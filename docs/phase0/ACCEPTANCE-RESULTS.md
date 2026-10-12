@@ -2,7 +2,7 @@
 
 Run on 12 October 2026 by Claude Code (automated), on the Mac described in [ENVIRONMENT.md](ENVIRONMENT.md).
 
-**Revision:** uncommitted working tree in a freshly initialised local Git repository; there is no commit hash yet. **Fixtures:** public Bengaluru landmarks with synthetic roles (`tests/fixtures/public_locations_bengaluru.json`) and a recorded real OSRM response (`tests/fixtures/recorded/osrm_bengaluru_car.json`, captured 2026-10-12T15:59:58Z).
+**Tested implementation revision:** `f6c479e` (`f6c479e5b2a8fecf60919e18f119cf39ad21b352`, local branch `main`, not pushed). The results below were produced on the working tree that became this commit. They were then re-verified on 2026-10-12T16:45Z from a `git archive` export of `f6c479e` with a fresh venv: `run_phase0.sh` exit 0, 114 passed, 2 skipped; the live OSRM test passed and the Google test was skipped as BLOCKED; scenario output identical to the committed evidence. **Fixtures:** public Bengaluru landmarks with synthetic roles (`tests/fixtures/public_locations_bengaluru.json`) and a recorded real OSRM response (`tests/fixtures/recorded/osrm_bengaluru_car.json`, captured 2026-10-12T15:59:58Z).
 
 **Commands:** `./run_phase0.sh` gave 114 passed, 2 skipped. `ROUTEWISE_LIVE_TESTS=1 pytest -m live` gave 1 passed (OSRM) and 1 skipped (Google BLOCKED). The mutation check (`tools/mutation_check.py`) caught 13 of 13 injected defects.
 
@@ -10,7 +10,7 @@ Run on 12 October 2026 by Claude Code (automated), on the Mac described in [ENVI
 
 | # | Criterion | Result | Evidence (tests in `spikes/routing/tests/`) | Notes / remaining |
 |---|---|---|---|---|
-| 1 | Reproducible environment | **Passed** | [ENVIRONMENT.md](ENVIRONMENT.md); `test_runtime_matches_pinned_lock`; clean-checkout run of `run_phase0.sh` (65 tracked files, fresh venv, same scenario output) | A commit hash is needed to cite a revision |
+| 1 | Reproducible environment | **Passed** | [ENVIRONMENT.md](ENVIRONMENT.md); `test_runtime_matches_pinned_lock`; clean run of `run_phase0.sh` from an export of `f6c479e` (74 files, fresh venv, same scenario output) | — |
 | 2 | Real road matrix | **Passed with OSRM car proxy · Blocked for the selected two-wheeler provider** | [osrm_live_capture.json](../../spikes/routing/evidence/osrm_live_capture.json): profile, timestamp, units, 256 elements, `HTTP 200 code Ok`, 4 directed asymmetries > 2 km; `test_recorded_matrix_is_real_directed_and_complete`; `test_live_osrm_returns_real_asymmetric_road_matrix` | Google `TWO_WHEELER` live trial: [BLOCKED](../../spikes/routing/evidence/google_routes_check.json), no key or spend approval. Car profile ≠ motorbike |
 | 3 | Separate starts and ends | **Passed** | `test_each_rider_starts_and_ends_where_requested` (3 riders, 12 orders, Office and Warehouse starts, Home/Custom/Last-stop ends); [scenario run](../../spikes/routing/evidence/scenario_run_recorded.md) | Run on the real matrix (recorded replay and live) |
 | 4 | Endpoint options and gate | **Passed** | `test_all_five_endpoint_options[office/warehouse/home/custom/last_stop]`; `test_last_stop_adds_no_artificial_return_trip`; `test_initial_optimization_waits_for_valid_confirmed_endpoints` (5 cases); `test_removed_rider_does_not_block_the_gate`; `test_api_boundary_blocks_until_every_rider_confirms` (HTTP 409 → 200) | API boundary is the spike FastAPI app, not Phase 1 |

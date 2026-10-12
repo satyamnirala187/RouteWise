@@ -4,7 +4,7 @@
 
 ## Phase and revision
 
-Phase 0 only; Phase 1 was not started. The work is an uncommitted working tree in a new local Git repository in this project folder (branch `main`, no commits, no remote). The original documentation package was not modified: SHA-256 checksums of all its files matched before and after the work.
+Phase 0 only; Phase 1 was not started. **Tested implementation revision: `f6c479e`** (`f6c479e5b2a8fecf60919e18f119cf39ad21b352`) on local branch `main`. There is no remote, and nothing has been pushed. A clean export of that commit was re-run on 2026-10-12 with identical results (see below). Later commits change only documentation. The original documentation package was not modified: SHA-256 checksums of all its files matched before and after the work.
 
 ## Delivered behaviour
 
@@ -41,6 +41,7 @@ Full output: [scenario_run_recorded.md](../../spikes/routing/evidence/scenario_r
 | `python -m routewise_spike benchmark` | Solve ~1 s (20 orders), ~5–6 s (50), ~12–14 s (100); synthetic matrix, timing only |
 | `tools/mutation_check.py` on a scratch copy | **13 of 13 injected defects caught**, e.g. gate disabled, missing edge → 0, lock ignored, priority ignored, reroute touching other riders, synthetic labelled real, private DNS allowed |
 | Clean-checkout reproduction (65 tracked files copied to scratch, fresh venv, `./run_phase0.sh`) | Exit 0; 114 passed, 2 skipped; scenario output byte-identical to the working tree |
+| Re-run from `git archive f6c479e` (74 files, fresh venv, `./run_phase0.sh`, then `pytest -m live`) | Exit 0; 114 passed, 2 skipped; live: OSRM passed, Google skipped (BLOCKED); scenario output identical to the committed evidence |
 
 ## Failed or not-run checks and limitations
 
@@ -76,5 +77,5 @@ P0-01, P0-03, P0-04, P0-05 and P0-06 → **In review**. P0-02 → **Blocked** (G
 1. Owner decides the service area, the pilot batch size and D04 direction, and approves (or declines) a capped Google key for the 36-element trial.
 2. Run `google-check --allow-billing --points 6` and the live tests, then record the results against criteria 2 and 11.
 3. Owner confirms D05–D08 and the D09/D10 values; supplies one public sample short link if desired.
-4. Commit the Phase 0 work so evidence can cite a revision.
+4. ~~Commit the Phase 0 work so evidence can cite a revision.~~ Done: `f6c479e` (local only, not pushed).
 5. Owner reviews this report and signs off. Phase 1 starts only after that.
