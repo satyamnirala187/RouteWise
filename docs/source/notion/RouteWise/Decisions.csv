@@ -1,0 +1,12 @@
+Decision,ID,State,Choice,Rationale,Evidence,Owner,Review gate,Decision date
+Product scope,D01,Confirmed requirement,Requirements R01–R24 and selected add-ons 2/4/8/9,Current user request,Current consolidated requirements,Unassigned,Before every scope change,
+Development workflow,D02,Selected for kickoff,Mac + Cursor + Claude Code terminal,Existing tools available,Local read-only tool verification; official Claude IDE guide,Unassigned,Phase 0,
+Application stack,D03,Proposed,React TS Tailwind / FastAPI / PostgreSQL,Requested candidate architecture,Compatibility not yet tested,Unassigned,Phase 0,
+Road and map provider,D04,Pending,,Coverage cost motorbike profile and rights need proof,Official provider docs only; trial pending,Unassigned,Phase 0,
+Priority semantics,D05,Proposed,First active order per assigned rider route,Avoid ambiguous global time precedence,Spike pending,Unassigned,Phase 0,
+Capacity unit,D06,Proposed,Order count,No weight/volume import fields agreed,User import contract,Unassigned,Phase 0,
+Distribution objective,D07,Proposed,Equal counts / smart road cost / manual locked owners,Implements three confirmed modes,Constraint spike pending,Unassigned,Phase 0,
+Postponed return,D08,Proposed,Keep owner; return explicitly to Pending,Predictable reinsertion,Workflow validation pending,Unassigned,Phase 0,
+Offline conflicts and expiry,D09,Pending,,Data loss and shared-device privacy require design,Device tests pending,Unassigned,Phase 0 and Phase 5,
+Deployment and retention,D10,Pending,,Accounts budget and retention are unspecified,No deployment created,Unassigned,Before pilot,
+Package ownership,D11,Confirmed requirement,Rider reroutes preserve other rider assignments,Physically assigned packages remain with their rider,Current user request,Unassigned,Phase 2 and Phase 4,

@@ -1,0 +1,13 @@
+KILLED: gate disabled
+KILLED: missing edge -> zero cost
+KILLED: last-stop sink charged as return
+KILLED: manual lock ignored
+KILLED: priority ignored
+KILLED: building grouping off
+KILLED: reroute touches other riders
+KILLED: postponed kept in sequence
+KILLED: google ROUTE_NOT_FOUND -> 0
+KILLED: synthetic labelled real
+KILLED: camera centre accepted
+KILLED: private DNS allowed
+KILLED: capacity precheck off

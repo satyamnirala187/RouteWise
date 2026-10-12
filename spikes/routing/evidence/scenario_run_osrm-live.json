@@ -1,0 +1,83 @@
+{
+  "run_at": "2026-10-12T16:20:19+00:00",
+  "matrix": "osrm-live",
+  "steps": [
+    {
+      "title": "1. Endpoint gate",
+      "passed": true
+    },
+    {
+      "title": "2. Smart plan (O08 first priority)",
+      "distance_label": "Road distances: osrm-table (OpenStreetMap data), profile car (proxy; not a two-wheeler profile)",
+      "assignments": {
+        "O01": "R1",
+        "O02": "R1",
+        "O03": "R1",
+        "O04": "R1",
+        "O09": "R1",
+        "O07": "R2",
+        "O06": "R2",
+        "O12": "R2",
+        "O05": "R2",
+        "O10": "R2",
+        "O08": "R3",
+        "O11": "R3"
+      },
+      "km": {
+        "R1": 14.63,
+        "R2": 14.603,
+        "R3": 10.662
+      }
+    },
+    {
+      "title": "2. Equal plan (O08 first priority)",
+      "distance_label": "Road distances: osrm-table (OpenStreetMap data), profile car (proxy; not a two-wheeler profile)",
+      "assignments": {
+        "O01": "R1",
+        "O02": "R1",
+        "O03": "R1",
+        "O11": "R1",
+        "O08": "R2",
+        "O09": "R2",
+        "O04": "R2",
+        "O10": "R2",
+        "O07": "R3",
+        "O06": "R3",
+        "O12": "R3",
+        "O05": "R3"
+      },
+      "km": {
+        "R1": 11.862,
+        "R2": 23.172,
+        "R3": 9.555
+      }
+    },
+    {
+      "title": "3. Manual plan (admin assignments fixed, O12 moved by admin)",
+      "assignments": {
+        "O01": "R1",
+        "O12": "R1",
+        "O02": "R1",
+        "O03": "R1",
+        "O11": "R1",
+        "O08": "R2",
+        "O09": "R2",
+        "O04": "R2",
+        "O10": "R2",
+        "O07": "R3",
+        "O06": "R3",
+        "O05": "R3"
+      }
+    },
+    {
+      "title": "4. Rider-only reroute (R1)",
+      "other_routes_unchanged": true,
+      "ownership_unchanged": true
+    },
+    {
+      "title": "5. Endpoint change (R2 Custom \u2192 Warehouse)",
+      "other_routes_unchanged": true,
+      "ownership_unchanged": true
+    }
+  ]
+}

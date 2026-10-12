@@ -1,0 +1,10 @@
+[project]
+name = "routewise-spike"
+version = "0.0.0"
+description = "RouteWise Phase 0 routing spike (not production code)"
+requires-python = ">=3.14,<3.15"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["live: calls a real external routing provider (opt in with ROUTEWISE_LIVE_TESTS=1)"]
+addopts = "-ra"

@@ -1,0 +1,5 @@
+{
+  "checked_at": "2026-10-12T16:14:17+00:00",
+  "status": "BLOCKED",
+  "reason": "GOOGLE_MAPS_API_KEY not set; no credentials and no approved spending cap (D04/D10)."
+}

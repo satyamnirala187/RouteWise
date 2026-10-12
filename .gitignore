@@ -1,0 +1,33 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# Node (Phase 1+)
+node_modules/
+
+# Customer and private data — never commit
+uploads/
+customer-data/
+*.xlsx
+*.xls
+*.csv.private
+*.dump
+*.sql.gz
+tests/fixtures/private/
+
+# Live provider evidence may contain provider content whose storage terms are
+# restricted (e.g. Google Routes). Only redacted/permitted evidence is committed.
+spikes/routing/evidence/private/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

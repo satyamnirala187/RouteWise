@@ -1,0 +1,21 @@
+{
+  "_about": "Public landmarks in Bengaluru, India (disclosed Phase 0 test area). Approximate coordinates entered by hand; the routing provider snaps each to the nearest road and the snap distance is recorded. Office/Warehouse/Home/Custom roles are SYNTHETIC labels on public places — no real addresses, homes or customers.",
+  "locations": [
+    {"id": "office", "name": "Office (synthetic) @ Vidhana Soudha", "lat": 12.9796, "lng": 77.5906},
+    {"id": "warehouse", "name": "Warehouse (synthetic) @ KSR Bengaluru City Railway Station", "lat": 12.9781, "lng": 77.5695},
+    {"id": "home_r1", "name": "Home endpoint (synthetic) @ Lalbagh Botanical Garden gate", "lat": 12.9507, "lng": 77.5848},
+    {"id": "custom_r2", "name": "Custom endpoint (synthetic) @ Indiranagar Metro Station", "lat": 12.9784, "lng": 77.6408},
+    {"id": "gps_r1", "name": "Simulated current position @ M. Chinnaswamy Stadium", "lat": 12.9788, "lng": 77.5996},
+    {"id": "cubbon_park", "name": "Cubbon Park", "lat": 12.9763, "lng": 77.5929},
+    {"id": "ub_city", "name": "UB City (shared building fixture)", "lat": 12.9716, "lng": 77.5960},
+    {"id": "mg_road_metro", "name": "MG Road Metro Station", "lat": 12.9755, "lng": 77.6066},
+    {"id": "commercial_street", "name": "Commercial Street", "lat": 12.9822, "lng": 77.6084},
+    {"id": "bangalore_palace", "name": "Bangalore Palace", "lat": 12.9987, "lng": 77.5921},
+    {"id": "mantri_square", "name": "Mantri Square Mall, Malleshwaram", "lat": 12.9916, "lng": 77.5712},
+    {"id": "jayanagar_4th_block", "name": "Jayanagar 4th Block", "lat": 12.9293, "lng": 77.5826},
+    {"id": "forum_koramangala", "name": "Forum Mall, Koramangala", "lat": 12.9346, "lng": 77.6113},
+    {"id": "ulsoor_lake", "name": "Ulsoor Lake", "lat": 12.9830, "lng": 77.6200},
+    {"id": "bull_temple", "name": "Bull Temple, Basavanagudi", "lat": 12.9428, "lng": 77.5679},
+    {"id": "shivajinagar_bus", "name": "Shivajinagar Bus Station", "lat": 12.9857, "lng": 77.6050}
+  ]
+}

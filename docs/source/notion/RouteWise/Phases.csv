@@ -1,0 +1,7 @@
+Phase,ID,Status,Owner,Priority,Depends on,Start date,Due date,Completion date,Outcome,Completion criteria,GitHub,Demo,Decision link,QA evidence,Human approval
+Discovery and architecture,P0,Not started,Unassigned,High,,,,,Prove real road matrices and variable endpoints,All twelve Phase 0 criteria evidenced and human accepted,,,,,
+Foundation auth and Excel import,P1,Not started,Unassigned,High,P0,,,,Secure sessions and validated editable orders,"Import, authorization and migration checks pass",,,,,
+Routing and multi-rider constraints,P2,Not started,Unassigned,High,P1,,,,Feasible initial plans with rider-specific starts and ends,"Confirmations, capacity, priority and modes pass",,,,,
+Rider PWA screens,P3,Not started,Unassigned,High,P2,,,,Call navigate and persistent delivery status,Representative phone round and role checks pass,,,,,
+Quick call rerouting and shared stops,P4,Not started,Unassigned,High,P3,,,,Individual reroutes and independent shared-building orders,"Ownership invariants, origins and endpoint-change tests pass",,,,,
+Offline tests pilot and deployment,P5,Not started,Unassigned,High,P4,,,,Reliable reconnect and measured pilot,Offline/device/security/pilot/restore evidence and approval,,,,,
