@@ -1,0 +1,19 @@
+{
+ "scope": "Observation for these 210 directed pairs per profile only; not a general claim about Valhalla's driving-side behaviour",
+ "comparison": "left-hand (fixed) minus right-hand (Valhalla default without the India polygon)",
+ "excludes": "Daulat Ram pins (changed between runs)",
+ "motor_scooter": {
+  "pairs_compared": 210,
+  "distance_changed": 0,
+  "time_changed": 0,
+  "max_abs_distance_change_m": 0,
+  "total_time_change_s": 0
+ },
+ "motorcycle": {
+  "pairs_compared": 210,
+  "distance_changed": 0,
+  "time_changed": 0,
+  "max_abs_distance_change_m": 0,
+  "total_time_change_s": 0
+ }
+}

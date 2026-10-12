@@ -38,7 +38,7 @@ Also checked and **not shortlisted**: GraphHopper hosted (has a `scooter` profil
 
 **Owner constraint (12 Oct 2026):** delivery area DU North Campus, Delhi; routing/service budget **₹0**; no paid subscriptions or billable services.
 
-- **Primary candidate: self-hosted Valhalla on OpenStreetMap data** (`motor_scooter`; `motorcycle` beta). No per-request fee. ODbL data may be stored, displayed on Leaflet with attribution, and recorded as evidence. Now under local evaluation: see `VALHALLA-LOCAL.md` (in progress).
+- **Primary candidate: self-hosted Valhalla on OpenStreetMap data** (`motor_scooter`; `motorcycle` beta). No per-request fee. ODbL data may be stored, displayed on Leaflet with attribution, and recorded as evidence. Now under local evaluation: see [VALHALLA-LOCAL.md](VALHALLA-LOCAL.md).
 - **Stadia Maps: not recommended and inactive.** The matrix needs Standard ($80/month), which the budget excludes. In addition, storing our computed **sequence/assignment** (not just totals and ETAs) is **unresolved** under its terms, so an unconfirmed Stadia setup could not back persisted plans or offline lists. An earlier draft of this page suggested persisting the sequence while awaiting Stadia's answer; that was wrong and has been withdrawn.
 - **Google Routes `TWO_WHEELER`: optional and inactive.** It is billable beyond the 1,000-element free cap, and its display rules exclude Leaflet.
 - **Public demo servers** (OSRM demo used in Phase 0): research evidence only, never production.
@@ -52,7 +52,7 @@ Using public test points only:
 - At least one asymmetry or detour shown.
 - Error-path tests around the real adapter.
 
-For the ₹0 budget, criterion 2 is pursued with **local Valhalla** on public DU North Campus points (`VALHALLA-LOCAL.md` (in progress)). The Stadia adapter (27 mocked tests) stays unused; its live check is not planned.
+For the ₹0 budget, criterion 2 is pursued with **local Valhalla** on public DU North Campus points ([VALHALLA-LOCAL.md](VALHALLA-LOCAL.md)). The Stadia adapter (27 mocked tests) stays unused; its live check is not planned.
 
 ## Sources (official, read 2026-10-12)
 

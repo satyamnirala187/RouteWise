@@ -31,3 +31,10 @@ spikes/routing/evidence/private/
 .DS_Store
 .idea/
 .vscode/
+
+# Local Valhalla data (OSM extracts and built tiles are large and reproducible; never commit)
+spikes/valhalla/data/
+*.osm.pbf
+valhalla_tiles/
+valhalla_tiles.tar
+.venv-valhalla/

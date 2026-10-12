@@ -14,7 +14,9 @@ Copied on 12 October 2026 from the RouteWise development package. The copies are
 
 - [Phase 0 report](phase0/PHASE0-REPORT.md): start here
 - [Acceptance results](phase0/ACCEPTANCE-RESULTS.md)
-- [Provider evaluation and cost](phase0/PROVIDER-EVALUATION.md)
+- [Local Valhalla evaluation — DU North Campus, ₹0](phase0/VALHALLA-LOCAL.md)
+- [Provider comparison (₹0 correction)](phase0/PROVIDER-COMPARISON.md) · [Stadia suitability (inactive)](phase0/STADIA-SUITABILITY.md)
+- [Provider evaluation and cost (12 Oct, pre-budget)](phase0/PROVIDER-EVALUATION.md)
 - [Architecture decision record](phase0/ARCHITECTURE-DECISION.md)
 - [Offline and privacy proposal](phase0/OFFLINE-PRIVACY.md)
 - [Environment and reproduction](phase0/ENVIRONMENT.md)

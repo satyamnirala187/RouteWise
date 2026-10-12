@@ -2,11 +2,56 @@
 
 **Date:** 12 October 2026 · **Prepared by:** Claude Code · **Status: in review, NOT complete.** The live check against the selected two-wheeler provider is blocked, and owner sign-off is required.
 
-## Phase and revision
+## Evidence sets (read this first)
 
-Phase 0 only; Phase 1 was not started. **Tested implementation revision: `f6c479e`** (`f6c479e5b2a8fecf60919e18f119cf39ad21b352`) on local branch `main`. There is no remote, and nothing has been pushed. A clean export of that commit was re-run on 2026-10-12 with identical results (see below). Later commits change only documentation. The original documentation package was not modified: SHA-256 checksums of all its files matched before and after the work.
+| Evidence set | Revision | Area and data | Tests at that revision |
+|---|---|---|---|
+| **Original Phase 0 spike: historical** | `f6c479e` | Bengaluru public points (test area only); OSRM public demo, car profile, response recorded 2026-10-12T15:59:58Z | 114 passed, 2 skipped; 13/13 injected defects caught |
+| Optional Stadia adapter (inactive, mocked only) | `a6c2875` | No live calls | +27 mocked tests |
+| **Delhi implementation: current** | the commit titled "Add local Valhalla routing evaluation for DU North Campus" (the commit directly after `a6c2875`; see `git log`) | DU North Campus, Delhi (confirmed area); local self-hosted Valhalla on OSM data up to 2026-10-11T20:21:06Z | 264 passed, 5 skipped (all checks run on the Bengaluru recording plus DU `motor_scooter` and `motorcycle`); 23/23 injected defects caught |
 
-## Delivered behaviour
+Results from one set are never reported as results of another. Bengaluru evidence files are unchanged since `f6c479e`.
+
+## Update — 13 October 2026: Delhi implementation (still in review, NOT complete)
+
+**Revision:** the commit titled "Add local Valhalla routing evaluation for DU North Campus" (the commit directly after `a6c2875`; see `git log`).
+
+**Owner constraints:** the delivery area is **DU North Campus, Delhi**; the routing/service budget is **₹0**; no paid subscriptions or billable services. In response:
+
+- **Stadia was corrected and set inactive** (commit `a6c2875`). Its matrix needs the $80/month plan, and persisting a Stadia-derived sequence is unresolved under its terms, so that earlier advice was withdrawn.
+- **Local Valhalla (OpenStreetMap) evaluated on this Mac with no manual install.**
+  - pyvalhalla 3.9.1 + pyosmium 4.3.1 in an isolated venv.
+  - Buffered Delhi extract: about 31 × 29 km, built from the full India extract because the box crosses a Geofabrik zone boundary.
+  - Tiles: 51 MB, built in 3.6 s; a 17 × 17 matrix takes 61–93 ms.
+  - Details, resources, attribution and limitations: [VALHALLA-LOCAL.md](VALHALLA-LOCAL.md).
+- **Real directed road matrices for scooter and motorcycle profiles**:
+  - 16 public DU points with OSM-sourced coordinates (gates and metro stations preferred).
+  - Every existing check passes on them, as it does on the historical Bengaluru matrix.
+  - The planner now supports **per-vehicle profiles** (scooters → `motor_scooter`, bikes → `motorcycle`).
+- **Findings from real data:**
+  1. A campus-centroid pin (Daulat Ram) is unroutable, so the planner now reports `UNROUTABLE_LOCATION` with the order id before solving.
+  2. The buffer matters: a naive campus-only clip loses 10 routes and lengthens 18.
+  3. India's country polygon is degenerate in the Geofabrik extract, so `build_tiles.sh` sets left-hand traffic explicitly. **Observation for the tested pairs only:** across the 210 directed point-to-point pairs compared (each profile), no distance or time changed. This is not a general claim about how the driving side affects Valhalla routing; other pairs, turn costs elsewhere and turn-by-turn guidance were not tested.
+- **Tests:** 264 passed, 5 skipped (opt-in live / blocked paid providers). Local Valhalla live tests gave 2 passed, live = recorded. The mutation check caught **23/23** injected defects (`spikes/routing/evidence/mutation_check.txt`).
+- **Still open:**
+  - D04 provider selection (self-hosted Valhalla is proposed).
+  - A ₹0 production host.
+  - Scooter vs motorcycle profile choice.
+  - D05–D10.
+  - Field validation of OSM data against real rider routes.
+  - Owner sign-off.
+
+Phase 1 has not started.
+
+## Original report for `f6c479e` (Bengaluru, historical)
+
+> Everything from here to the end of this file is the original 12 October report for `f6c479e`, kept as written except for this note. Its next steps are partly superseded by the ₹0 budget and the Delhi update above (e.g. the Google trial is no longer planned).
+
+### Phase and revision
+
+Phase 0 only; Phase 1 was not started. **Tested implementation revision: `f6c479e`** (`f6c479e5b2a8fecf60919e18f119cf39ad21b352`) on local branch `main`. There is no remote, and nothing has been pushed. A clean export of that commit was re-run on 2026-10-12 with identical results (see below). `5c533a8` changed documentation only. `a6c2875` (Stadia adapter) and the Delhi commit change code, and are described in the update above, not here. The original documentation package was not modified: SHA-256 checksums of all its files matched before and after the work.
+
+### Delivered behaviour
 
 A reproducible routing spike (`spikes/routing/`), built on OR-Tools 9.15 and Python 3.14.3, that:
 
@@ -27,7 +72,7 @@ Example output on the real matrix (smart mode, O08 first priority):
 
 Full output: [scenario_run_recorded.md](../../spikes/routing/evidence/scenario_run_recorded.md).
 
-## Commands run and actual results
+### Commands run and actual results
 
 | Command | Result |
 |---|---|
@@ -43,14 +88,14 @@ Full output: [scenario_run_recorded.md](../../spikes/routing/evidence/scenario_r
 | Clean-checkout reproduction (65 tracked files copied to scratch, fresh venv, `./run_phase0.sh`) | Exit 0; 114 passed, 2 skipped; scenario output byte-identical to the working tree |
 | Re-run from `git archive f6c479e` (74 files, fresh venv, `./run_phase0.sh`, then `pytest -m live`) | Exit 0; 114 passed, 2 skipped; live: OSRM passed, Google skipped (BLOCKED); scenario output identical to the committed evidence |
 
-## Failed or not-run checks and limitations
+### Failed or not-run checks and limitations
 
 - **Blocked:** live Google Routes `TWO_WHEELER` matrix (criterion 2 for the selected provider, criterion 11 latency and trial). No credentials; spending not approved.
 - **Not run:** live short-link resolution (no public sample link); invalid-key behaviour against the real Google API (mocked only).
 - **Fixed during the spike:** OR-Tools 9.15's `SetAllowedVehiclesForIndex` binding rejects Python lists, so locks use the `VehicleVar` domain instead. Three first-priority orders across three riders initially found no solution, and locked cases took 3–20 s. The root cause was the cheapest-arc start interacting with the zero-cost Last-stop sink; it is fixed with insertion + GLS bounded by solution count (see [ARCHITECTURE-DECISION.md](ARCHITECTURE-DECISION.md#solver-configuration-finding)).
 - **Limits:** OSRM car profile is a proxy for motorbikes; durations are free-flow; the runtime benchmark is synthetic; there is no auth, persistence or UI (later phases). The DNS check and connection in the link resolver are not pinned to the same IP; this is a Phase 1 hardening item.
 
-## Decisions changed or proposed
+### Decisions changed or proposed
 
 | ID | Before | Proposal now |
 |---|---|---|
@@ -64,15 +109,15 @@ Full output: [scenario_run_recorded.md](../../spikes/routing/evidence/scenario_r
 | D10 | Pending | 30-day retention proposed; hosting and spend still open |
 | new | — | Optimization runs as an in-process async task with polling (100 orders ≈ 14 s); solver = insertion + GLS, 1,000-solution bound |
 
-## Tasks proposed for status change (owner approves)
+### Tasks proposed for status change (owner approves)
 
 P0-01, P0-03, P0-04, P0-05 and P0-06 → **In review**. P0-02 → **Blocked** (Google trial). P0-07 → **In progress** (decisions with owner). P0-08 stays **Not started** until review. Nothing is proposed as Done before human approval. Details: [NOTION-UPDATE-PROPOSAL.md](NOTION-UPDATE-PROPOSAL.md).
 
-## Owner approval and date
+### Owner approval and date
 
 *(blank — awaiting human review)*
 
-## Next steps and prerequisites (Phase 1 stays blocked until the gate passes)
+### Next steps and prerequisites (Phase 1 stays blocked until the gate passes)
 
 1. Owner decides the service area, the pilot batch size and D04 direction, and approves (or declines) a capped Google key for the 36-element trial.
 2. Run `google-check --allow-billing --points 6` and the live tests, then record the results against criteria 2 and 11.

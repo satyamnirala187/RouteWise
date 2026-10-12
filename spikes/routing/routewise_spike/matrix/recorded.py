@@ -47,3 +47,53 @@ class RecordedOSRMProvider:
                 notes=p.notes,
             ),
         )
+
+
+class RecordedMatrixProvider:
+    """Replay a normalised recording (see matrix.valhalla_local.to_recording)."""
+
+    def __init__(self, path: Path):
+        from .base import ElementStatus, MatrixElement
+
+        data = json.loads(Path(path).read_text())
+        self.meta = data["meta"]
+        self.locations = {d["id"]: Location(**d) for d in data["locations"]}
+        self._elements = {}
+        for o, d, status, dist, dur in data["elements"]:
+            st = ElementStatus(status)
+            self._elements[(o, d)] = MatrixElement(st, dist, dur) if st is ElementStatus.OK else MatrixElement(st)
+        self.name = f"{self.meta['provider']} (recorded)"
+
+    def compute(self, origins: list[Location], destinations: list[Location], profile: str) -> RoadMatrix:
+        for loc in [*origins, *destinations]:
+            rec = self.locations.get(loc.id)
+            if rec is None or (rec.lat, rec.lng) != (loc.lat, loc.lng):
+                raise KeyError(f"location {loc.id} is not part of the recording")
+        elements = {(o.id, d.id): self._elements[(o.id, d.id)]
+                    for o in origins for d in destinations if o.id != d.id}
+        m = self.meta
+        return RoadMatrix(
+            elements,
+            Provenance(
+                provider=m["provider"],
+                real_road=bool(m["real_road"]),
+                profile=m["profile"],
+                requested_at=m["requested_at"],
+                element_count=len(origins) * len(destinations),
+                response_status=m.get("response_status", ""),
+                recorded=True,
+                notes=m.get("notes", ""),
+            ),
+        )
+
+
+class ByProfile:
+    """Dispatch compute() to a provider per profile (e.g. two recorded Valhalla costings)."""
+
+    name = "by-profile"
+
+    def __init__(self, providers: dict):
+        self.providers = providers
+
+    def compute(self, origins: list[Location], destinations: list[Location], profile: str) -> RoadMatrix:
+        return self.providers[profile].compute(origins, destinations, profile)

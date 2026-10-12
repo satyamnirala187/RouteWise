@@ -8,7 +8,7 @@ root = pathlib.Path(sys.argv[1]); py = sys.argv[2]
 P = root / "spikes/routing/routewise_spike"
 mutants = {
  "gate disabled": ("planner.py", "    gate = endpoint_gate_issues(rnd)\n", "    gate = []\n"),
- "missing edge -> zero cost": ("planner.py", "                if c is None:\n                    cost[a][b] = FORBIDDEN\n                    allowed[a][b] = False\n", "                if c is None:\n                    cost[a][b] = 0\n"),
+ "missing edge -> zero cost": ("planner.py", "cost[a][b] = FORBIDDEN if c is None else c", "cost[a][b] = 0 if c is None else c"),
  "last-stop sink charged as return": ("planner.py", "    if vehicle.end_location_id is not None:\n        path.append(vehicle.end_location_id)\n", "    path.append(vehicle.end_location_id or vehicle.start_location_id)\n"),
  "manual lock ignored": ("planner.py", "            routing.VehicleVar(idx).SetValues([v_index[s.locked_rider_id]])\n", "            pass\n"),
  "priority ignored": ("planner.py", "                    routing.NextVar(manager.NodeToIndex(j)).RemoveValue(idx)\n", "                    pass\n"),
@@ -24,6 +24,11 @@ mutants = {
  "stadia km not converted": ("matrix/stadia.py", "round(dist * 1000)", "round(dist)"),
  "stadia 200km check off": ("matrix/stadia.py", "if widest > MAX_BLINE_KM:", "if False:"),
  "stadia tile too big": ("matrix/stadia.py", "self.tile = int(math.isqrt(max_elements))", "self.tile = 30"),
+ "valhalla bicycle allowed": ("matrix/valhalla_local.py", 'COSTINGS = {"motor_scooter", "motorcycle"}', 'COSTINGS = {"motor_scooter", "motorcycle", "bicycle"}'),
+ "valhalla engine error swallowed": ("matrix/valhalla_local.py", 'raise ProviderUnavailable(f"Valhalla matrix failed', 'return None  # raise ProviderUnavailable(f"Valhalla matrix failed'),
+ "recorded no-route -> ok zero": ("matrix/recorded.py", "MatrixElement(st, dist, dur) if st is ElementStatus.OK else MatrixElement(st)", "MatrixElement(ElementStatus.OK, dist or 0, dur or 0)"),
+ "unroutable pin check off": ("planner.py", "        if not reachable:\n            bad.extend(s.order_ids)", "        if False:\n            bad.extend(s.order_ids)"),
+ "per-vehicle profile ignored": ("planner.py", "            routing.SetArcCostEvaluatorOfVehicle(callbacks[id(per_vehicle[v.rider_id])], k)", "            routing.SetArcCostEvaluatorOfVehicle(next(iter(callbacks.values())), k)"),
  "stadia units unchecked": ("matrix/stadia.py", 'if payload.get("units") != "kilometers":', "if False:"),
 }
 for name, (f, old, new) in mutants.items():

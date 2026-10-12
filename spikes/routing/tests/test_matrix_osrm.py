@@ -22,7 +22,11 @@ def osrm(handler):
                              min_interval_s=0)
 
 
-def test_recorded_matrix_is_real_directed_and_complete(real, locations):
+def test_recorded_matrix_is_real_directed_and_complete(locations):
+    from routewise_spike.matrix.recorded import RecordedOSRMProvider
+    from routewise_spike.scenario import RECORDED_OSRM
+
+    real = RecordedOSRMProvider(RECORDED_OSRM)  # historical Bengaluru evidence
     ids = list(locations)
     m = real.compute(list(locations.values()), list(locations.values()), "car_proxy")
     assert m.provenance.real_road and m.provenance.recorded
@@ -37,7 +41,11 @@ def test_recorded_matrix_is_real_directed_and_complete(real, locations):
     assert "Road distances" in m.provenance.label() and "recorded" in m.provenance.label()
 
 
-def test_recorded_provider_refuses_points_outside_recording(real):
+def test_recorded_provider_refuses_points_outside_recording():
+    from routewise_spike.matrix.recorded import RecordedOSRMProvider
+    from routewise_spike.scenario import RECORDED_OSRM
+
+    real = RecordedOSRMProvider(RECORDED_OSRM)
     with pytest.raises(KeyError):
         real.compute([Location("elsewhere", "", 1, 1)], [A], "car_proxy")
 

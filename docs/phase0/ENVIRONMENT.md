@@ -62,3 +62,24 @@ ROUTEWISE_LIVE_TESTS=1 .venv/bin/python -m pytest -q -m live    # opt-in network
 ```
 
 A clean-checkout run was verified by copying only the files Git would track into a scratch directory and running `run_phase0.sh` there with a fresh venv. The result is in [PHASE0-REPORT.md](PHASE0-REPORT.md#commands-run-and-actual-results).
+
+## Local Valhalla tooling (added 2026-10-12, DU North Campus evaluation)
+
+| Item | Observed |
+|---|---|
+| Hardware | Apple M2, 8 cores, 16 GB RAM, ~87 GB free disk |
+| Docker / Colima / Podman / Homebrew | Not installed, and **not needed** |
+| pyvalhalla | 3.9.1 (official Valhalla Python package; cp314 macOS arm64 wheel; bundles `valhalla_build_tiles`, `valhalla_build_admins`, `valhalla_service` and an in-process `Actor`) |
+| pyosmium (`osmium`) | 4.3.1 (used for the buffered extract) |
+| Environment | `spikes/routing/.venv-valhalla` (git-ignored), built from `requirements.lock` + `requirements-valhalla.in`, frozen in `requirements-valhalla.lock`. The core `.venv` and its tests do not need Valhalla |
+
+```bash
+cd spikes/routing
+python3.14 -m venv .venv-valhalla
+.venv-valhalla/bin/python -m pip install -r requirements-valhalla.lock
+../valhalla/build_tiles.sh                                        # download India extract (1.7 GB), cut buffer, build tiles
+.venv-valhalla/bin/python -m routewise_spike capture-valhalla     # local only; writes DU recordings + evidence
+.venv-valhalla/bin/python -m routewise_spike run-scenario --matrix du-live-motor_scooter
+```
+
+No manual installation step was required. The resource figures from the build are in [VALHALLA-LOCAL.md](VALHALLA-LOCAL.md).

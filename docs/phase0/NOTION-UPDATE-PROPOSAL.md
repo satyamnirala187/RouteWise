@@ -4,6 +4,24 @@
 
 Evidence links below are repository-relative. Replace them with GitHub URLs once a repository exists; none has been created. The Commit field stays blank until a commit exists.
 
+## Revision — 13 October 2026 (supersedes conflicting rows below)
+
+Owner constraints: delivery area **DU North Campus, Delhi**; budget **₹0**; no paid services.
+
+| Record | Proposed change |
+|---|---|
+| P0-02 | Blocked → **In review**. Real directed road matrices from **local self-hosted Valhalla** (OSM, `motor_scooter` and `motorcycle`) on public DU points. Google/Stadia are optional and inactive |
+| P0-07 | In progress (unchanged). Add evidence: `docs/phase0/VALHALLA-LOCAL.md`, `PROVIDER-COMPARISON.md` (₹0 correction) |
+| A01 | Blocked → **Passed** (local Valhalla, DU). Note: the provider is not yet formally selected (D04) |
+| A02–A06 | Passed (unchanged). Add "also passed on DU Valhalla scooter and motorcycle matrices" |
+| D04 | Pending → **Proposed: self-hosted Valhalla on OpenStreetMap (₹0 licence)**. Production host within ₹0 still to be decided; Stadia inactive ($80/month matrix plan; sequence storage unresolved); Google optional |
+| *(new)* D13 | Proposed: two-wheeler profile per vehicle type (scooter → `motor_scooter`, bike → `motorcycle` [beta]); owner to confirm |
+| Home callout | "Phase 0 in review. Routing proven on real OpenStreetMap roads around DU North Campus using local Valhalla (₹0). Production host and provider decision pending. Phase 1 not started." |
+
+Commit field: use `f6c479e` for the original Bengaluru evidence and the Delhi commit ("Add local Valhalla routing evaluation for DU North Campus") for the DU evidence; never mix them in one row.
+
+Phase P0 status stays **In progress**; nothing moves to Done before owner sign-off.
+
 ## Phases
 
 | ID | Field | Current | Proposed |

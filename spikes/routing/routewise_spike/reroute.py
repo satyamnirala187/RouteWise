@@ -79,7 +79,7 @@ def reroute_rider(
     rider_id: str,
     provider: MatrixProvider,
     *,
-    profile: str,
+    profile: str | dict,
     origin: RerouteOrigin,
     metric: str = "distance",
     time_limit_s: int = 10,
@@ -103,7 +103,8 @@ def reroute_rider(
     locs = [rnd.locations[i] for i in loc_ids]
     old = plan.routes[rider_id]
     try:
-        matrix = provider.compute(locs, locs, profile)
+        rider_profile = profile if isinstance(profile, str) else profile[rider.vehicle]
+        matrix = provider.compute(locs, locs, rider_profile)
     except ProviderError as exc:
         return RerouteOutcome(
             plan, False, f"Awaiting recalculation: {type(exc).__name__}. Last valid plan v{plan.version} kept; reconnect and retry."

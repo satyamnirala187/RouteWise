@@ -43,12 +43,25 @@ def test_missing_edge_cost_is_none_not_zero(locations):
     assert m.cost("office", "ub_city") is None
 
 
-def test_isolated_stop_fails_explicitly_without_dropping_orders(make_round, locations):
-    others = [i for i in locations if i != "bull_temple"]
-    cut = {(o, "bull_temple") for o in others}
+def test_isolated_stop_fails_explicitly_without_dropping_orders(make_round):
+    rnd = make_round(mode=DistributionMode.SMART)
+    isolated = rnd.order("O11").location_id
+    cut = {(o, isolated) for o in rnd.locations if o != isolated}
     with pytest.raises(PlanningError) as exc:
-        optimize_round(make_round(mode=DistributionMode.SMART), SyntheticMatrixProvider(unreachable=cut),
+        optimize_round(rnd, SyntheticMatrixProvider(unreachable=cut),
                        profile="synthetic", time_limit_s=2)
-    assert exc.value.code == "NO_FEASIBLE_PLAN"
+    # Caught before solving, with the exact order to fix (pin correction), not a generic failure.
+    assert exc.value.code == "UNROUTABLE_LOCATION"
     assert "No order was dropped" in exc.value.message
-    assert any("O11" in d for d in exc.value.details)
+    assert exc.value.details == ["O11"]
+
+
+def test_infeasible_combination_still_reports_no_feasible_plan(make_round):
+    """Every pin routable, but the only way into one stop is from a start that can't take it."""
+    rnd = make_round(mode=DistributionMode.SMART)
+    target = rnd.order("O11").location_id
+    cut = {(o, target) for o in rnd.locations if o not in (target, "office")}  # only reachable from Office (R1)
+    rnd.order("O11").locked_rider_id = "R2"  # ...but locked to a Warehouse rider
+    with pytest.raises(PlanningError) as exc:
+        optimize_round(rnd, SyntheticMatrixProvider(unreachable=cut), profile="synthetic", time_limit_s=2)
+    assert exc.value.code == "NO_FEASIBLE_PLAN" and "No order was dropped" in exc.value.message

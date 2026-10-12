@@ -1,0 +1,83 @@
+{
+  "run_at": "2026-10-12T18:25:17+00:00",
+  "matrix": "du-live-motor_scooter",
+  "steps": [
+    {
+      "title": "1. Endpoint gate",
+      "passed": true
+    },
+    {
+      "title": "2. Smart plan (O08 first priority)",
+      "distance_label": "Road distances: valhalla-local (OpenStreetMap data), profile motor_scooter",
+      "assignments": {
+        "O08": "R1",
+        "O06": "R1",
+        "O11": "R1",
+        "O09": "R2",
+        "O07": "R2",
+        "O05": "R2",
+        "O04": "R2",
+        "O12": "R2",
+        "O10": "R3",
+        "O01": "R3",
+        "O02": "R3",
+        "O03": "R3"
+      },
+      "km": {
+        "R1": 5.132,
+        "R2": 11.757,
+        "R3": 6.655
+      }
+    },
+    {
+      "title": "2. Equal plan (O08 first priority)",
+      "distance_label": "Road distances: valhalla-local (OpenStreetMap data), profile motor_scooter",
+      "assignments": {
+        "O08": "R1",
+        "O09": "R1",
+        "O06": "R1",
+        "O11": "R1",
+        "O07": "R2",
+        "O05": "R2",
+        "O04": "R2",
+        "O12": "R2",
+        "O10": "R3",
+        "O01": "R3",
+        "O02": "R3",
+        "O03": "R3"
+      },
+      "km": {
+        "R1": 5.426,
+        "R2": 11.604,
+        "R3": 6.655
+      }
+    },
+    {
+      "title": "3. Manual plan (admin assignments fixed, O12 moved R2 -> R1)",
+      "assignments": {
+        "O12": "R1",
+        "O08": "R1",
+        "O09": "R1",
+        "O06": "R1",
+        "O11": "R1",
+        "O07": "R2",
+        "O05": "R2",
+        "O04": "R2",
+        "O10": "R3",
+        "O01": "R3",
+        "O02": "R3",
+        "O03": "R3"
+      }
+    },
+    {
+      "title": "4. Rider-only reroute (R1)",
+      "other_routes_unchanged": true,
+      "ownership_unchanged": true
+    },
+    {
+      "title": "5. Endpoint change (R2 Custom \u2192 Warehouse)",
+      "other_routes_unchanged": true,
+      "ownership_unchanged": true
+    }
+  ]
+}

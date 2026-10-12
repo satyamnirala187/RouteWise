@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from ortools.constraint_solver import pywrapcp, routing_enums_pb2
 
 from .gate import endpoint_gate_issues
-from .matrix.base import MatrixProvider, RoadMatrix
+from .matrix.base import MatrixProvider, Provenance, RoadMatrix
 from .models import (
     DeliveryRound,
     DistributionMode,
@@ -28,6 +28,7 @@ from .models import (
     Plan,
     RiderRoute,
     Stop,
+    Vehicle,
 )
 
 FORBIDDEN = 10**9
@@ -127,13 +128,16 @@ def equal_bounds(total: int, capacities: dict[str, int]) -> dict[str, tuple[int,
 def solve(
     vehicles: list[VehicleSpec],
     stops: list[StopSpec],
-    matrix: RoadMatrix,
+    matrix: RoadMatrix | dict[str, RoadMatrix],
     *,
     metric: str = "distance",
     bounds: dict[str, tuple[int, int]] | None = None,
     time_limit_s: int = 10,
     solution_limit: int = 1000,
 ) -> SolveResult:
+    """`matrix` is one matrix for every rider, or one per rider id (mixed vehicle profiles)."""
+    per_vehicle = matrix if isinstance(matrix, dict) else {v.rider_id: matrix for v in vehicles}
+    distinct = list({id(m): m for m in per_vehicle.values()}.values())
     n_stops = len(stops)
     v_index = {v.rider_id: i for i, v in enumerate(vehicles)}
     # Node layout: stops, then (start, end) per vehicle.
@@ -146,33 +150,43 @@ def solve(
         node_loc.append(v.end_location_id)  # None = virtual sink
     n = len(node_loc)
 
-    cost = [[0] * n for _ in range(n)]
+    # One cost table per distinct matrix. An arc missing in every matrix is removed from
+    # the search; an arc missing for only some profiles is priced FORBIDDEN for those
+    # vehicles, and any plan still using it is rejected when routes are assembled.
+    costs: dict[int, list[list[int]]] = {}
     allowed = [[True] * n for _ in range(n)]
+    for m in distinct:
+        cost = [[0] * n for _ in range(n)]
+        for a in range(n):
+            for b in range(n):
+                if a == b:
+                    continue
+                la, lb = node_loc[a], node_loc[b]
+                if lb is None:  # into a Last-stop virtual sink: free, not driving distance
+                    cost[a][b] = 0
+                elif la is None:
+                    cost[a][b] = FORBIDDEN
+                else:
+                    c = m.cost(la, lb, metric)
+                    cost[a][b] = FORBIDDEN if c is None else c
+        costs[id(m)] = cost
     for a in range(n):
         for b in range(n):
-            if a == b:
-                continue
-            la, lb = node_loc[a], node_loc[b]
-            if lb is None:  # into a Last-stop virtual sink: free, not driving distance
-                cost[a][b] = 0
-            elif la is None:
-                cost[a][b] = FORBIDDEN
+            if a != b and node_loc[b] is not None and all(costs[id(m)][a][b] >= FORBIDDEN for m in distinct):
                 allowed[a][b] = False
-            else:
-                c = matrix.cost(la, lb, metric)
-                if c is None:
-                    cost[a][b] = FORBIDDEN
-                    allowed[a][b] = False
-                else:
-                    cost[a][b] = c
 
     manager = pywrapcp.RoutingIndexManager(n, len(vehicles), starts, ends)
     routing = pywrapcp.RoutingModel(manager)
 
-    def arc(i: int, j: int) -> int:
-        return cost[manager.IndexToNode(i)][manager.IndexToNode(j)]
+    def make_arc(cost):
+        return lambda i, j: cost[manager.IndexToNode(i)][manager.IndexToNode(j)]
 
-    routing.SetArcCostEvaluatorOfAllVehicles(routing.RegisterTransitCallback(arc))
+    callbacks = {key: routing.RegisterTransitCallback(make_arc(cost)) for key, cost in costs.items()}
+    if len(callbacks) == 1:
+        routing.SetArcCostEvaluatorOfAllVehicles(next(iter(callbacks.values())))
+    else:
+        for k, v in enumerate(vehicles):
+            routing.SetArcCostEvaluatorOfVehicle(callbacks[id(per_vehicle[v.rider_id])], k)
 
     def index_of(node: int) -> int:
         if node < n_stops:
@@ -237,7 +251,7 @@ def solve(
             "NO_FEASIBLE_PLAN",
             "No plan satisfies capacities, locks, priorities and reachable road edges "
             f"within {time_limit_s}s per strategy. No order was dropped.",
-            _reachability_hints(stops, vehicles, matrix),
+            _reachability_hints(stops, vehicles, distinct[0]),
         )
     status = SOLVER_STATUS.get(routing.status(), str(routing.status()))
     warnings = []
@@ -312,6 +326,49 @@ def assemble_route(
 
 
 # ---------------------------------------------------------------- initial plan
+
+
+def rider_matrices(provider: MatrixProvider, locs, riders, profile) -> tuple[dict[str, RoadMatrix], RoadMatrix]:
+    """One matrix per distinct profile; returns (rider id -> matrix, a representative matrix).
+
+    The representative carries combined provenance: real_road only if every matrix is real.
+    """
+    if isinstance(profile, str):
+        m = provider.compute(locs, locs, profile)
+        return {r.id: m for r in riders}, m
+    by_profile = {p: provider.compute(locs, locs, p) for p in sorted({profile[r.vehicle] for r in riders})}
+    by_rider = {r.id: by_profile[profile[r.vehicle]] for r in riders}
+    first = next(iter(by_profile.values()))
+    combined = RoadMatrix(first.elements, Provenance(**{
+        **first.provenance.__dict__,
+        "real_road": all(m.provenance.real_road for m in by_profile.values()),
+        "profile": ", ".join(f"{p} ({'/'.join(sorted(v.value for v, q in profile.items() if q == p))})"
+                             for p in by_profile),
+        "element_count": sum(m.provenance.element_count for m in by_profile.values()),
+    }))
+    return by_rider, combined
+
+
+def _unroutable_check(stops, loc_ids, by_rider: dict[str, RoadMatrix], open_routes: bool) -> None:
+    """A pin with no road edge in or out (for every rider's profile) needs correcting, not solving."""
+    matrices = list({id(m): m for m in by_rider.values()}.values())
+    bad = []
+    for s in stops:
+        others = [x for x in loc_ids if x != s.location_id]
+        reachable = any(
+            any(m.cost(x, s.location_id) is not None for x in others)
+            and (open_routes or any(m.cost(s.location_id, x) is not None for x in others))
+            for m in matrices
+        )
+        if not reachable:
+            bad.extend(s.order_ids)
+    if bad:
+        raise PlanningError(
+            "UNROUTABLE_LOCATION",
+            "These orders' pins have no road connection for the riders' vehicles; choose a pin on a public road "
+            "(e.g. the gate) before planning. No order was dropped.",
+            sorted(bad),
+        )
 
 
 def fingerprint(rnd: DeliveryRound) -> str:
@@ -391,7 +448,7 @@ def optimize_round(
     rnd: DeliveryRound,
     provider: MatrixProvider,
     *,
-    profile: str,
+    profile: str | dict[Vehicle, str],
     metric: str = "distance",
     time_limit_s: int = 30,  # ~14 s measured at 100 orders / 8 riders (solver_benchmark.md)
     plan_version: int = 1,
@@ -407,16 +464,17 @@ def optimize_round(
     loc_ids = sorted({s.location_id for s in stops} | {v.start_location_id for v in vehicles}
                      | {v.end_location_id for v in vehicles if v.end_location_id})
     locs = [rnd.locations[i] for i in loc_ids]
-    matrix = provider.compute(locs, locs, profile)
+    by_rider, matrix = rider_matrices(provider, locs, riders, profile)
+    _unroutable_check(stops, loc_ids, by_rider, open_routes=any(v.end_location_id is None for v in vehicles))
 
     bounds = None
     if rnd.mode is DistributionMode.EQUAL:
         bounds = equal_bounds(len(rnd.orders), {r.id: r.capacity for r in riders})
-    result = solve(vehicles, stops, matrix, metric=metric, bounds=bounds, time_limit_s=time_limit_s)
+    result = solve(vehicles, stops, by_rider, metric=metric, bounds=bounds, time_limit_s=time_limit_s)
 
     routes = {}
     for v, r in zip(vehicles, riders):
-        routes[r.id] = assemble_route(r.id, 1, v, r.endpoint.kind, result.sequences[r.id], matrix)
+        routes[r.id] = assemble_route(r.id, 1, v, r.endpoint.kind, result.sequences[r.id], by_rider[r.id])
     assignments = {oid: rid for rid, route in routes.items() for oid in route.order_ids()}
     warnings = list(result.warnings)
     if bounds:

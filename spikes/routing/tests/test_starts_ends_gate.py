@@ -18,11 +18,13 @@ def test_each_rider_starts_and_ends_where_requested(real, make_round):
     assert plan.routes["R1"].start_location_id == "office" and plan.routes["R1"].end_location_id == "home_r1"
     assert plan.routes["R2"].start_location_id == "warehouse" and plan.routes["R2"].end_location_id == "custom_r2"
     assert plan.routes["R3"].start_location_id == "warehouse" and plan.routes["R3"].end_location_id is None
-    assert plan.distance_label.startswith("Road distances")
+    assert plan.distance_label.startswith("Road distances") and plan.provenance["real_road"]
 
 
-def test_last_stop_adds_no_artificial_return_trip(real, make_round, locations):
-    plan = optimize_round(make_round(), real, profile=PROFILE)
+def test_last_stop_adds_no_artificial_return_trip(real, make_round):
+    rnd = make_round()
+    locations = rnd.locations
+    plan = optimize_round(rnd, real, profile=PROFILE)
     r3 = plan.routes["R3"]
     assert r3.stops, "fixture should give R3 at least one stop"
     path = [r3.start_location_id] + [s.location_id for s in r3.stops]
@@ -87,7 +89,8 @@ def test_api_boundary_blocks_until_every_rider_confirms(real, make_round):
     assert r.status_code == 409
     body = r.json()["detail"]
     assert body["code"] == "ENDPOINTS_NOT_CONFIRMED" and len(body["details"]) == 3
-    assert "home_r1" not in r.text and "12.95" not in r.text  # no rider location leaks
+    home = rnd.locations["home_r1"]
+    assert "home_r1" not in r.text and f"{home.lat}" not in r.text and f"{home.lng}" not in r.text  # no location leaks
     for rid, kind, loc in [("R1", "home", "home_r1"), ("R2", "custom", "custom_r2")]:
         assert client.put(f"/rounds/phase0-demo/riders/{rid}/endpoint",
                           json={"kind": kind, "location_id": loc, "confirm": True}).status_code == 200

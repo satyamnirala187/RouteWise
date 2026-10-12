@@ -1,0 +1,4 @@
+# Optional local-Valhalla tooling (Phase 0 evaluation). Installed into .venv-valhalla
+# on top of requirements.lock; the core spike and its tests do not need these.
+pyvalhalla==3.9.1
+osmium==4.3.1

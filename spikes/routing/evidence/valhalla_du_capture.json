@@ -1,0 +1,398 @@
+{
+  "captured_at": "2026-10-12T18:21:31+00:00",
+  "test_area": "DU North Campus, Delhi (confirmed delivery area)",
+  "bbox": {
+    "south": 28.55,
+    "west": 77.06,
+    "north": 28.83,
+    "east": 77.36
+  },
+  "data": "Geofabrik india-latest.osm.pbf (OSM data up to 2026-10-11T20:21:06Z, md5 95615ee3bb02b3748905024da46137b7) cut to a buffered box around DU North Campus (S28.55 W77.06 N28.83 E77.36).",
+  "points": 17,
+  "costings": {
+    "motor_scooter": {
+      "latency_ms": 93,
+      "elements": 289,
+      "no_route_pairs": [
+        [
+          "office",
+          "daulat_ram_centroid"
+        ],
+        [
+          "warehouse",
+          "daulat_ram_centroid"
+        ],
+        [
+          "home_r1",
+          "daulat_ram_centroid"
+        ],
+        [
+          "custom_r2",
+          "daulat_ram_centroid"
+        ],
+        [
+          "gps_r1",
+          "daulat_ram_centroid"
+        ],
+        [
+          "kirori_mal",
+          "daulat_ram_centroid"
+        ],
+        [
+          "hansraj",
+          "daulat_ram_centroid"
+        ],
+        [
+          "hindu_college",
+          "daulat_ram_centroid"
+        ],
+        [
+          "st_stephens",
+          "daulat_ram_centroid"
+        ],
+        [
+          "miranda_house",
+          "daulat_ram_centroid"
+        ],
+        [
+          "ramjas",
+          "daulat_ram_centroid"
+        ],
+        [
+          "srcc",
+          "daulat_ram_centroid"
+        ],
+        [
+          "daulat_ram",
+          "daulat_ram_centroid"
+        ],
+        [
+          "kamla_nagar",
+          "daulat_ram_centroid"
+        ],
+        [
+          "gtb_nagar",
+          "daulat_ram_centroid"
+        ],
+        [
+          "civil_lines",
+          "daulat_ram_centroid"
+        ],
+        [
+          "daulat_ram_centroid",
+          "office"
+        ],
+        [
+          "daulat_ram_centroid",
+          "warehouse"
+        ],
+        [
+          "daulat_ram_centroid",
+          "home_r1"
+        ],
+        [
+          "daulat_ram_centroid",
+          "custom_r2"
+        ],
+        [
+          "daulat_ram_centroid",
+          "gps_r1"
+        ],
+        [
+          "daulat_ram_centroid",
+          "kirori_mal"
+        ],
+        [
+          "daulat_ram_centroid",
+          "hansraj"
+        ],
+        [
+          "daulat_ram_centroid",
+          "hindu_college"
+        ],
+        [
+          "daulat_ram_centroid",
+          "st_stephens"
+        ],
+        [
+          "daulat_ram_centroid",
+          "miranda_house"
+        ],
+        [
+          "daulat_ram_centroid",
+          "ramjas"
+        ],
+        [
+          "daulat_ram_centroid",
+          "srcc"
+        ],
+        [
+          "daulat_ram_centroid",
+          "daulat_ram"
+        ],
+        [
+          "daulat_ram_centroid",
+          "kamla_nagar"
+        ],
+        [
+          "daulat_ram_centroid",
+          "gtb_nagar"
+        ],
+        [
+          "daulat_ram_centroid",
+          "civil_lines"
+        ]
+      ],
+      "largest_directed_asymmetries": [
+        {
+          "a": "warehouse",
+          "b": "gps_r1",
+          "a_to_b_m": 7015,
+          "b_to_a_m": 4917,
+          "diff_m": 2098
+        },
+        {
+          "a": "home_r1",
+          "b": "miranda_house",
+          "a_to_b_m": 3885,
+          "b_to_a_m": 2115,
+          "diff_m": 1770
+        },
+        {
+          "a": "home_r1",
+          "b": "gtb_nagar",
+          "a_to_b_m": 2891,
+          "b_to_a_m": 1314,
+          "diff_m": 1577
+        },
+        {
+          "a": "warehouse",
+          "b": "miranda_house",
+          "a_to_b_m": 5346,
+          "b_to_a_m": 3860,
+          "diff_m": 1486
+        },
+        {
+          "a": "office",
+          "b": "gps_r1",
+          "a_to_b_m": 2415,
+          "b_to_a_m": 1055,
+          "diff_m": 1360
+        }
+      ],
+      "routable_pairs": 240
+    },
+    "motorcycle": {
+      "latency_ms": 61,
+      "elements": 289,
+      "no_route_pairs": [
+        [
+          "office",
+          "daulat_ram_centroid"
+        ],
+        [
+          "warehouse",
+          "daulat_ram_centroid"
+        ],
+        [
+          "home_r1",
+          "daulat_ram_centroid"
+        ],
+        [
+          "custom_r2",
+          "daulat_ram_centroid"
+        ],
+        [
+          "gps_r1",
+          "daulat_ram_centroid"
+        ],
+        [
+          "kirori_mal",
+          "daulat_ram_centroid"
+        ],
+        [
+          "hansraj",
+          "daulat_ram_centroid"
+        ],
+        [
+          "hindu_college",
+          "daulat_ram_centroid"
+        ],
+        [
+          "st_stephens",
+          "daulat_ram_centroid"
+        ],
+        [
+          "miranda_house",
+          "daulat_ram_centroid"
+        ],
+        [
+          "ramjas",
+          "daulat_ram_centroid"
+        ],
+        [
+          "srcc",
+          "daulat_ram_centroid"
+        ],
+        [
+          "daulat_ram",
+          "daulat_ram_centroid"
+        ],
+        [
+          "kamla_nagar",
+          "daulat_ram_centroid"
+        ],
+        [
+          "gtb_nagar",
+          "daulat_ram_centroid"
+        ],
+        [
+          "civil_lines",
+          "daulat_ram_centroid"
+        ],
+        [
+          "daulat_ram_centroid",
+          "office"
+        ],
+        [
+          "daulat_ram_centroid",
+          "warehouse"
+        ],
+        [
+          "daulat_ram_centroid",
+          "home_r1"
+        ],
+        [
+          "daulat_ram_centroid",
+          "custom_r2"
+        ],
+        [
+          "daulat_ram_centroid",
+          "gps_r1"
+        ],
+        [
+          "daulat_ram_centroid",
+          "kirori_mal"
+        ],
+        [
+          "daulat_ram_centroid",
+          "hansraj"
+        ],
+        [
+          "daulat_ram_centroid",
+          "hindu_college"
+        ],
+        [
+          "daulat_ram_centroid",
+          "st_stephens"
+        ],
+        [
+          "daulat_ram_centroid",
+          "miranda_house"
+        ],
+        [
+          "daulat_ram_centroid",
+          "ramjas"
+        ],
+        [
+          "daulat_ram_centroid",
+          "srcc"
+        ],
+        [
+          "daulat_ram_centroid",
+          "daulat_ram"
+        ],
+        [
+          "daulat_ram_centroid",
+          "kamla_nagar"
+        ],
+        [
+          "daulat_ram_centroid",
+          "gtb_nagar"
+        ],
+        [
+          "daulat_ram_centroid",
+          "civil_lines"
+        ]
+      ],
+      "largest_directed_asymmetries": [
+        {
+          "a": "home_r1",
+          "b": "gps_r1",
+          "a_to_b_m": 5554,
+          "b_to_a_m": 3172,
+          "diff_m": 2382
+        },
+        {
+          "a": "custom_r2",
+          "b": "gtb_nagar",
+          "a_to_b_m": 5235,
+          "b_to_a_m": 7500,
+          "diff_m": 2265
+        },
+        {
+          "a": "home_r1",
+          "b": "custom_r2",
+          "a_to_b_m": 8759,
+          "b_to_a_m": 6549,
+          "diff_m": 2210
+        },
+        {
+          "a": "warehouse",
+          "b": "gps_r1",
+          "a_to_b_m": 7015,
+          "b_to_a_m": 4917,
+          "diff_m": 2098
+        },
+        {
+          "a": "custom_r2",
+          "b": "st_stephens",
+          "a_to_b_m": 5996,
+          "b_to_a_m": 3992,
+          "diff_m": 2004
+        }
+      ],
+      "routable_pairs": 240
+    }
+  },
+  "profile_comparison": {
+    "pairs_with_different_distance": 46,
+    "pairs_with_different_time": 193,
+    "total_time_s": {
+      "motor_scooter": 69233,
+      "motorcycle": 66543
+    },
+    "largest_distance_differences": [
+      {
+        "from": "custom_r2",
+        "to": "daulat_ram",
+        "motor_scooter_m": 4245,
+        "motorcycle_m": 5809
+      },
+      {
+        "from": "custom_r2",
+        "to": "st_stephens",
+        "motor_scooter_m": 4555,
+        "motorcycle_m": 5996
+      },
+      {
+        "from": "miranda_house",
+        "to": "custom_r2",
+        "motor_scooter_m": 5389,
+        "motorcycle_m": 6701
+      },
+      {
+        "from": "home_r1",
+        "to": "hansraj",
+        "motor_scooter_m": 4793,
+        "motorcycle_m": 6046
+      },
+      {
+        "from": "hansraj",
+        "to": "custom_r2",
+        "motor_scooter_m": 3288,
+        "motorcycle_m": 4469
+      }
+    ]
+  }
+}

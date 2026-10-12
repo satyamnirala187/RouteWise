@@ -1,6 +1,7 @@
 """Phase 0 spike commands.
 
-  python -m routewise_spike capture-osrm      # live OSRM call, writes recorded fixture + evidence
+  python -m routewise_spike capture-osrm      # live OSRM call, writes recorded fixture + evidence (historical)
+  python -m routewise_spike capture-valhalla  # local Valhalla (no network): DU recordings + evidence
   python -m routewise_spike google-check      # live Google Routes check (BLOCKED without key)
   python -m routewise_spike run-scenario      # full scenario on the recorded real matrix
   python -m routewise_spike cost-projection   # element volumes and prices for 20/50/100 orders
@@ -177,7 +178,83 @@ def _route_lines(plan: Plan, rnd) -> list[str]:
     return lines
 
 
+VALHALLA_DATA = REPO_ROOT / "spikes" / "valhalla" / "data"
+DU_BBOX = {"south": 28.55, "west": 77.06, "north": 28.83, "east": 77.36}
+DU_DATA_NOTE = ("Geofabrik india-latest.osm.pbf (OSM data up to 2026-10-11T20:21:06Z, md5 95615ee3bb02b3748905024da46137b7) "
+                "cut to a buffered box around DU North Campus (S28.55 W77.06 N28.83 E77.36).")
+
+
+def cmd_capture_valhalla(args) -> int:
+    """Run local Valhalla (no network) on the DU public points; record both two-wheeler costings."""
+    from .matrix.valhalla_local import ValhallaLocalProvider, to_recording
+    from .scenario import DU_LOCATIONS_FILE, RECORDED_VALHALLA
+
+    tiles = VALHALLA_DATA / "valhalla_tiles"
+    locs = list(load_locations(DU_LOCATIONS_FILE).values())
+    ids = [loc.id for loc in locs]
+    provider = ValhallaLocalProvider(tiles, data_note=DU_DATA_NOTE)
+    summary: dict = {"captured_at": _now(), "test_area": "DU North Campus, Delhi (confirmed delivery area)",
+                     "bbox": DU_BBOX, "data": DU_DATA_NOTE, "points": len(locs), "costings": {}}
+    matrices = {}
+    for costing in ("motor_scooter", "motorcycle"):
+        try:
+            m = provider.compute(locs, locs, costing)
+        except ProviderError as exc:
+            print(f"Valhalla {costing} failed: {exc}", file=sys.stderr)
+            return 2
+        matrices[costing] = m
+        meta = {"test_area": "DU North Campus, Delhi — public landmarks; roles are synthetic",
+                "bbox": DU_BBOX, "latency_ms": provider.last_latency_ms}
+        RECORDED_VALHALLA[costing].write_text(json.dumps(to_recording(m, locs, meta), indent=1))
+        ok = [(a, b) for a in ids for b in ids if a != b and m.get(a, b).status is ElementStatus.OK]
+        summary["costings"][costing] = {
+            "latency_ms": provider.last_latency_ms,
+            "elements": m.provenance.element_count,
+            "no_route_pairs": [(a, b) for a in ids for b in ids if a != b and m.get(a, b).status is not ElementStatus.OK],
+            "largest_directed_asymmetries": asymmetry_pairs(m, ids, 5),
+            "routable_pairs": len(ok),
+        }
+    s, c = matrices["motor_scooter"], matrices["motorcycle"]
+    both = [(a, b) for a in ids for b in ids if a != b and s.get(a, b).status is ElementStatus.OK
+            and c.get(a, b).status is ElementStatus.OK]
+    diffs = sorted(both, key=lambda p: -abs(s.get(*p).distance_m - c.get(*p).distance_m))[:5]
+    summary["profile_comparison"] = {
+        "pairs_with_different_distance": sum(1 for p in both if s.get(*p).distance_m != c.get(*p).distance_m),
+        "pairs_with_different_time": sum(1 for p in both if s.get(*p).duration_s != c.get(*p).duration_s),
+        "total_time_s": {"motor_scooter": sum(s.get(*p).duration_s for p in both),
+                         "motorcycle": sum(c.get(*p).duration_s for p in both)},
+        "largest_distance_differences": [
+            {"from": a, "to": b, "motor_scooter_m": s.get(a, b).distance_m, "motorcycle_m": c.get(a, b).distance_m}
+            for a, b in diffs],
+    }
+    EVIDENCE.mkdir(parents=True, exist_ok=True)
+    (EVIDENCE / "valhalla_du_capture.json").write_text(json.dumps(summary, indent=2))
+    print(json.dumps(summary, indent=2))
+    return 0
+
+
 def _provider(kind: str):
+    if kind in ("du-motor_scooter", "du-motorcycle"):
+        from .matrix.recorded import RecordedMatrixProvider
+        from .scenario import RECORDED_VALHALLA
+
+        return RecordedMatrixProvider(RECORDED_VALHALLA[kind.split("-", 1)[1]]), "recorded"
+    if kind in ("du-fleet", "du-live-fleet"):
+        from .matrix.recorded import ByProfile, RecordedMatrixProvider
+        from .matrix.valhalla_local import ValhallaLocalProvider
+        from .models import Vehicle
+        from .scenario import RECORDED_VALHALLA
+
+        if kind == "du-fleet":
+            providers = {c: RecordedMatrixProvider(RECORDED_VALHALLA[c]) for c in RECORDED_VALHALLA}
+        else:
+            live = ValhallaLocalProvider(VALHALLA_DATA / "valhalla_tiles", data_note=DU_DATA_NOTE)
+            providers = {c: live for c in RECORDED_VALHALLA}
+        return ByProfile(providers), {Vehicle.SCOOTER: "motor_scooter", Vehicle.BIKE: "motorcycle"}
+    if kind in ("du-live-motor_scooter", "du-live-motorcycle"):
+        from .matrix.valhalla_local import ValhallaLocalProvider
+
+        return ValhallaLocalProvider(VALHALLA_DATA / "valhalla_tiles", data_note=DU_DATA_NOTE), kind.split("-", 2)[2]
     if kind == "recorded":
         from .matrix.recorded import RecordedOSRMProvider
 
@@ -193,7 +270,10 @@ def _provider(kind: str):
 
 def cmd_run_scenario(args) -> int:
     provider, profile = _provider(args.matrix)
-    md = [f"# Phase 0 scenario run", "", f"Run at {_now()} · matrix source `{args.matrix}`", ""]
+    area = "du_north" if args.matrix.startswith("du-") else "bengaluru"
+    area_label = ("DU North Campus, Delhi (confirmed delivery area)" if area == "du_north"
+                  else "Bengaluru (historical test area; evidence only)")
+    md = [f"# Phase 0 scenario run", "", f"Run at {_now()} · matrix source `{args.matrix}` · area: {area_label}", ""]
     log: dict = {"run_at": _now(), "matrix": args.matrix, "steps": []}
 
     def step(title: str, lines: list[str], data: dict):
@@ -201,7 +281,7 @@ def cmd_run_scenario(args) -> int:
         log["steps"].append({"title": title} | data)
 
     # 1. Gate: one rider has not confirmed.
-    rnd = phase0_round(confirmed=True)
+    rnd = phase0_round(confirmed=True, area=area)
     rnd.rider("R3").endpoint.confirmed = False
     try:
         optimize_round(rnd, provider, profile=profile)
@@ -213,7 +293,7 @@ def cmd_run_scenario(args) -> int:
     # 2. Smart, equal and manual plans with a first-delivery priority.
     plans = {}
     for mode in (DistributionMode.SMART, DistributionMode.EQUAL):
-        r = phase0_round(mode=mode)
+        r = phase0_round(mode=mode, area=area)
         r.order("O08").first_priority = True
         plans[mode] = optimize_round(r, provider, profile=profile)
         p = plans[mode]
@@ -221,20 +301,24 @@ def cmd_run_scenario(args) -> int:
              [f"Label: **{p.distance_label}**", *_route_lines(p, r), *[f"- warning: {w}" for w in p.warnings]],
              {"distance_label": p.distance_label, "assignments": p.assignments,
               "km": {k: v.road_distance_m / 1000 for k, v in p.routes.items()}})
-    manual = phase0_round(mode=DistributionMode.MANUAL)
+    manual = phase0_round(mode=DistributionMode.MANUAL, area=area)
     for oid, rid in plans[DistributionMode.EQUAL].assignments.items():
         manual.order(oid).locked_rider_id = rid
-    manual.order("O12").locked_rider_id = "R3" if plans[DistributionMode.EQUAL].assignments["O12"] != "R3" else "R1"
+    # The admin moves O12 to another rider who still has spare capacity.
+    owner = plans[DistributionMode.EQUAL].assignments["O12"]
+    load = {r.id: sum(1 for o in manual.orders if o.locked_rider_id == r.id) for r in manual.riders}
+    target = next(r.id for r in manual.riders if r.id != owner and load[r.id] < r.capacity)
+    manual.order("O12").locked_rider_id = target
     try:
         mp = optimize_round(manual, provider, profile=profile)
-        step("3. Manual plan (admin assignments fixed, O12 moved by admin)",
+        step(f"3. Manual plan (admin assignments fixed, O12 moved {owner} -> {target})",
              [f"Label: **{mp.distance_label}**", *_route_lines(mp, manual)],
              {"assignments": mp.assignments})
     except PlanningError as exc:
         step("3. Manual plan", [f"Explicit result: `{exc.code}` {exc.message} {exc.details}"], {"error": exc.code})
 
     # 4. Rider-only reroute: complete first stop, postpone next, reroute R1 from GPS.
-    rnd = phase0_round()
+    rnd = phase0_round(area=area)
     store = PlanStore()
     plan = store.commit(rnd, optimize_round(rnd, provider, profile=profile))
     before = {k: v for k, v in plan.routes.items()}
@@ -343,12 +427,15 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="routewise_spike")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("capture-osrm").set_defaults(fn=cmd_capture_osrm)
+    sub.add_parser("capture-valhalla").set_defaults(fn=cmd_capture_valhalla)
     g = sub.add_parser("google-check")
     g.add_argument("--allow-billing", action="store_true")
     g.add_argument("--points", type=int, default=6)
     g.set_defaults(fn=cmd_google_check)
     s = sub.add_parser("run-scenario")
-    s.add_argument("--matrix", choices=["recorded", "osrm-live", "synthetic"], default="recorded")
+    s.add_argument("--matrix", default="recorded",
+                   choices=["recorded", "osrm-live", "synthetic", "du-motor_scooter", "du-motorcycle",
+                            "du-live-motor_scooter", "du-live-motorcycle", "du-fleet", "du-live-fleet"])
     s.set_defaults(fn=cmd_run_scenario)
     sub.add_parser("cost-projection").set_defaults(fn=cmd_cost_projection)
     st = sub.add_parser("stadia-check")

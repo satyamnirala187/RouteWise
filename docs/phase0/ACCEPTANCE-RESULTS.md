@@ -1,12 +1,42 @@
 # Phase 0 acceptance results
 
+## Evidence sets (read this first)
+
+| Evidence set | Revision | Area and data | Tests at that revision |
+|---|---|---|---|
+| **Original Phase 0 spike: historical** | `f6c479e` | Bengaluru public points (test area only); OSRM public demo, car profile, response recorded 2026-10-12T15:59:58Z | 114 passed, 2 skipped; 13/13 injected defects caught |
+| Optional Stadia adapter (inactive, mocked only) | `a6c2875` | No live calls | +27 mocked tests |
+| **Delhi implementation: current** | the commit titled "Add local Valhalla routing evaluation for DU North Campus" (the commit directly after `a6c2875`; see `git log`) | DU North Campus, Delhi (confirmed area); local self-hosted Valhalla on OSM data up to 2026-10-11T20:21:06Z | 264 passed, 5 skipped (all checks run on the Bengaluru recording plus DU `motor_scooter` and `motorcycle`); 23/23 injected defects caught |
+
+Results from one set are never reported as results of another. Bengaluru evidence files are unchanged since `f6c479e`.
+
+**Current status: Phase 0 is not complete** (owner review, D04 provider, production host, D05–D10 and sign-off pending).
+
+## Update — 13 October 2026: confirmed area DU North Campus, local Valhalla (₹0)
+
+The owner confirmed the delivery area (DU North Campus, Delhi), a **₹0** routing budget, and no paid services. Local, self-hosted Valhalla on OpenStreetMap data was evaluated: see [VALHALLA-LOCAL.md](VALHALLA-LOCAL.md). The rows further down are the results as tested at `f6c479e` and are kept unchanged. This table records what changed. **Revision for this update:** the commit titled "Add local Valhalla routing evaluation for DU North Campus" (the commit directly after `a6c2875`; see `git log`).
+
+| # | Updated result | Evidence |
+|---|---|---|
+| 1 | **Passed.** The core environment is unchanged. Local Valhalla tooling is pinned in `requirements-valhalla.lock` (pyvalhalla 3.9.1, osmium 4.3.1). No manual install was needed | [ENVIRONMENT.md](ENVIRONMENT.md), [VALHALLA-LOCAL.md](VALHALLA-LOCAL.md) §1–3 |
+| 2 | **Passed with local Valhalla** (`motor_scooter` and `motorcycle`), with real directed matrices on 16 public DU points: 240/240 routable pairs and asymmetries up to 2.4 km. The provider is still **not formally selected** (D04 is an owner decision). Google/Stadia live checks remain BLOCKED but are optional and inactive | `valhalla_du_capture.json`, `test_valhalla_du.py` |
+| 3–8 | **Passed on DU data too.** Every planner check runs on Bengaluru OSRM (historical) plus DU Valhalla scooter and motorcycle. Mixed fleet: each rider is planned on its own vehicle profile | 264 passed / 5 skipped; `scenario_run_du-*.md` |
+| 9 | **Passed.** The local adapter is tested with a fake engine (errors, nulls, bicycle refused). New: real unroutable pins are reported as `UNROUTABLE_LOCATION` before solving | `test_valhalla_du.py`, `test_unreachable_labels.py` |
+| 10 | Unchanged (passed offline; live short link not run) | — |
+| 11 | **Evidence updated; decision pending.** Self-hosted Valhalla has ₹0 licence cost and no per-request fee. Local resource use is measured. **A production host within ₹0 is unresolved** (owner decision) | [VALHALLA-LOCAL.md](VALHALLA-LOCAL.md) §3, §6; [PROVIDER-COMPARISON.md](PROVIDER-COMPARISON.md) |
+| 12 | Unchanged (proposal awaiting decisions). Self-hosting removes the provider caching restrictions; ODbL attribution applies | [OFFLINE-PRIVACY.md](OFFLINE-PRIVACY.md) |
+
+Phase 0 is **still not complete.** The owner must review the gates, decide D04 (provider), D05–D10 and the production host, and sign off.
+
+## Results as tested at `f6c479e` (12 October 2026, Bengaluru, historical)
+
 Run on 12 October 2026 by Claude Code (automated), on the Mac described in [ENVIRONMENT.md](ENVIRONMENT.md).
 
 **Tested implementation revision:** `f6c479e` (`f6c479e5b2a8fecf60919e18f119cf39ad21b352`, local branch `main`, not pushed). The results below were produced on the working tree that became this commit. They were then re-verified on 2026-10-12T16:45Z from a `git archive` export of `f6c479e` with a fresh venv: `run_phase0.sh` exit 0, 114 passed, 2 skipped; the live OSRM test passed and the Google test was skipped as BLOCKED; scenario output identical to the committed evidence. **Fixtures:** public Bengaluru landmarks with synthetic roles (`tests/fixtures/public_locations_bengaluru.json`) and a recorded real OSRM response (`tests/fixtures/recorded/osrm_bengaluru_car.json`, captured 2026-10-12T15:59:58Z).
 
 **Commands:** `./run_phase0.sh` gave 114 passed, 2 skipped. `ROUTEWISE_LIVE_TESTS=1 pytest -m live` gave 1 passed (OSRM) and 1 skipped (Google BLOCKED). The mutation check (`tools/mutation_check.py`) caught 13 of 13 injected defects.
 
-**Phase 0 is not complete.** Criterion 2 is blocked for the selected two-wheeler provider, criterion 11 is blocked on the live Google trial and the owner's spending decision, and human review has not happened.
+**At that time, Phase 0 was not complete.** Criterion 2 is blocked for the selected two-wheeler provider, criterion 11 is blocked on the live Google trial and the owner's spending decision, and human review has not happened.
 
 | # | Criterion | Result | Evidence (tests in `spikes/routing/tests/`) | Notes / remaining |
 |---|---|---|---|---|
@@ -23,7 +53,7 @@ Run on 12 October 2026 by Claude Code (automated), on the Mac described in [ENVI
 | 11 | Provider decision | **Blocked** (evidence recorded; decision pending) | [PROVIDER-EVALUATION.md](PROVIDER-EVALUATION.md): coverage (India supported, beta), limits, prices, element projections for 20/50/100 orders, OSRM latency 497 ms per 256 elements; [cost_projection.md](../../spikes/routing/evidence/cost_projection.md) | Google latency not observed; spending cap ($0 trial proposed) and D04 need the owner |
 | 12 | Offline/privacy architecture | **Proposed, awaiting decision** | [OFFLINE-PRIVACY.md](OFFLINE-PRIVACY.md) | Expiry, retention and logout values need owner approval (D09/D10). Implementation is Phase 5 |
 
-## Tracker cases A01–A06 (Phase 0)
+## Tracker cases A01–A06 (as tested at `f6c479e`, historical; see the update table for DU)
 
 | ID | Case | Result | Evidence |
 |---|---|---|---|
@@ -36,7 +66,7 @@ Run on 12 October 2026 by Claude Code (automated), on the Mac described in [ENVI
 
 Spike-level evidence also exists for later-phase cases A09/A10 (link resolution), A12 (gate), A13 (single owner), A14 (stale plan), A18/A20/A21 (reroute, endpoint change, shared stop). **Those cases stay "Not run"** until they are re-tested in the real application in their own phases.
 
-## Known limits of this evidence
+## Known limits of the `f6c479e` evidence
 
 - Durations are free-flow car estimates from OSM data, not traffic-aware and not two-wheeler specific.
 - The 20/50/100-order runtime benchmark used a synthetic matrix (timing only).

@@ -8,3 +8,5 @@
 - Never label synthetic or straight-line costs as road distances; a missing matrix edge is never zero. Every matrix carries provenance (`real_road`, `recorded`).
 - No secrets or real customer data in Git, fixtures, logs or docs. Google Routes calls need explicit owner approval (`google-check --allow-billing`).
 - Notion is updated by a human after approval; `docs/phase0/NOTION-UPDATE-PROPOSAL.md` is a proposal only.
+- Owner constraints (2026-10-12): delivery area DU North Campus, Delhi; routing/service budget ₹0; no paid subscriptions or billable services. Stadia and Google stay optional and inactive; never depend on public demo servers for production.
+- Local routing: self-hosted Valhalla (`spikes/valhalla/build_tiles.sh`, `.venv-valhalla`). Bengaluru fixtures/evidence are historical only — do not edit them.

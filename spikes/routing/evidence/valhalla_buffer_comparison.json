@@ -1,0 +1,78 @@
+{
+  "tight_box": {
+    "south": 28.675,
+    "west": 77.2,
+    "north": 28.7,
+    "east": 77.22
+  },
+  "points_inside_tight_box": [
+    "office",
+    "gps_r1",
+    "kirori_mal",
+    "hansraj",
+    "hindu_college",
+    "st_stephens",
+    "miranda_house",
+    "ramjas",
+    "srcc",
+    "daulat_ram",
+    "kamla_nagar",
+    "gtb_nagar",
+    "daulat_ram_centroid"
+  ],
+  "pairs": 156,
+  "routable_with_buffer_only": 10,
+  "longer_without_buffer": 18,
+  "largest_increases": [
+    {
+      "from": "gps_r1",
+      "to": "office",
+      "buffered_m": 1055,
+      "campus_only_m": 2709
+    },
+    {
+      "from": "st_stephens",
+      "to": "office",
+      "buffered_m": 1799,
+      "campus_only_m": 2967
+    },
+    {
+      "from": "hindu_college",
+      "to": "office",
+      "buffered_m": 1898,
+      "campus_only_m": 3054
+    },
+    {
+      "from": "hansraj",
+      "to": "office",
+      "buffered_m": 2346,
+      "campus_only_m": 3310
+    },
+    {
+      "from": "gps_r1",
+      "to": "gtb_nagar",
+      "buffered_m": 1858,
+      "campus_only_m": 2495
+    },
+    {
+      "from": "miranda_house",
+      "to": "gtb_nagar",
+      "buffered_m": 801,
+      "campus_only_m": 1350
+    },
+    {
+      "from": "hindu_college",
+      "to": "kirori_mal",
+      "buffered_m": 1612,
+      "campus_only_m": 2084
+    },
+    {
+      "from": "hindu_college",
+      "to": "st_stephens",
+      "buffered_m": 1513,
+      "campus_only_m": 1985
+    }
+  ],
+  "costing": "motor_scooter",
+  "clip": "strict (only roads entirely inside the tight box)"
+}

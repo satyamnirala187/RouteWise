@@ -1,5 +1,7 @@
 # Road-matrix provider evaluation (criteria 2 and 11, decision D04)
 
+> **Superseded in part (13 Oct 2026):** with a ₹0 budget and no paid services, the Google trial proposed below is not pursued. See [PROVIDER-COMPARISON.md](PROVIDER-COMPARISON.md) and the local self-hosted Valhalla evaluation in [VALHALLA-LOCAL.md](VALHALLA-LOCAL.md). The facts and prices below are kept as recorded on 12 Oct.
+
 **State:** evidence gathered; **no provider selected**. The Google Routes live trial is **Blocked**: no credentials, and no approved spending cap. Official pages were read on 12 October 2026. Prices and limits change, so recheck them before any spending decision.
 
 ## What was actually tested live

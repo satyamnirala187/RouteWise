@@ -135,12 +135,12 @@ def test_stale_plan_cannot_overwrite_newer_state(real, make_round):
 def test_same_building_orders_share_one_stop_but_count_two_capacity_units(real, make_round):
     rnd = make_round()
     stops = build_stops(rnd, [o.id for o in rnd.orders], 5)
-    ub = [s for s in stops if s.building_id == "B-UBCITY"]
+    ub = [s for s in stops if s.building_id == rnd.order("O02").building_id]
     assert len(ub) == 1 and ub[0].order_ids == ["O02", "O03"] and ub[0].demand == 2
     plan = optimize_round(rnd, real, profile=PROFILE)
     owner = plan.assignments["O02"]
     assert plan.assignments["O03"] == owner
-    nav = [s for s in plan.routes[owner].stops if s.location_id == "ub_city"]
+    nav = [s for s in plan.routes[owner].stops if s.location_id == rnd.order("O02").location_id]
     assert len(nav) == 1 and nav[0].order_ids == ["O02", "O03"]
 
 
@@ -163,7 +163,7 @@ def test_building_group_counts_two_capacity_units(real, make_round):
 
 def test_proximity_alone_does_not_group(make_round):
     rnd = make_round()
-    rnd.orders.append(Order("O13", "ub_city", None))  # same coordinates, no validated building id
+    rnd.orders.append(Order("O13", rnd.order("O02").location_id, None))  # same point, no validated building id
     stops = build_stops(rnd, ["O02", "O03", "O13"], 5)
     assert sorted(s.order_ids for s in stops) == [["O02", "O03"], ["O13"]]
 
@@ -187,4 +187,4 @@ def test_shared_stop_partial_completion_keeps_independent_statuses(real, make_ro
     assert rnd.order("O02").status is OrderStatus.COMPLETED
     assert rnd.order("O03").status is OrderStatus.PENDING
     assert r3.completed_order_ids == ["O02"]
-    assert [s.order_ids for s in r3.stops if s.location_id == "ub_city"] == [["O03"]]
+    assert [s.order_ids for s in r3.stops if s.location_id == rnd.order("O03").location_id] == [["O03"]]

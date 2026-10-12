@@ -1,0 +1,107 @@
+{
+ "_about": "Public landmarks around DU North Campus, Delhi — the confirmed delivery area (owner, 2026-10-12). Coordinates are taken from OpenStreetMap (© OpenStreetMap contributors, ODbL 1.0; Geofabrik extract with data up to 2026-10-11T20:21:06Z); 'osm' gives the source object. Named gates and stations are preferred over campus centroids. Office/Warehouse/Home/Custom/current-position roles are SYNTHETIC labels on public places — no real addresses, homes or customers.",
+ "locations": [
+  {
+   "id": "office",
+   "name": "Office (synthetic) @ Vishwavidyalaya Metro Station [osm n7018316588]",
+   "lat": 28.695077,
+   "lng": 77.214746
+  },
+  {
+   "id": "warehouse",
+   "name": "Warehouse (synthetic) @ Azadpur bus station [osm w78175818]",
+   "lat": 28.707497,
+   "lng": 77.177752
+  },
+  {
+   "id": "home_r1",
+   "name": "Home endpoint (synthetic) @ Model Town Metro Station [osm n7018301880]",
+   "lat": 28.702714,
+   "lng": 77.193991
+  },
+  {
+   "id": "custom_r2",
+   "name": "Custom endpoint (synthetic) @ Kashmere Gate Metro Station [osm n268381477]",
+   "lat": 28.667449,
+   "lng": 77.228249
+  },
+  {
+   "id": "gps_r1",
+   "name": "Simulated current position @ University of Delhi bus stop [osm n6362341629]",
+   "lat": 28.688345,
+   "lng": 77.214788
+  },
+  {
+   "id": "kirori_mal",
+   "name": "Kirori Mal College (campus centroid) [osm w971502567]",
+   "lat": 28.683259,
+   "lng": 77.207101
+  },
+  {
+   "id": "hansraj",
+   "name": "Hansraj College Gate 1 (shared-building fixture) [osm n12213496680]",
+   "lat": 28.678721,
+   "lng": 77.209859
+  },
+  {
+   "id": "hindu_college",
+   "name": "Hindu College (campus centroid) [osm w1266065702]",
+   "lat": 28.684261,
+   "lng": 77.211025
+  },
+  {
+   "id": "st_stephens",
+   "name": "St. Stephen's College (building centroid) [osm w1370877377]",
+   "lat": 28.685844,
+   "lng": 77.211671
+  },
+  {
+   "id": "miranda_house",
+   "name": "Miranda House Gate 1 [osm n11217727763]",
+   "lat": 28.693703,
+   "lng": 77.209342
+  },
+  {
+   "id": "ramjas",
+   "name": "Ramjas College Gate 1 [osm n12250023997]",
+   "lat": 28.686264,
+   "lng": 77.20773
+  },
+  {
+   "id": "srcc",
+   "name": "Shri Ram College of Commerce (campus centroid) [osm w818318820]",
+   "lat": 28.690037,
+   "lng": 77.206451
+  },
+  {
+   "id": "daulat_ram",
+   "name": "Daulat Ram College bus stop (delivery pin on public road) [osm n12196467755]",
+   "lat": 28.68824,
+   "lng": 77.206397
+  },
+  {
+   "id": "kamla_nagar",
+   "name": "Kamla Nagar (suburb point) [osm n2823928902]",
+   "lat": 28.680675,
+   "lng": 77.20395
+  },
+  {
+   "id": "gtb_nagar",
+   "name": "GTB Nagar Metro Station [osm n913485885]",
+   "lat": 28.698133,
+   "lng": 77.2064
+  },
+  {
+   "id": "civil_lines",
+   "name": "Civil Lines Metro Station [osm n7018316586]",
+   "lat": 28.676851,
+   "lng": 77.22503
+  },
+  {
+   "id": "daulat_ram_centroid",
+   "name": "Daulat Ram College campus centroid — snaps to an isolated internal road; unroutable-pin test only [osm w1396793189]",
+   "lat": 28.688749,
+   "lng": 77.204888
+  }
+ ]
+}

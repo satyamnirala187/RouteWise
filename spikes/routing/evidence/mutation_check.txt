@@ -11,3 +11,13 @@ KILLED: synthetic labelled real
 KILLED: camera centre accepted
 KILLED: private DNS allowed
 KILLED: capacity precheck off
+KILLED: stadia null -> zero
+KILLED: stadia km not converted
+KILLED: stadia 200km check off
+KILLED: stadia tile too big
+KILLED: valhalla bicycle allowed
+KILLED: valhalla engine error swallowed
+KILLED: recorded no-route -> ok zero
+KILLED: unroutable pin check off
+KILLED: per-vehicle profile ignored
+KILLED: stadia units unchecked
