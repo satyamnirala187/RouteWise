@@ -45,6 +45,14 @@ def test_tiered_monthly_cost():
     assert monthly_cost_usd(20_000, "Essentials (DRIVE, basic)") == pytest.approx(50.0)
 
 
+def test_stadia_cost_uses_the_plan_that_includes_the_matrix():
+    from routewise_spike.costs import stadia_monthly_usd
+
+    assert stadia_monthly_usd(348_296) == 80.0  # 100 orders/day fits Standard's 7.5M credits
+    assert stadia_monthly_usd(750_000) == 80.0
+    assert stadia_monthly_usd(850_000) == pytest.approx(80 + 1_000_000 / 1000 * 0.02)
+
+
 def test_projection_counts_elements_as_origins_times_destinations():
     p = project(20, 3)
     assert p.locations == 25 and p.initial_elements == 625 and p.initial_requests == 1
@@ -75,3 +83,16 @@ def test_live_google_routes_two_wheeler_matrix(locations):
     pts = [locations[i] for i in ("office", "ub_city", "forum_koramangala")]
     m = GoogleRoutesMatrixProvider(os.environ["GOOGLE_MAPS_API_KEY"]).compute(pts, pts, "two_wheeler")
     assert m.provenance.real_road and m.provenance.profile == "TWO_WHEELER"
+
+
+@pytest.mark.live
+@pytest.mark.skipif(not os.environ.get("STADIA_API_KEY"),
+                    reason="BLOCKED: STADIA_API_KEY not set (no account; matrix needs Standard+ or trial)")
+def test_live_stadia_motor_scooter_matrix(locations):
+    from routewise_spike.matrix.stadia import StadiaMatrixProvider
+
+    pts = [locations[i] for i in ("office", "ub_city", "forum_koramangala", "shivajinagar_bus")]
+    m = StadiaMatrixProvider(os.environ["STADIA_API_KEY"]).compute(pts, pts, "motor_scooter")
+    assert m.provenance.real_road and m.provenance.profile == "motor_scooter"
+    ids = [p.id for p in pts]
+    assert any(m.get(a, b).distance_m != m.get(b, a).distance_m for a in ids for b in ids if a < b)

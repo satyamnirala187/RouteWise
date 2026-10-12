@@ -18,6 +18,18 @@ SKUS = {
 }
 MAX_ELEMENTS_PER_REQUEST = 625
 
+# Stadia Maps (pricing page read 2026-10-12, USD). The Time/Distance Matrix is NOT on
+# Free or Starter; Standard allows 625 elements per request. Matrix = 10 credits/element.
+# (monthly fee, included credits, USD per 1000 extra credits)
+STADIA_PLANS = {"Standard": (80.0, 7_500_000, 0.02), "Professional": (250.0, 25_000_000, 0.015)}
+STADIA_CREDITS_PER_ELEMENT = 10
+
+
+def stadia_monthly_usd(elements: int, plan: str = "Standard", other_credits: int = 0) -> float:
+    fee, included, per_1000 = STADIA_PLANS[plan]
+    credits = elements * STADIA_CREDITS_PER_ELEMENT + other_credits
+    return round(fee + max(0, credits - included) / 1000 * per_1000, 2)
+
 
 def monthly_cost_usd(elements: int, sku: str) -> float:
     free, tiers = SKUS[sku]
@@ -73,8 +85,8 @@ ROUNDS_PER_MONTH = 26  # one round per working day, six days a week (assumption)
 def projection_table() -> str:
     rows = [
         "| Orders | Riders | Locations | Initial elements (requests) | Per round, no reuse | Per round, origin-row reuse | Monthly elements (no reuse) | "
-        + " | ".join(f"{s} USD/month" for s in SKUS) + " |",
-        "|" + "---|" * (7 + len(SKUS)),
+        + " | ".join(f"Google {s} USD/month" for s in SKUS) + " | Stadia Standard USD/month (credits used) |",
+        "|" + "---|" * (8 + len(SKUS)),
     ]
     for orders, riders in SIZES:
         p = project(orders, riders)
@@ -82,6 +94,7 @@ def projection_table() -> str:
         costs = " | ".join(f"{monthly_cost_usd(monthly, s):,.2f}" for s in SKUS)
         rows.append(
             f"| {orders} | {riders} | {p.locations} | {p.initial_elements:,} ({p.initial_requests}) | "
-            f"{p.per_round_no_reuse:,} | {p.per_round_with_reuse:,} | {monthly:,} | {costs} |"
+            f"{p.per_round_no_reuse:,} | {p.per_round_with_reuse:,} | {monthly:,} | {costs} | "
+            f"{stadia_monthly_usd(monthly):,.2f} ({monthly * STADIA_CREDITS_PER_ELEMENT:,} of 7,500,000) |"
         )
     return "\n".join(rows)

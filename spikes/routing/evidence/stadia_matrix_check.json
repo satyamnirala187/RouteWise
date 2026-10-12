@@ -1,0 +1,5 @@
+{
+  "checked_at": "2026-10-12T17:20:09+00:00",
+  "status": "BLOCKED",
+  "reason": "STADIA_API_KEY not set; no account (matrix needs Standard+ or the 14-day trial)."
+}

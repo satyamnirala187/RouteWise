@@ -4,6 +4,7 @@
   python -m routewise_spike google-check      # live Google Routes check (BLOCKED without key)
   python -m routewise_spike run-scenario      # full scenario on the recorded real matrix
   python -m routewise_spike cost-projection   # element volumes and prices for 20/50/100 orders
+  python -m routewise_spike stadia-check      # live Stadia matrix check (BLOCKED without key)
 """
 
 from __future__ import annotations
@@ -119,6 +120,42 @@ def cmd_google_check(args) -> int:
         result["no_route_elements"] = sum(1 for e in matrix.elements.values() if e.status is not ElementStatus.OK)
         result["directed_asymmetry_observed"] = bool(asymmetry_pairs(matrix, ids, 1)
                                                      and asymmetry_pairs(matrix, ids, 1)[0]["diff_m"] > 0)
+    out.write_text(json.dumps(result, indent=2))
+    print(json.dumps(result, indent=2))
+    return 0 if result["status"] == "OK" else 2
+
+
+def cmd_stadia_check(args) -> int:
+    """Live Stadia matrix check on public test points. Stores metadata only (Stadia ToS §8)."""
+    key = os.environ.get("STADIA_API_KEY", "")
+    EVIDENCE.mkdir(parents=True, exist_ok=True)
+    out = EVIDENCE / "stadia_matrix_check.json"
+    if not key:
+        result = {"checked_at": _now(), "status": "BLOCKED",
+                  "reason": "STADIA_API_KEY not set; no account (matrix needs Standard+ or the 14-day trial)."}
+        out.write_text(json.dumps(result, indent=2))
+        print(json.dumps(result, indent=2))
+        return 3
+    if not args.allow_network:
+        print("Refusing to call Stadia without --allow-network (owner approval required).", file=sys.stderr)
+        return 4
+    from .matrix.stadia import StadiaMatrixProvider
+
+    locs = list(load_locations().values())[: args.points]
+    ids = [loc.id for loc in locs]
+    provider = StadiaMatrixProvider(key)
+    t0 = time.monotonic()
+    try:
+        matrix = provider.compute(locs, locs, args.costing)
+    except ProviderError as exc:
+        result = {"checked_at": _now(), "status": "FAILED", "error": type(exc).__name__, "message": str(exc)}
+    else:
+        asym = asymmetry_pairs(matrix, ids, 1)
+        result = {"checked_at": _now(), "status": "OK", "latency_ms": round((time.monotonic() - t0) * 1000),
+                  "batches": provider.requests_made} | matrix.provenance.as_dict()
+        result["no_route_elements"] = sum(1 for e in matrix.elements.values() if e.status is not ElementStatus.OK)
+        result["directed_asymmetry_observed"] = bool(asym and asym[0]["diff_m"] > 0)
+        result["test_area"] = "Bengaluru public landmarks (test area only, not the confirmed delivery area)"
     out.write_text(json.dumps(result, indent=2))
     print(json.dumps(result, indent=2))
     return 0 if result["status"] == "OK" else 2
@@ -247,7 +284,10 @@ def cmd_cost_projection(args) -> int:
         f"Generated {_now()}. Assumptions: {ROUNDS_PER_MONTH} rounds/month; 2 reroutes per rider per round; "
         "locations = orders + 2 starts + 1 distinct fixed end per rider (upper bound); elements = origins × destinations; "
         "≤625 elements per request. Prices: Google Maps Platform global list, USD, page updated 2026-10-08; "
-        "free monthly caps applied per SKU. Monthly cost uses the no-reuse column.",
+        "free monthly caps applied per SKU. Monthly cost uses the no-reuse column. "
+        "Stadia: matrix needs the Standard plan or higher ($80/month, 7.5M credits, 10 credits per element, "
+        "+$0.02 per 1,000 extra credits; pricing page read 2026-10-12); batches of <=625 elements bill exactly "
+        "origins x destinations; basemap tiles and other credit use are not included.",
         "",
         projection_table(),
         "",
@@ -311,6 +351,11 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--matrix", choices=["recorded", "osrm-live", "synthetic"], default="recorded")
     s.set_defaults(fn=cmd_run_scenario)
     sub.add_parser("cost-projection").set_defaults(fn=cmd_cost_projection)
+    st = sub.add_parser("stadia-check")
+    st.add_argument("--allow-network", action="store_true")
+    st.add_argument("--points", type=int, default=6)
+    st.add_argument("--costing", choices=["motor_scooter", "motorcycle"], default="motor_scooter")
+    st.set_defaults(fn=cmd_stadia_check)
     b = sub.add_parser("benchmark")
     b.add_argument("--time-limit", type=int, default=30)
     b.set_defaults(fn=cmd_benchmark)

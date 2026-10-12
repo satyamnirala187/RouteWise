@@ -20,6 +20,11 @@ mutants = {
  "camera centre accepted": ("linkresolve.py", '        return LinkResult("needs_correction", reason="map camera centre only; not a destination pin")', '        m = re.search(r"@(-?[\\d.]+),(-?[\\d.]+)", path); return _coords(m.group(1), m.group(2), "camera")'),
  "private DNS allowed": ("linkresolve.py", "        if not addrs or not all(_is_public(a) for a in addrs):", "        if not addrs:"),
  "capacity precheck off": ("planner.py", "    if len(rnd.orders) > total_cap:", "    if False:"),
+ "stadia null -> zero": ("matrix/stadia.py", "out[key] = MatrixElement(ElementStatus.NO_ROUTE)", "out[key] = MatrixElement(ElementStatus.OK, 0, 0)"),
+ "stadia km not converted": ("matrix/stadia.py", "round(dist * 1000)", "round(dist)"),
+ "stadia 200km check off": ("matrix/stadia.py", "if widest > MAX_BLINE_KM:", "if False:"),
+ "stadia tile too big": ("matrix/stadia.py", "self.tile = int(math.isqrt(max_elements))", "self.tile = 30"),
+ "stadia units unchecked": ("matrix/stadia.py", 'if payload.get("units") != "kilometers":', "if False:"),
 }
 for name, (f, old, new) in mutants.items():
     p = P / f; orig = p.read_text()
