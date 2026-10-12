@@ -1,0 +1,4 @@
+dist/assets/index-EttH_es-.css   17.40 kB │ gzip:  4.22 kB
+dist/assets/index-Bfpt1ZYZ.js   281.07 kB │ gzip: 87.65 kB
+
+✓ built in 118ms

@@ -1,0 +1,1 @@
+typecheck: OK (tsconfig.json + tsconfig.node.json)

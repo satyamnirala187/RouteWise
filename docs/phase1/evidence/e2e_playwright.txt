@@ -1,0 +1,13 @@
+
+Running 8 tests using 1 worker
+
+  ✓  1 [desktop] › e2e/phase1.spec.ts:25:1 › sign-in page rejects a wrong password with a generic message (563ms)
+  ✓  2 [desktop] › e2e/phase1.spec.ts:35:1 › admin imports, previews, saves, fixes a pin and edits an order (800ms)
+  ✓  3 [desktop] › e2e/phase1.spec.ts:77:1 › rider sees only own deliveries; other riders' data and admin areas are refused (393ms)
+  ✓  4 [desktop] › e2e/phase1.spec.ts:97:1 › sign out ends the session on the server (409ms)
+  ✓  5 [mobile] › e2e/phase1.spec.ts:25:1 › sign-in page rejects a wrong password with a generic message (357ms)
+  ✓  6 [mobile] › e2e/phase1.spec.ts:35:1 › admin imports, previews, saves, fixes a pin and edits an order (943ms)
+  ✓  7 [mobile] › e2e/phase1.spec.ts:77:1 › rider sees only own deliveries; other riders' data and admin areas are refused (429ms)
+  ✓  8 [mobile] › e2e/phase1.spec.ts:97:1 › sign out ends the session on the server (391ms)
+
+  8 passed (6.4s)

@@ -38,3 +38,12 @@ spikes/valhalla/data/
 valhalla_tiles/
 valhalla_tiles.tar
 .venv-valhalla/
+
+# Phase 1 local tooling and runtime data (never commit)
+.local/
+services/api/.venv/
+apps/web/node_modules/
+apps/web/dist/
+apps/web/test-results/
+apps/web/playwright-report/
+*.log

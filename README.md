@@ -2,26 +2,27 @@
 
 A mobile-first delivery-routing PWA for a small startup: Excel import → rider configuration → endpoint confirmation → road-based multi-rider routes → simple delivery updates. Scope, workflow and plans are in [`docs/source`](docs/source/START-HERE.md).
 
-**Current state: Phase 0 (discovery and routing spike) is in review and not complete.** Delivery area: DU North Campus, Delhi; budget ₹0. Routing is proven locally with self-hosted Valhalla on OpenStreetMap data ([evaluation](docs/phase0/VALHALLA-LOCAL.md)); the provider decision, production host and owner sign-off are pending. No application (Phase 1+) exists yet. See the [Phase 0 report](docs/phase0/PHASE0-REPORT.md).
+**Current state:** Phase 0 accepted for local development on 13 Oct 2026 (`2a34226`, [record](docs/phase0/OWNER-ACCEPTANCE-2026-10-13.md)). **Phase 1 (foundation, secure sign-in, Excel import) is implemented locally and awaiting owner review**: see the [Phase 1 report](docs/phase1/PHASE1-REPORT.md). Delivery area: DU North Campus, Delhi; budget ₹0; nothing is deployed.
 
 ## Layout
 
 ```text
 docs/source/        verbatim copy of the project documentation package (do not edit here)
-docs/phase0/        Phase 0 report, acceptance results, provider evaluation, ADR, offline/privacy proposal, Notion proposal
+docs/phase0/        Phase 0 report, owner acceptance, evidence (historical and accepted baseline)
+docs/phase1/        Phase 1 report, screenshots, evidence
+docs/DEVELOPMENT.md how to run the app locally
+apps/web/           React + TypeScript + Tailwind frontend (Vite)
+services/api/       FastAPI backend, Alembic migrations, tests
+scripts/            local PostgreSQL (dev-db.sh) and browser tests (e2e.sh)
 spikes/routing/     Phase 0 routing spike (Python 3.14, OR-Tools) — not production code
 spikes/valhalla/    local Valhalla build scripts (data/ is git-ignored)
 tests/fixtures/     public fixtures: DU North Campus (current) and Bengaluru (historical), recorded real matrices
 ```
 
-## Run the Phase 0 spike
+## Run it
 
-```bash
-cd spikes/routing
-./run_phase0.sh     # needs python3.14; offline; no paid service is called
-```
-
-See [docs/phase0/ENVIRONMENT.md](docs/phase0/ENVIRONMENT.md) for individual commands, live checks and versions.
+- The app (Phase 1): see [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+- The Phase 0 routing spike: `cd spikes/routing && ./run_phase0.sh` (offline; see [ENVIRONMENT.md](docs/phase0/ENVIRONMENT.md)).
 
 ## Rules
 

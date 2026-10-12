@@ -1,0 +1,26 @@
+KILLED: csrf check skipped
+KILLED: origin check skipped
+KILLED: riders allowed on admin
+KILLED: idle expiry ignored
+KILLED: absolute expiry ignored
+KILLED: logout does not revoke
+KILLED: login throttling off
+KILLED: rider sees all orders
+KILLED: private IPs allowed
+KILLED: connect by hostname
+KILLED: TLS hostname check off
+KILLED: redirect host not revalidated
+KILLED: camera centre accepted
+KILLED: formula accepted
+KILLED: numeric contact not warned
+KILLED: zip ratio check off
+KILLED: readiness ignores service area
+KILLED: validation echoes input
+KILLED: import row lock removed
+KILLED: commit after response (scope=request)
+KILLED: import parsing on event loop
+KILLED: DNS without timeout
+KILLED: raw URL control chars allowed
+KILLED: malformed URL unhandled
+KILLED: malformed redirect unhandled
+25/25 killed

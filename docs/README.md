@@ -10,9 +10,15 @@ Copied on 12 October 2026 from the RouteWise development package. The copies are
 - [Mac setup](source/development/MAC-SETUP.md) · [Kickoff](source/development/KICKOFF.md)
 - Tracker CSVs: [Phases](source/notion/RouteWise/Phases.csv), [Tasks](source/notion/RouteWise/Tasks.csv), [Acceptance cases](source/notion/RouteWise/Acceptance-Cases.csv), [Decisions](source/notion/RouteWise/Decisions.csv)
 
-## Phase 0 outputs
+## Phase 1
 
-- [Phase 0 report](phase0/PHASE0-REPORT.md): start here
+- [Phase 1 report](phase1/PHASE1-REPORT.md): start here
+- [Local development guide](DEVELOPMENT.md)
+
+## Phase 0 outputs (accepted 13 Oct 2026)
+
+- [Owner acceptance record](phase0/OWNER-ACCEPTANCE-2026-10-13.md)
+- [Phase 0 report](phase0/PHASE0-REPORT.md)
 - [Acceptance results](phase0/ACCEPTANCE-RESULTS.md)
 - [Local Valhalla evaluation — DU North Campus, ₹0](phase0/VALHALLA-LOCAL.md)
 - [Provider comparison (₹0 correction)](phase0/PROVIDER-COMPARISON.md) · [Stadia suitability (inactive)](phase0/STADIA-SUITABILITY.md)

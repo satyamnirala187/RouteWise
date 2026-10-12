@@ -1,0 +1,12 @@
+# RouteWise API (Phase 1). Python 3.14.3. Versions shared with the Phase 0 spike are reused.
+fastapi==0.143.0
+httpx==0.28.1
+openpyxl==3.1.5
+pytest==9.1.1
+uvicorn==0.54.0
+sqlalchemy==2.1.4
+alembic==1.20.0
+psycopg[binary]==3.3.6
+argon2-cffi==25.1.0
+python-multipart==0.0.32
+defusedxml==0.7.1

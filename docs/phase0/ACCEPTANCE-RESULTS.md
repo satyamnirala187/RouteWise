@@ -1,5 +1,7 @@
 # Phase 0 acceptance results
 
+> **Accepted by the owner on 13 October 2026 for local development** at `2a34226` ([owner acceptance record](OWNER-ACCEPTANCE-2026-10-13.md)). This is the current accepted baseline: local Valhalla + OpenStreetMap for DU North Campus, Delhi, with D04–D10 approved as recorded there. The text below is the historical record as written before acceptance. Its "in review / not complete" statements describe that time and are kept unchanged. Phase 1 work is reported in [../phase1/PHASE1-REPORT.md](../phase1/PHASE1-REPORT.md).
+
 ## Evidence sets (read this first)
 
 | Evidence set | Revision | Area and data | Tests at that revision |

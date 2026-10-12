@@ -1,5 +1,7 @@
 # Proposed Notion progress update — FOR REVIEW, NOT APPLIED
 
+> **Accepted by the owner on 13 October 2026 for local development** at `2a34226` ([owner acceptance record](OWNER-ACCEPTANCE-2026-10-13.md)). This is the current accepted baseline: local Valhalla + OpenStreetMap for DU North Campus, Delhi, with D04–D10 approved as recorded there. The text below is the historical record as written before acceptance. Its "in review / not complete" statements describe that time and are kept unchanged. Phase 1 work is reported in [../phase1/PHASE1-REPORT.md](../phase1/PHASE1-REPORT.md).
+
 **Notion has not been updated.** This is a proposed diff for the existing records in the live workspace (Phases, Tasks, Acceptance cases, Decisions, home page). Per [09-Updates](../source/notion/RouteWise/09-Updates.md), apply it only after the owner approves the Phase 0 report, edit existing rows (do not re-import CSVs), and re-read the changed records afterwards.
 
 Evidence links below are repository-relative. Replace them with GitHub URLs once a repository exists; none has been created. The Commit field stays blank until a commit exists.

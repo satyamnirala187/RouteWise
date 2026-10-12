@@ -1,7 +1,7 @@
 # RouteWise — notes for Claude Code
 
 - Scope baseline: `docs/source/notion/RouteWise/01-Product.md` (R01–R24, add-ons 2/4/8/9 only). Do not add fuel analytics, a postponed dashboard, a balanced-workload mode, or compulsory package/dispatch confirmation. Order statuses are exactly Pending / Postponed / Completed.
-- Work phase by phase (`docs/source/notion/RouteWise/04-Roadmap.md`). Phase 0 is in review; **do not start Phase 1 until the owner signs off** on `docs/phase0/PHASE0-REPORT.md`.
+- Work phase by phase (`docs/source/notion/RouteWise/04-Roadmap.md`). Phase 0 was accepted on 2026-10-13 (`docs/phase0/OWNER-ACCEPTANCE-2026-10-13.md`). Phase 1 is implemented and awaiting review (`docs/phase1/PHASE1-REPORT.md`); **do not start Phase 2 until the owner accepts Phase 1.**
 - `docs/source/` is a verbatim copy of the documentation package. Put new or changed docs in `docs/phase0/` (and later phase folders), not in `docs/source/`.
 - Spike: `cd spikes/routing && ./run_phase0.sh`. Tests: `.venv/bin/python -m pytest -q`. Live network tests are opt-in via `ROUTEWISE_LIVE_TESTS=1`.
 - Python 3.14.3 in `spikes/routing/.venv` (pinned by `requirements.lock`). Never modify system Python.
@@ -10,3 +10,5 @@
 - Notion is updated by a human after approval; `docs/phase0/NOTION-UPDATE-PROPOSAL.md` is a proposal only.
 - Owner constraints (2026-10-12): delivery area DU North Campus, Delhi; routing/service budget ₹0; no paid subscriptions or billable services. Stadia and Google stay optional and inactive; never depend on public demo servers for production.
 - Local routing: self-hosted Valhalla (`spikes/valhalla/build_tiles.sh`, `.venv-valhalla`). Bengaluru fixtures/evidence are historical only — do not edit them.
+- App: `services/api` (FastAPI, Alembic, pytest against local PostgreSQL from `scripts/dev-db.sh`) and `apps/web` (React/TS/Tailwind/Vite). See `docs/DEVELOPMENT.md`. Every protected endpoint uses `require_admin`/`require_rider`; mutations need the session CSRF token. Never log customer fields.
+- Short links are fetched only through `routewise_api/netsafe.py` (validated public IP is the connection target, hostname-verified TLS, headers only). Tests mock all network I/O.
