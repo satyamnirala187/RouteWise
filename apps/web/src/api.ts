@@ -108,7 +108,16 @@ export interface AdminOrder {
 }
 
 export interface RoundSummary { id: string; name: string; created_at: string; orders: number; needs_pin: number; }
-export interface Readiness { ready: boolean; orders: number; blockers: { order_code: string; reason: string }[]; }
+export interface ConfigurationBlocker { code: string; reason: string; rider_id?: string; rider?: string; }
+export interface Readiness {
+  ready: boolean;                // orders and rider setup both ready for planning
+  orders: number;
+  orders_ready: boolean;         // every order has a valid pin
+  blockers: { order_code: string; reason: string }[];  // order-location blockers (Phase 1)
+  configuration_blockers: ConfigurationBlocker[];      // riders, depots, destinations, confirmations (Phase 2A)
+  riders: { participating: number; confirmed: number };
+  input_version: number;
+}
 
 export interface Issue { severity: "error" | "warning"; field: string | null; message: string; }
 export interface PreviewRow {

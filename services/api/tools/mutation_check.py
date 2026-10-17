@@ -1,4 +1,4 @@
-"""Phase 1 mutation check: inject known security/correctness defects into a scratch copy of
+"""Phase 1 + 2A mutation check: inject known security/correctness defects into a scratch copy of
 services/api and confirm the test suite fails for each.
 
 Usage: python tools/mutation_check.py <scratch copy of services/api> <python with API deps>
@@ -35,13 +35,42 @@ MUTANTS = {
     "validation echoes input": ("main.py", '        errors = [{"loc": e.get("loc"), "msg": e.get("msg")} for e in exc.errors()]', "        errors = exc.errors()"),
     # Correction pass (independent review findings)
     "import row lock removed": ("routers/admin.py", "with_for_update=True, populate_existing=True", "populate_existing=True"),
-    "commit after response (scope=request)": (("deps.py", "routers/auth.py", "routers/admin.py", "routers/rider.py"),
+    "commit after response (scope=request)": (("deps.py", "routers/auth.py", "routers/admin.py", "routers/rider.py",
+                                               "routers/admin_riders.py"),
                                               'Depends(get_db, scope="function")', "Depends(get_db)", "all"),
     "import parsing on event loop": ("routers/admin.py", "def upload_import(", "async def upload_import("),
     "DNS without timeout": ("netsafe.py", "        addrs = future.result(timeout=min(DNS_TIMEOUT_S, _remaining(deadline, clock)))", "        addrs = resolver(host)"),
     "raw URL control chars allowed": ("netsafe.py", "    if _UNSAFE_TARGET_CHARS.search(url):", "    if False:"),
     "malformed URL unhandled": ("locations.py", "    except ValueError:  # malformed authority", "    except KeyError:  # malformed authority"),
     "malformed redirect unhandled": ("locations.py", "        except ValueError:  # malformed Location header", "        except KeyError:  # malformed Location header"),
+    # Phase 2A: rider setup, destinations, confirmation and readiness
+    "stale confirmation accepted": ("routers/rider.py", "    if body.config_version != rr.config_version:", "    if False:"),
+    "config change keeps confirmation": ("riders.py", "    rr.config_version += 1\n", ""),
+    "depot move keeps confirmations": ("routers/admin_riders.py", "    if moved:", "    if False:"),
+    "any old confirmation counts": ("riders.py", "    return rr.confirmed_version is not None and rr.confirmed_version == rr.config_version",
+                                    "    return rr.confirmed_version is not None"),
+    "admin view leaks destination coordinates": ("riders.py", '"destination": {"kind": endpoint.kind} if endpoint else None,',
+                                                 '"destination": {"kind": endpoint.kind, "lat": endpoint.lat, "lng": endpoint.lng} if endpoint else None,'),
+    "confirm skips depot locks": ("routers/rider.py", "    depots = lock_depots_shared(db)\n    rnd, rr = _locked_own(db, current, round_id)\n    if body.config_version",
+                                  "    depots = {d.kind: d for d in db.scalars(select(Depot)).all()}\n    rnd, rr = _locked_own(db, current, round_id)\n    if body.config_version"),
+    "round row lock skipped": ("riders.py", "    return db.get(DeliveryRound, round_id, with_for_update=True, populate_existing=True)",
+                               "    return db.get(DeliveryRound, round_id, populate_existing=True)"),
+    "rider lists others' rounds": ("routers/rider.py", ".where(RoundRider.rider_id == current.rider.id, RoundRider.participating.is_(True))",
+                                   ".where(RoundRider.participating.is_(True))"),
+    "removed rider still reaches round": ("routers/rider.py", "    if rr is None or not rr.participating:\n        raise HTTPException(status.HTTP_404_NOT_FOUND, NOT_FOUND)\n    return rnd, rr",
+                                          "    if rr is None:\n        raise HTTPException(status.HTTP_404_NOT_FOUND, NOT_FOUND)\n    return rnd, rr"),
+    "deactivated account ignored": ("riders.py", "    if not account_active:", "    if False:"),
+    "unconfirmed riders not blocked": ("riders.py", '        elif rr.confirmed_version is None:\n            blockers.append(',
+                                       '        elif False:\n            blockers.append('),
+    "Last stop accepts a location": ("routers/rider.py", "        if body.lat is not None or body.lng is not None:", "        if False:"),
+    "Home outside service area": ("routers/rider.py", "        if not settings.service_area.contains(loc.lat, loc.lng):", "        if False:"),
+    "depot outside service area": ("routers/admin_riders.py", "    if not settings.service_area.contains(loc.lat, loc.lng):", "    if False:"),
+    "capacity zero allowed": ("routers/admin_riders.py", "Field(ge=1, le=MAX_CAPACITY)", "Field(ge=0, le=MAX_CAPACITY)"),
+    "inactive account added": ("routers/admin_riders.py", "        if participating and not user.active:", "        if False:"),
+    "customer text is planning input": ("routers/admin.py", "    return order.location_state, order.lat, order.lng, order.status",
+                                        "    return order.location_state, order.lat, order.lng, order.status, order.customer_name"),
+    "pin edit not planning input": ("routers/admin.py", "    if _planning_fields(order) != before:\n        bump_round_input(db, order.round_id)",
+                                    "    if _planning_fields(order) != before:\n        pass"),
 }
 
 killed = 0

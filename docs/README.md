@@ -10,8 +10,14 @@ Copied on 12 October 2026 from the RouteWise development package. The copies are
 - [Mac setup](source/development/MAC-SETUP.md) · [Kickoff](source/development/KICKOFF.md)
 - Tracker CSVs: [Phases](source/notion/RouteWise/Phases.csv), [Tasks](source/notion/RouteWise/Tasks.csv), [Acceptance cases](source/notion/RouteWise/Acceptance-Cases.csv), [Decisions](source/notion/RouteWise/Decisions.csv)
 
-## Phase 1
+## Phase 2 (in progress, not complete)
 
+- [Implementation plan: steps 2A, 2B, 2C](phase2/IMPLEMENTATION-PLAN.md)
+- [Step 2A report](phase2/STEP-2A-REPORT.md): rider setup, depots, destinations, confirmations, readiness. **Implemented, awaiting review**; 2B and 2C not started
+
+## Phase 1 (accepted 13 Oct 2026 for local development, `fcac55e`)
+
+- [Owner acceptance record](phase1/OWNER-ACCEPTANCE-2026-10-13.md)
 - [Phase 1 report](phase1/PHASE1-REPORT.md): start here
 - [Local development guide](DEVELOPMENT.md)
 

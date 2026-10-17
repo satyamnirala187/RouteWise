@@ -2,14 +2,15 @@
 
 A mobile-first delivery-routing PWA for a small startup: Excel import → rider configuration → endpoint confirmation → road-based multi-rider routes → simple delivery updates. Scope, workflow and plans are in [`docs/source`](docs/source/START-HERE.md).
 
-**Current state:** Phase 0 accepted for local development on 13 Oct 2026 (`2a34226`, [record](docs/phase0/OWNER-ACCEPTANCE-2026-10-13.md)). **Phase 1 (foundation, secure sign-in, Excel import) is implemented locally and awaiting owner review**: see the [Phase 1 report](docs/phase1/PHASE1-REPORT.md). Delivery area: DU North Campus, Delhi; budget ₹0; nothing is deployed.
+**Current state:** Phase 0 accepted for local development on 13 Oct 2026 (`2a34226`, [record](docs/phase0/OWNER-ACCEPTANCE-2026-10-13.md)). **Phase 1 (foundation, secure sign-in, Excel import) accepted for local development on 13 Oct 2026** (`fcac55e`, [record](docs/phase1/OWNER-ACCEPTANCE-2026-10-13.md), [report](docs/phase1/PHASE1-REPORT.md)). **Phase 2 (routing and multi-rider constraints) is in progress and not complete:** step 2A (rider setup, Office/Warehouse, rider-confirmed destinations, readiness; API only) is **implemented, awaiting review**: see the [2A report](docs/phase2/STEP-2A-REPORT.md). Steps 2B and 2C have not started ([plan](docs/phase2/IMPLEMENTATION-PLAN.md)). Delivery area: DU North Campus, Delhi; budget ₹0; nothing is deployed.
 
 ## Layout
 
 ```text
 docs/source/        verbatim copy of the project documentation package (do not edit here)
 docs/phase0/        Phase 0 report, owner acceptance, evidence (historical and accepted baseline)
-docs/phase1/        Phase 1 report, screenshots, evidence
+docs/phase1/        Phase 1 report, owner acceptance, screenshots, evidence
+docs/phase2/        Phase 2 plan and step reports (2A implemented, awaiting review)
 docs/DEVELOPMENT.md how to run the app locally
 apps/web/           React + TypeScript + Tailwind frontend (Vite)
 services/api/       FastAPI backend, Alembic migrations, tests

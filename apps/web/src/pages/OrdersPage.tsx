@@ -74,9 +74,11 @@ export default function OrdersPage({ onUnauthorized }: { onUnauthorized: () => v
       {readiness && (
         <div data-testid="readiness" role="status"
           className={`rounded-lg px-4 py-3 text-sm ring-1 ${readiness.ready ? "bg-emerald-50 text-emerald-900 ring-emerald-200" : "bg-amber-50 text-amber-950 ring-amber-200"}`}>
-          {readiness.ready
-            ? `All ${readiness.orders} orders have a valid pin. Route planning arrives in Phase 2.`
+          {readiness.orders_ready
+            ? `All ${readiness.orders} orders have a valid pin.`
             : `${readiness.blockers.length} of ${readiness.orders} orders need a valid pin. Planning is blocked until they are fixed.`}
+          {readiness.configuration_blockers.length > 0 &&
+            ` Rider setup: ${readiness.configuration_blockers.length} item(s) to finish before planning.`}
         </div>
       )}
 

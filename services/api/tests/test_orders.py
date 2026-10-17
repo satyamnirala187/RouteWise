@@ -99,14 +99,18 @@ def test_location_link_correction(admin, round_with_orders):
 
 def test_readiness_gate_blocks_until_every_pin_is_valid(admin, round_with_orders, db):
     r = admin.get(f"/api/admin/rounds/{round_with_orders}/readiness").json()
-    assert r == {"ready": False, "orders": 2, "blockers": [{"order_code": "RW-001002", "reason": "location needs correction"}]}
+    assert (r["ready"], r["orders"], r["orders_ready"]) == (False, 2, False)
+    assert r["blockers"] == [{"order_code": "RW-001002", "reason": "location needs correction"}]
     rows = db.scalars(select(Order).order_by(Order.source_row)).all()
     with pytest.raises(NotReadyForPlanning) as exc:
         planning_input(list(rows), admin.client.app.state.settings.service_area)
     assert exc.value.blockers[0]["order_code"] == "RW-001002"
     o = orders(admin, round_with_orders)[1]
     admin.send("POST", f"/api/admin/orders/{o['id']}/pin", json={"version": o["version"], "lat": 28.6883, "lng": 77.2148})
-    assert admin.get(f"/api/admin/rounds/{round_with_orders}/readiness").json()["ready"] is True
+    ready = admin.get(f"/api/admin/rounds/{round_with_orders}/readiness").json()
+    # Every pin is valid now; planning still waits for riders (Phase 2A rider gate).
+    assert ready["orders_ready"] is True and ready["blockers"] == []
+    assert ready["ready"] is False and [b["code"] for b in ready["configuration_blockers"]] == ["no_participating_riders"]
     db.expire_all()
     inputs = planning_input(list(db.scalars(select(Order)).all()), admin.client.app.state.settings.service_area)
     assert len(inputs) == 2 and all(i["lat"] and i["lng"] for i in inputs)

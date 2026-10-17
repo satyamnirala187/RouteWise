@@ -120,3 +120,37 @@ def test_rider_b_sees_only_b(app, two_riders_with_orders):
     rb = Browser(app)
     rb.login("rider_b")
     assert [o["order_code"] for o in rb.get("/api/rider/orders").json()] == ["RW-T1"]
+
+
+PHASE_2A_ROUTES = {
+    ("GET", "/api/admin/depots"), ("PUT", "/api/admin/depots/{kind}"),
+    ("GET", "/api/admin/riders"), ("PATCH", "/api/admin/riders/{rider_id}"),
+    ("GET", "/api/admin/rounds/{round_id}/riders"), ("PUT", "/api/admin/rounds/{round_id}/riders/{rider_id}"),
+    ("GET", "/api/rider/rounds"), ("GET", "/api/rider/rounds/{round_id}"),
+    ("PUT", "/api/rider/rounds/{round_id}/destination"), ("POST", "/api/rider/rounds/{round_id}/confirm"),
+}
+
+
+def test_phase_2a_routes_exist_and_confirmation_is_rider_only(app):
+    routes = set(all_api_routes(app))
+    assert PHASE_2A_ROUTES <= routes
+    writes_naming_rider_choices = {(m, p) for m, p in routes if m != "GET" and ("confirm" in p or "destination" in p)}
+    assert writes_naming_rider_choices and all(p.startswith("/api/rider/") for _, p in writes_naming_rider_choices)
+
+
+def test_every_rider_mutation_requires_the_sessions_csrf_token(app):
+    make_user(app, "rider1", "rider")
+    make_user(app, "rider2", "rider")
+    rider, other = Browser(app), Browser(app)
+    rider.login("rider1")
+    other.login("rider2")
+    mutations = [(m, p) for m, p in all_api_routes(app) if m in {"POST", "PUT", "PATCH", "DELETE"}
+                 and p.startswith("/api/rider")]
+    assert mutations
+    for method, path in mutations:
+        url = concrete(path)
+        assert rider.send(method, url, csrf=False).status_code == 403, ("missing", method, path)
+        assert rider.send(method, url, headers={"X-CSRF-Token": "x" * 43}, csrf=False).status_code == 403
+        assert rider.send(method, url, headers={"X-CSRF-Token": other.csrf}, csrf=False).status_code == 403, \
+            ("token of another session", method, path)
+        assert rider.send(method, url, origin="https://evil.example").status_code == 403, ("origin", method, path)

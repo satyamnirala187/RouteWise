@@ -8,7 +8,10 @@ const state = JSON.parse(readFileSync(process.env.E2E_STATE ?? "", "utf8")) as {
   seeded_orders: Record<string, string[]>;
   workbook: string;
 };
-const SHOTS = path.resolve(import.meta.dirname, "../../../docs/phase1/screenshots");
+// Later re-runs point E2E_SHOTS_DIR elsewhere so the accepted Phase 1 screenshots stay as recorded.
+const SHOTS = process.env.E2E_SHOTS_DIR
+  ? path.resolve(process.env.E2E_SHOTS_DIR)
+  : path.resolve(import.meta.dirname, "../../../docs/phase1/screenshots");
 
 async function shot(page: Page, name: string) {
   const project = test.info().project.name;

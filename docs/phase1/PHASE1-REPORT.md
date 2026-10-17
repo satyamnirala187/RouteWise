@@ -1,5 +1,7 @@
 # Phase 1 report — foundation, secure sign-in and Excel import
 
+> **Accepted by the owner on 13 October 2026 for local development** at `fcac55e` ([owner acceptance record](OWNER-ACCEPTANCE-2026-10-13.md)). The acceptance covers local development only; real phones, Safari/Firefox, live short links, accessibility, CI, production HTTPS, backups, load testing and retention cleanup remain unperformed. The text below is the historical record as written before acceptance. Its "awaiting owner review", "uncommitted" and "pending sign-off" statements describe that time and are kept unchanged. Phase 2 work is tracked in [../phase2/](../phase2/IMPLEMENTATION-PLAN.md).
+
 **Date:** 13 October 2026 · **Prepared by:** Claude Code · **Status: implemented locally; awaiting owner review.** Phase 2 has not started. Nothing is deployed and nothing was spent (₹0).
 
 **Revision:** base commit `2a34226` (the accepted Phase 0 baseline). **All Phase 1 changes, including the correction pass, are uncommitted** in the working tree; no commit has been made for Phase 1 yet. No remote exists, and nothing was pushed.

@@ -26,7 +26,8 @@ from routewise_api.security import hash_password  # noqa: E402
 
 API_DIR = Path(__file__).resolve().parents[1]
 ORIGIN = "http://localhost:5173"
-TABLES = "assignments, orders, import_batches, delivery_rounds, sessions, login_failures, riders, users"
+TABLES = ("rider_endpoints, round_riders, depots, assignments, orders, import_batches, delivery_rounds, sessions, "
+          "login_failures, riders, users")
 
 
 def _test_url() -> str:

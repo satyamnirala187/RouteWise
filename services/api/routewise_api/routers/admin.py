@@ -26,6 +26,7 @@ from ..orders import (
     validate_status,
     validate_text,
 )
+from ..riders import bump_round_input, configuration_blockers
 
 router = APIRouter(prefix="/api/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 
@@ -201,12 +202,19 @@ def list_orders(round_id: uuid.UUID, db: DBSession = Depends(get_db, scope="func
 
 @router.get("/rounds/{round_id}/readiness")
 def round_readiness(round_id: uuid.UUID, db: DBSession = Depends(get_db, scope="function"), settings: Settings = Depends(get_settings)) -> dict:
-    """Optimization validity gate (no optimizer UI in Phase 1)."""
-    if db.get(DeliveryRound, round_id) is None:
+    """Planning gate (no optimizer yet). `blockers` keeps its Phase 1 meaning: order-location
+    blockers. `configuration_blockers` adds the rider side: participating riders, depots,
+    starts, destinations and current confirmations. No destination coordinates are returned."""
+    rnd = db.get(DeliveryRound, round_id)
+    if rnd is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Round not found")
     orders = db.scalars(select(Order).where(Order.round_id == round_id)).all()
     blockers = readiness_blockers(list(orders), settings.service_area)
-    return {"ready": not blockers and len(orders) > 0, "orders": len(orders), "blockers": blockers}
+    orders_ready = not blockers and len(orders) > 0
+    config_blockers, riders = configuration_blockers(db, round_id, settings.service_area)
+    return {"ready": orders_ready and not config_blockers, "orders": len(orders), "orders_ready": orders_ready,
+            "blockers": blockers, "configuration_blockers": config_blockers, "riders": riders,
+            "input_version": rnd.input_version}
 
 
 class OrderPatch(BaseModel):
@@ -244,10 +252,22 @@ def _bump(order: Order, now: datetime) -> None:
     order.updated_at = now
 
 
+def _planning_fields(order: Order) -> tuple:
+    return order.location_state, order.lat, order.lng, order.status
+
+
+def _bump_if_planning_input_changed(db: DBSession, order: Order, before: tuple) -> None:
+    """Pins and statuses are planning input; customer text is not, and never touches any
+    rider's confirmation either."""
+    if _planning_fields(order) != before:
+        bump_round_input(db, order.round_id)
+
+
 @router.patch("/orders/{order_id}")
 def edit_order(order_id: uuid.UUID, body: OrderPatch, db: DBSession = Depends(get_db, scope="function"),
                settings: Settings = Depends(get_settings), now: datetime = Depends(get_now)) -> dict:
     order = _locked_order(db, order_id, body.version)
+    before = _planning_fields(order)
     try:
         if body.customer_name is not None:
             order.customer_name = validate_text("name", body.customer_name, required=True)
@@ -264,6 +284,7 @@ def edit_order(order_id: uuid.UUID, body: OrderPatch, db: DBSession = Depends(ge
     except ValueError as exc:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(exc)) from None
     _bump(order, now)
+    _bump_if_planning_input_changed(db, order, before)
     return order_view(order, settings.service_area)
 
 
@@ -274,8 +295,10 @@ def set_manual_pin(order_id: uuid.UUID, body: PinIn, db: DBSession = Depends(get
     loc = manual_pin(body.lat, body.lng)
     if not loc.resolved:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, loc.note)
+    before = _planning_fields(order)
     apply_location(order, loc)
     _bump(order, now)
+    _bump_if_planning_input_changed(db, order, before)
     view = order_view(order, settings.service_area)
     if not view["location"]["in_service_area"]:
         view["warning"] = "This pin is outside the DU North Campus service area and will block planning."
@@ -286,9 +309,11 @@ def set_manual_pin(order_id: uuid.UUID, body: PinIn, db: DBSession = Depends(get
 def set_location_link(order_id: uuid.UUID, body: LinkIn, db: DBSession = Depends(get_db, scope="function"),
                       settings: Settings = Depends(get_settings), now: datetime = Depends(get_now)) -> dict:
     order = _locked_order(db, order_id, body.version)
+    before = _planning_fields(order)
     order.location_link = body.link.strip()
     deadline = time.monotonic() + settings.link_budget_s
     apply_location(order, resolve_link(order.location_link, allow_network=settings.resolve_short_links,
                                        deadline=deadline))
     _bump(order, now)
+    _bump_if_planning_input_changed(db, order, before)
     return order_view(order, settings.service_area)

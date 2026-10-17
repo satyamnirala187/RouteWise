@@ -1,4 +1,4 @@
-# Local development (Phase 1)
+# Local development (Phase 1 and step 2A)
 
 Everything runs on this Mac, at ₹0, with no admin rights, Docker or Homebrew. Secrets live only in the git-ignored `.env` at the repo root.
 
@@ -54,9 +54,28 @@ Open http://localhost:5173 and sign in. Admins land on **Orders** (and **Import*
 cd services/api && .venv/bin/python -m pytest -q             # API: real PostgreSQL (routewise_test), migrations, mocked network
 cd apps/web && npm run typecheck && npx vitest run            # frontend type checks + unit tests
 scripts/e2e.sh                                                # Playwright, desktop + mobile, isolated routewise_e2e DB, screenshots
+E2E_SHOTS_DIR="$PWD/docs/phase2/screenshots" scripts/e2e.sh    # same, but keeps the accepted Phase 1 screenshots untouched
 cd spikes/routing && .venv/bin/python -m pytest -q            # Phase 0 routing regression
 python3 services/api/tools/mutation_check.py <copy of services/api> services/api/.venv/bin/python   # optional
 ```
+
+The mutation check rewrites files, so run it on a copy laid out as `<dir>/services/api`, with `<dir>/.env` and `<dir>/tests/fixtures` linked to the real ones: the code finds both relative to the package. It uses the same test database, so don't run the API suite at the same time.
+
+## Rider setup (step 2A: API only, no screens yet)
+
+No optimizer exists yet. These endpoints store what Phase 2B will plan from. Every mutation needs the session's CSRF token.
+
+| Who | Endpoint | Purpose |
+|---|---|---|
+| Admin | `GET /api/admin/depots`, `PUT /api/admin/depots/{office\|warehouse}` | Office and Warehouse: label and coordinates inside the DU North Campus area. Send `version: null` to create, else the version being edited |
+| Admin | `GET /api/admin/riders`, `PATCH /api/admin/riders/{id}` | Rider profiles: display name, default vehicle. Accounts are still created with the CLI |
+| Admin | `GET /api/admin/rounds/{id}/riders`, `PUT /api/admin/rounds/{id}/riders/{rider_id}` | Add a rider to a round (`version: null`), or change participation, vehicle (`scooter`/`bike`), capacity (1–1000 orders) and start (`office`/`warehouse`) |
+| Admin | `GET /api/admin/rounds/{id}/readiness` | Order-pin blockers (`blockers`) plus rider-setup blockers (`configuration_blockers`); never destination coordinates |
+| Rider | `GET /api/rider/rounds`, `GET /api/rider/rounds/{id}` | Own rounds and own setup, including `config_version` |
+| Rider | `PUT /api/rider/rounds/{id}/destination` | Choose `office`, `warehouse`, `home`, `last_stop` or `custom` (Home/Custom need `lat`/`lng`) |
+| Rider | `POST /api/rider/rounds/{id}/confirm` | Confirm `{"config_version": n}`, the version shown; a changed setup returns 409 |
+
+The confirmation rules are in `services/api/routewise_api/riders.py` and [the step 2A report](phase2/STEP-2A-REPORT.md).
 
 ## Database
 

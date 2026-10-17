@@ -1,0 +1,48 @@
+# Full run (17 Oct 2026), tools/mutation_check.py on a scratch copy
+KILLED: csrf check skipped
+KILLED: origin check skipped
+KILLED: riders allowed on admin
+KILLED: idle expiry ignored
+KILLED: absolute expiry ignored
+KILLED: logout does not revoke
+KILLED: login throttling off
+KILLED: rider sees all orders
+KILLED: private IPs allowed
+KILLED: connect by hostname
+KILLED: TLS hostname check off
+KILLED: redirect host not revalidated
+KILLED: camera centre accepted
+KILLED: formula accepted
+KILLED: numeric contact not warned
+KILLED: zip ratio check off
+KILLED: readiness ignores service area
+KILLED: validation echoes input
+KILLED: import row lock removed
+KILLED: commit after response (scope=request)
+KILLED: import parsing on event loop
+KILLED: DNS without timeout
+KILLED: raw URL control chars allowed
+KILLED: malformed URL unhandled
+KILLED: malformed redirect unhandled
+KILLED: stale confirmation accepted
+KILLED: config change keeps confirmation
+KILLED: depot move keeps confirmations
+KILLED: any old confirmation counts
+KILLED: admin view leaks destination coordinates
+KILLED: confirm skips depot locks
+KILLED: round row lock skipped
+KILLED: rider lists others' rounds
+SURVIVED: removed rider still reaches round
+KILLED: deactivated account ignored
+KILLED: unconfirmed riders not blocked
+KILLED: Last stop accepts a location
+KILLED: Home outside service area
+KILLED: depot outside service area
+KILLED: capacity zero allowed
+KILLED: inactive account added
+KILLED: customer text is planning input
+KILLED: pin edit not planning input
+42/43 killed
+
+# After adding write-path assertions to test_riders_only_reach_their_own_participating_rounds, the survivor was re-run alone (same harness, same pytest command):
+KILLED: removed rider still reaches round

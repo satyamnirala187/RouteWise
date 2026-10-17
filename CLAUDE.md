@@ -1,7 +1,7 @@
 # RouteWise — notes for Claude Code
 
 - Scope baseline: `docs/source/notion/RouteWise/01-Product.md` (R01–R24, add-ons 2/4/8/9 only). Do not add fuel analytics, a postponed dashboard, a balanced-workload mode, or compulsory package/dispatch confirmation. Order statuses are exactly Pending / Postponed / Completed.
-- Work phase by phase (`docs/source/notion/RouteWise/04-Roadmap.md`). Phase 0 was accepted on 2026-10-13 (`docs/phase0/OWNER-ACCEPTANCE-2026-10-13.md`). Phase 1 is implemented and awaiting review (`docs/phase1/PHASE1-REPORT.md`); **do not start Phase 2 until the owner accepts Phase 1.**
+- Work phase by phase (`docs/source/notion/RouteWise/04-Roadmap.md`). Phase 0 was accepted on 2026-10-13 (`docs/phase0/OWNER-ACCEPTANCE-2026-10-13.md`). Phase 1 was accepted for local development on 2026-10-13 at `fcac55e` (`docs/phase1/OWNER-ACCEPTANCE-2026-10-13.md`). Phase 2 is planned in `docs/phase2/IMPLEMENTATION-PLAN.md` (steps 2A → 2B → 2C). **Step 2A is implemented and awaiting review** (`docs/phase2/STEP-2A-REPORT.md`); Phase 2 is not complete. Do not start 2B until the owner asks; one step at a time. Plan proposals Q1–Q8 are pending, not approved; do not build the Q1 "all orders Pending" replanning restriction without approval.
 - `docs/source/` is a verbatim copy of the documentation package. Put new or changed docs in `docs/phase0/` (and later phase folders), not in `docs/source/`.
 - Spike: `cd spikes/routing && ./run_phase0.sh`. Tests: `.venv/bin/python -m pytest -q`. Live network tests are opt-in via `ROUTEWISE_LIVE_TESTS=1`.
 - Python 3.14.3 in `spikes/routing/.venv` (pinned by `requirements.lock`). Never modify system Python.
