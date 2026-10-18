@@ -1,0 +1,4 @@
+# Spike regression: cd spikes/routing && .venv/bin/python -m pytest -q; then ROUTEWISE_LIVE_TESTS=1 .venv-valhalla/bin/python -m pytest -q -m live tests/test_valhalla_du.py (18 Oct 2026). Exit code: 0
+264 passed, 5 skipped, 4 warnings in 75.96s (0:01:15)
+..                                                                       [100%]
+2 passed, 11 deselected in 0.63s

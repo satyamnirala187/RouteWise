@@ -1,4 +1,4 @@
-# Local development (Phase 1, steps 2A and 2B)
+# Local development (Phase 1 and Phase 2 steps 2A–2C)
 
 Everything runs on this Mac, at ₹0, with no admin rights, Docker or Homebrew. Secrets live only in the git-ignored `.env` at the repo root.
 
@@ -50,7 +50,9 @@ cd services/api && .venv/bin/uvicorn --factory routewise_api.main:get_app --host
 cd apps/web && npx vite                     # http://localhost:5173 (proxies /api to :8000)
 ```
 
-Open http://localhost:5173 and sign in. Admins land on **Orders** (and **Import**); riders land on **My deliveries**.
+Open http://localhost:5173 and sign in. Admins land on **Orders**; the menu also has **Round setup**, **Plan**, **Import** and **Office & riders**. The selected round travels in the URL (`?round=`), never in browser storage. Riders land on their page: **My rounds** (choose, save, then confirm a destination for each round they take part in) and **My deliveries**.
+
+A plan needs the local Valhalla tiles (step 2b above). Without them, Optimize reports `ROUTING_ENGINE_UNAVAILABLE`; there is no fallback.
 
 **Production-style single origin (local check only, not a deployment):** `cd apps/web && npm run build`, then run the API alone. It serves `apps/web/dist` at http://127.0.0.1:8000. In production, set `ROUTEWISE_ENV=production`; the app then refuses to start without Secure cookies and uses the `__Host-` cookie prefix.
 
@@ -59,31 +61,34 @@ Open http://localhost:5173 and sign in. Admins land on **Orders** (and **Import*
 ```bash
 cd services/api && .venv/bin/python -m pytest -q             # API: real PostgreSQL (routewise_test), migrations, mocked network
 cd apps/web && npm run typecheck && npx vitest run            # frontend type checks + unit tests
-scripts/e2e.sh                                                # Playwright, desktop + mobile, isolated routewise_e2e DB, screenshots
-E2E_SHOTS_DIR="$PWD/docs/phase2/screenshots" scripts/e2e.sh    # same, but keeps the accepted Phase 1 screenshots untouched
+E2E_SHOTS_DIR=/tmp/rw-shots scripts/e2e.sh                     # Playwright, desktop + mobile, isolated routewise_e2e DB (Phase 1 + Phase 2 specs)
+ROUTEWISE_E2E_LIVE=1 E2E_SHOTS_DIR=/tmp/rw-shots scripts/e2e.sh e2e/phase2-live.spec.ts   # opt-in: browser planning on the real local tiles
+python3 scripts/web_defect_check.py /tmp/rw-webmut            # optional: targeted 2C defect checks on a scratch copy of apps/web
 cd spikes/routing && .venv/bin/python -m pytest -q            # Phase 0 routing regression
 python3 services/api/tools/mutation_check.py <copy of services/api> services/api/.venv/bin/python   # optional
 ```
 
+Browser tests plan with the **recorded** real local-Valhalla DU matrices: `services/api/scripts/e2e_app.py` (used only by `playwright.config.ts`) injects them through the test-only seam, and every plan shown says "Recorded real-road distances". It also offers a hold file (`.local/e2e/hold-solve`) so a test can change input while a run is in progress. `ROUTEWISE_E2E_LIVE=1` uses the real tiles instead. Without `E2E_SHOTS_DIR`, the Phase 1 spec rewrites the accepted `docs/phase1/screenshots/`; the Phase 2 spec writes to `docs/phase2/screenshots/2c/` (override with `E2E_2C_SHOTS_DIR`).
+
 The mutation check rewrites files, so run it on a copy laid out as `<dir>/services/api`, with `<dir>/.env` and `<dir>/tests/fixtures` linked to the real ones: the code finds both relative to the package. It uses the same test database, so don't run the API suite at the same time.
 
-## Rider setup (step 2A: API only, no screens yet)
+## Rider setup (step 2A API; screens since 2C)
 
-No optimizer exists yet. These endpoints store what Phase 2B will plan from. Every mutation needs the session's CSRF token.
+Every mutation needs the session's CSRF token.
 
 | Who | Endpoint | Purpose |
 |---|---|---|
 | Admin | `GET /api/admin/depots`, `PUT /api/admin/depots/{office\|warehouse}` | Office and Warehouse: label and coordinates inside the DU North Campus area. Send `version: null` to create, else the version being edited |
 | Admin | `GET /api/admin/riders`, `PATCH /api/admin/riders/{id}` | Rider profiles: display name, default vehicle. Accounts are still created with the CLI |
 | Admin | `GET /api/admin/rounds/{id}/riders`, `PUT /api/admin/rounds/{id}/riders/{rider_id}` | Add a rider to a round (`version: null`), or change participation, vehicle (`scooter`/`bike`), capacity (1–1000 orders) and start (`office`/`warehouse`) |
-| Admin | `GET /api/admin/rounds/{id}/readiness` | Order-pin blockers (`blockers`) plus rider-setup blockers (`configuration_blockers`); never destination coordinates |
+| Admin | `GET /api/admin/rounds/{id}/readiness` | Order-pin blockers (`blockers`) plus rider-setup blockers (`configuration_blockers`); since 2C also `mode`, `pending_orders` and `planning_limits`. Never destination coordinates |
 | Rider | `GET /api/rider/rounds`, `GET /api/rider/rounds/{id}` | Own rounds and own setup, including `config_version` |
 | Rider | `PUT /api/rider/rounds/{id}/destination` | Choose `office`, `warehouse`, `home`, `last_stop` or `custom` (Home/Custom need `lat`/`lng`) |
 | Rider | `POST /api/rider/rounds/{id}/confirm` | Confirm `{"config_version": n}`, the version shown; a changed setup returns 409 |
 
 The confirmation rules are in `services/api/routewise_api/riders.py` and [the step 2A report](phase2/STEP-2A-REPORT.md).
 
-## Planning (step 2B: API only, no screens yet)
+## Planning (step 2B API; screens since 2C)
 
 | Endpoint (admin) | Purpose |
 |---|---|

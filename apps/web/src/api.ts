@@ -14,6 +14,20 @@ export class ApiError extends Error {
   constructor(public status: number, message: string, public detail?: unknown) {
     super(message);
   }
+  /** Machine-readable code of a structured error (e.g. "NOT_READY", "configuration_changed"). */
+  get code(): string | undefined {
+    const d = this.detail as { code?: unknown } | undefined;
+    return d && typeof d === "object" && typeof d.code === "string" ? d.code : undefined;
+  }
+  /** Order codes / rider names a structured error refers to (never coordinates). */
+  get details(): string[] {
+    const d = this.detail as { details?: unknown; issues?: { reason?: string }[] } | undefined;
+    if (d && typeof d === "object") {
+      if (Array.isArray(d.details)) return d.details.map(String);
+      if (Array.isArray(d.issues)) return d.issues.map((i) => String(i.reason ?? ""));
+    }
+    return [];
+  }
 }
 
 let csrfToken: string | null = null;
@@ -28,10 +42,13 @@ function messageFrom(detail: unknown, status: number): string {
   if (detail && typeof detail === "object" && "file_errors" in detail) {
     return (detail as { file_errors: string[] }).file_errors.join(" ");
   }
+  if (detail && typeof detail === "object" && typeof (detail as { message?: unknown }).message === "string") {
+    return (detail as { message: string }).message;
+  }
   return status === 401 ? "Please sign in again." : `Request failed (${status}).`;
 }
 
-export async function api<T>(path: string, opts: { method?: string; json?: unknown; form?: FormData } = {}): Promise<T> {
+export async function api<T>(path: string, opts: { method?: string; json?: unknown; form?: FormData; signal?: AbortSignal } = {}): Promise<T> {
   const method = opts.method ?? "GET";
   const headers: Record<string, string> = { Accept: "application/json" };
   let body: BodyInit | undefined;
@@ -42,7 +59,7 @@ export async function api<T>(path: string, opts: { method?: string; json?: unkno
     body = opts.form;
   }
   if (MUTATING.has(method) && csrfToken) headers["X-CSRF-Token"] = csrfToken;
-  const res = await fetch(path, { method, headers, body, credentials: "same-origin", cache: "no-store" });
+  const res = await fetch(path, { method, headers, body, credentials: "same-origin", cache: "no-store", signal: opts.signal });
   const text = await res.text();
   const data = text ? JSON.parse(text) : null;
   if (!res.ok) throw new ApiError(res.status, messageFrom(data?.detail, res.status), data?.detail);
@@ -111,6 +128,8 @@ export interface AdminOrder {
 
 export interface RoundSummary { id: string; name: string; created_at: string; orders: number; needs_pin: number; }
 export interface ConfigurationBlocker { code: string; reason: string; rider_id?: string; rider?: string; }
+export type Mode = "equal" | "smart" | "manual";
+export interface PlanningLimits { max_pending_orders: number; max_riders: number; max_locations: number; solve_seconds: number; }
 export interface Readiness {
   ready: boolean;                // orders and rider setup both ready for planning
   orders: number;
@@ -119,6 +138,88 @@ export interface Readiness {
   configuration_blockers: ConfigurationBlocker[];      // riders, depots, destinations, confirmations (Phase 2A)
   riders: { participating: number; confirmed: number };
   input_version: number;
+  mode: Mode;                    // Phase 2C: shown on the planning screen
+  pending_orders: number;
+  planning_limits: PlanningLimits;
+}
+
+// ---- Phase 2: Office/Warehouse, riders, round setup, destinations (2A contracts)
+export type Vehicle = "scooter" | "bike";
+export type DepotKind = "office" | "warehouse";
+export type DestinationKind = "office" | "warehouse" | "home" | "last_stop" | "custom";
+export const DEPOT_KINDS: DepotKind[] = ["office", "warehouse"];
+export const DESTINATION_KINDS: DestinationKind[] = ["office", "warehouse", "home", "last_stop", "custom"];
+export const PRIVATE_KINDS: DestinationKind[] = ["home", "custom"];
+export const KIND_LABEL: Record<DestinationKind, string> = {
+  office: "Office", warehouse: "Warehouse", home: "Home", last_stop: "Last stop", custom: "Custom",
+};
+export const VEHICLE_LABEL: Record<Vehicle, string> = { scooter: "Scooter", bike: "Motorbike" };
+
+export interface Depot {
+  kind: DepotKind; label: string; lat: number; lng: number; version: number; updated_at: string;
+  in_service_area: boolean; confirmations_invalidated?: number;
+}
+export type Depots = Record<DepotKind, Depot | null>;
+export interface RiderProfile {
+  id: string; username: string; display_name: string; default_vehicle: Vehicle | null; account_active: boolean; version: number;
+}
+export type ConfirmationState = "confirmed" | "not_confirmed" | "outdated";
+export interface Confirmation { state: ConfirmationState; confirmed_version: number | null; confirmed_at: string | null; }
+export interface SetupIssue { code: string; reason: string; }
+/** Admin view of one rider in a round: destination kind only, never Home/Custom coordinates. */
+export interface RoundRider {
+  rider_id: string; display_name: string; username: string; account_active: boolean; participating: boolean;
+  vehicle: Vehicle; capacity: number; start: DepotKind; destination: { kind: DestinationKind } | null;
+  config_version: number; confirmation: Confirmation; issues: SetupIssue[];
+}
+export interface RiderRoundSummary {
+  round_id: string; round_name: string; config_version: number; destination_kind: DestinationKind | null;
+  confirmation: ConfirmationState;
+}
+export interface Place { set: boolean; label: string | null; lat: number | null; lng: number | null; }
+/** The rider's own setup (includes their own Home/Custom coordinates; shown only to them). */
+export interface RiderSetup {
+  round_id: string; round_name: string; config_version: number; vehicle: Vehicle; capacity: number;
+  start: { kind: DepotKind } & Place;
+  destination: ({ kind: DestinationKind; open_route?: boolean } & Partial<Place>) | null;
+  confirmation: Confirmation; issues: SetupIssue[];
+}
+
+// ---- Phase 2B: runs and versioned plans
+export type RunState = "queued" | "running" | "succeeded" | "failed" | "stale" | "interrupted";
+export const TERMINAL_RUN_STATES: RunState[] = ["succeeded", "failed", "stale", "interrupted"];
+export interface PlanningRun {
+  id: string; round_id: string; state: RunState; mode: Mode; input_version: number;
+  requested_at: string; started_at: string | null; finished_at: string | null;
+  error: { code: string; message: string; details: string[] } | null;
+  plan_version: number | null; timings: Record<string, number> | null;
+}
+export interface PlanOrderRef { id: string; order_code: string; }
+export interface PlanRoute {
+  rider_id: string; rider: string | null; vehicle: Vehicle; profile: string; capacity: number;
+  start: DepotKind; destination: DestinationKind; open_route: boolean;
+  road_distance_m: number; road_duration_s: number;
+  stops: { seq: number; orders: PlanOrderRef[] }[]; postponed: PlanOrderRef[]; completed: PlanOrderRef[];
+}
+export interface Provenance {
+  provider?: string; real_road?: boolean; recorded?: boolean; profile?: string; requested_at?: string;
+  notes?: string; solver_status?: string; solver_strategy?: string; [k: string]: unknown;
+}
+export interface Plan {
+  id: string; round_id: string; version: number; is_current: boolean; out_of_date: boolean; input_version: number;
+  mode: Mode; created_at: string; run_id: string; superseded_at: string | null; distance_label: string;
+  provenance: Provenance; warnings: string[];
+  summary: {
+    planned_orders: number; postponed_held: number; completed_held: number;
+    completed_without_owner?: string[]; completed_owner_not_participating?: string[];
+    ownership_changes: { order_code: string; from_rider: string | null; to_rider: string | null }[];
+    total_road_distance_m: number; total_road_duration_s: number;
+  };
+  routes: PlanRoute[]; attribution: string;
+}
+export interface PlanVersion {
+  version: number; is_current: boolean; out_of_date: boolean; mode: Mode; created_at: string;
+  superseded_at: string | null; total_road_distance_m: number | null; planned_orders: number | null;
 }
 
 export interface Issue { severity: "error" | "warning"; field: string | null; message: string; }

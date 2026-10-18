@@ -5,7 +5,10 @@ import Shell from "./components/Shell";
 import ImportPage from "./pages/ImportPage";
 import LoginPage from "./pages/LoginPage";
 import OrdersPage from "./pages/OrdersPage";
+import PlanPage from "./pages/PlanPage";
 import RiderPage from "./pages/RiderPage";
+import RoundSetupPage from "./pages/RoundSetupPage";
+import SettingsPage from "./pages/SettingsPage";
 
 // Route guards only choose which screen to show. Every permission is enforced by the API.
 export default function App() {
@@ -40,6 +43,9 @@ export default function App() {
         element={session?.role === "admin" ? <Shell session={session} onSignOut={signOut} /> : <Navigate to={home} replace />}
       >
         <Route index element={<OrdersPage onUnauthorized={onSignedOut} />} />
+        <Route path="round" element={<RoundSetupPage onUnauthorized={onSignedOut} />} />
+        <Route path="plan" element={<PlanPage onUnauthorized={onSignedOut} />} />
+        <Route path="settings" element={<SettingsPage onUnauthorized={onSignedOut} />} />
         <Route path="import" element={<ImportPage onUnauthorized={onSignedOut} />} />
       </Route>
       <Route

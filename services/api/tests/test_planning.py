@@ -581,3 +581,14 @@ def test_held_orders_use_up_their_riders_capacity(app, admin, db):
     plan = plan_now(w)
     x = routes(plan)["Rider X"]
     assert x["stops"] == [] and len(x["postponed"]) == 1 and len(x["completed"]) == 1
+
+
+def test_readiness_explains_mode_pending_count_and_limits(world, app):
+    w = world
+    r = w.admin.get(f"/api/admin/rounds/{w.rid}/readiness").json()
+    limits = app.state.settings.planning
+    assert r["mode"] == "smart" and r["pending_orders"] == len(w.codes)
+    assert r["planning_limits"] == {"max_pending_orders": limits.max_pending_orders, "max_riders": limits.max_riders,
+                                    "max_locations": limits.max_locations, "solve_seconds": limits.solve_seconds}
+    w.admin.send("PUT", f"/api/admin/rounds/{w.rid}/mode", json={"mode": "manual"})
+    assert w.admin.get(f"/api/admin/rounds/{w.rid}/readiness").json()["mode"] == "manual"

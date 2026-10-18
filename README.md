@@ -2,7 +2,7 @@
 
 A mobile-first delivery-routing PWA for a small startup: Excel import → rider configuration → endpoint confirmation → road-based multi-rider routes → simple delivery updates. Scope, workflow and plans are in [`docs/source`](docs/source/START-HERE.md).
 
-**Current state:** Phase 0 accepted for local development on 13 Oct 2026 (`2a34226`, [record](docs/phase0/OWNER-ACCEPTANCE-2026-10-13.md)). **Phase 1 (foundation, secure sign-in, Excel import) accepted for local development on 13 Oct 2026** (`fcac55e`, [record](docs/phase1/OWNER-ACCEPTANCE-2026-10-13.md), [report](docs/phase1/PHASE1-REPORT.md)). **Phase 2 (routing and multi-rider constraints) is in progress and not complete:** step 2A (rider setup and destination confirmation) is committed at `13de782`, and step 2B (local Valhalla + OR-Tools planning, versioned plans; API only) is committed locally and **awaiting review**: see the [2A report](docs/phase2/STEP-2A-REPORT.md) and [2B report](docs/phase2/STEP-2B-REPORT.md). Step 2C (screens and end-to-end verification) has not started ([plan](docs/phase2/IMPLEMENTATION-PLAN.md)). Delivery area: DU North Campus, Delhi; budget ₹0; nothing is deployed.
+**Current state:** Phase 0 accepted for local development on 13 Oct 2026 (`2a34226`, [record](docs/phase0/OWNER-ACCEPTANCE-2026-10-13.md)). **Phase 1 (foundation, secure sign-in, Excel import) accepted for local development on 13 Oct 2026** (`fcac55e`, [record](docs/phase1/OWNER-ACCEPTANCE-2026-10-13.md), [report](docs/phase1/PHASE1-REPORT.md)). **Phase 2 (routing and multi-rider constraints) is in progress and not complete:** step 2A (rider setup and destination confirmation) is committed at `13de782`, step 2B (local Valhalla + OR-Tools planning, versioned plans) at `9c0db08`, and step 2C (configuration and planning screens, rider destination card, browser verification) is committed; **Phase 2 is awaiting final owner review**: see the [Phase 2 report](docs/phase2/PHASE2-REPORT.md) and the [2A](docs/phase2/STEP-2A-REPORT.md), [2B](docs/phase2/STEP-2B-REPORT.md) and [2C](docs/phase2/STEP-2C-REPORT.md) reports ([plan](docs/phase2/IMPLEMENTATION-PLAN.md)). Delivery area: DU North Campus, Delhi; budget ₹0; nothing is deployed.
 
 ## Layout
 
@@ -10,7 +10,7 @@ A mobile-first delivery-routing PWA for a small startup: Excel import → rider 
 docs/source/        verbatim copy of the project documentation package (do not edit here)
 docs/phase0/        Phase 0 report, owner acceptance, evidence (historical and accepted baseline)
 docs/phase1/        Phase 1 report, owner acceptance, screenshots, evidence
-docs/phase2/        Phase 2 plan and step reports (2A committed; 2B committed, awaiting review)
+docs/phase2/        Phase 2 plan and step reports (2A, 2B and 2C committed; awaiting final owner review)
 docs/DEVELOPMENT.md how to run the app locally
 apps/web/           React + TypeScript + Tailwind frontend (Vite)
 services/api/       FastAPI backend, Alembic migrations, tests

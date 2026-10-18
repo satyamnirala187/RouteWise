@@ -1,0 +1,38 @@
+# Step 2C correction pass: browser suite, RECORDED real-road matrices (19 Oct 2026 01:14 IST)
+# Phase 1 + Phase 2 specs, desktop 1280 px + mobile 390 px. Screenshots written to a scratch directory (not committed evidence).
+$ E2E_SHOTS_DIR=<scratch> E2E_2C_SHOTS_DIR=<scratch> scripts/e2e.sh
+Running 30 tests using 1 worker
+
+  ✓   1 [desktop] › e2e/phase1.spec.ts:28:1 › sign-in page rejects a wrong password with a generic message (540ms)
+  ✓   2 [desktop] › e2e/phase1.spec.ts:38:1 › admin imports, previews, saves, fixes a pin and edits an order (842ms)
+  ✓   3 [desktop] › e2e/phase1.spec.ts:80:1 › rider sees only own deliveries; other riders' data and admin areas are refused (437ms)
+  ✓   4 [desktop] › e2e/phase1.spec.ts:100:1 › sign out ends the session on the server (414ms)
+  -   5 [desktop] › e2e/phase2-live.spec.ts:9:1 › live: a mixed-fleet round planned in the browser on real local Valhalla roads
+  ✓   6 [desktop] › e2e/phase2.spec.ts:56:1 › admin sets Office and Warehouse with validation and conflict recovery, and edits a rider profile (1.2s)
+  ✓   7 [desktop] › e2e/phase2.spec.ts:100:1 › full round: import, mixed fleet from both starts, rider confirmations, smart plan on recorded roads (4.7s)
+  ✓   8 [desktop] › e2e/phase2.spec.ts:200:1 › equal and manual modes with owner locks, first delivery, bulk assignment and version history (5.6s)
+  ✓   9 [desktop] › e2e/phase2.spec.ts:276:1 › capacity and first-delivery conflicts are explained and nothing is saved (1.1s)
+  ✓  10 [desktop] › e2e/phase2.spec.ts:314:1 › a destination change during a solve rejects the result and keeps the previous plan (2.6s)
+  ✓  11 [desktop] › e2e/phase2.spec.ts:356:1 › a configuration change after planning marks the plan out of date; stale edits are refused (2.2s)
+  ✓  12 [desktop] › e2e/phase2.spec.ts:405:1 › riders see only their own rounds, destinations and deliveries; Home/Custom stay private (3.6s)
+  ✓  13 [desktop] › e2e/phase2.spec.ts:452:1 › polling stops on navigation, round switching and session expiry; stale responses never replace the selected round (21.2s)
+  ✓  14 [desktop] › e2e/phase2.spec.ts:549:1 › readiness refresh shows riders' confirmations from other sessions; late responses never replace another round (6.0s)
+  ✓  15 [desktop] › e2e/phase2.spec.ts:613:1 › mode changes are saved one at a time, recover from failure and stay per round (2.9s)
+  ✓  16 [mobile] › e2e/phase1.spec.ts:28:1 › sign-in page rejects a wrong password with a generic message (378ms)
+  ✓  17 [mobile] › e2e/phase1.spec.ts:38:1 › admin imports, previews, saves, fixes a pin and edits an order (973ms)
+  ✓  18 [mobile] › e2e/phase1.spec.ts:80:1 › rider sees only own deliveries; other riders' data and admin areas are refused (442ms)
+  ✓  19 [mobile] › e2e/phase1.spec.ts:100:1 › sign out ends the session on the server (432ms)
+  -  20 [mobile] › e2e/phase2-live.spec.ts:9:1 › live: a mixed-fleet round planned in the browser on real local Valhalla roads
+  ✓  21 [mobile] › e2e/phase2.spec.ts:56:1 › admin sets Office and Warehouse with validation and conflict recovery, and edits a rider profile (1.3s)
+  ✓  22 [mobile] › e2e/phase2.spec.ts:100:1 › full round: import, mixed fleet from both starts, rider confirmations, smart plan on recorded roads (5.4s)
+  ✓  23 [mobile] › e2e/phase2.spec.ts:200:1 › equal and manual modes with owner locks, first delivery, bulk assignment and version history (6.0s)
+  ✓  24 [mobile] › e2e/phase2.spec.ts:276:1 › capacity and first-delivery conflicts are explained and nothing is saved (6.4s)
+  ✓  25 [mobile] › e2e/phase2.spec.ts:314:1 › a destination change during a solve rejects the result and keeps the previous plan (4.5s)
+  ✓  26 [mobile] › e2e/phase2.spec.ts:356:1 › a configuration change after planning marks the plan out of date; stale edits are refused (2.4s)
+  ✓  27 [mobile] › e2e/phase2.spec.ts:405:1 › riders see only their own rounds, destinations and deliveries; Home/Custom stay private (3.9s)
+  ✓  28 [mobile] › e2e/phase2.spec.ts:452:1 › polling stops on navigation, round switching and session expiry; stale responses never replace the selected round (21.1s)
+  ✓  29 [mobile] › e2e/phase2.spec.ts:549:1 › readiness refresh shows riders' confirmations from other sessions; late responses never replace another round (6.1s)
+  ✓  30 [mobile] › e2e/phase2.spec.ts:613:1 › mode changes are saved one at a time, recover from failure and stay per round (2.9s)
+
+  2 skipped
+  28 passed (2.0m)

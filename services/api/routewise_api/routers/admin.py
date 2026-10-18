@@ -203,9 +203,11 @@ def list_orders(round_id: uuid.UUID, db: DBSession = Depends(get_db, scope="func
 
 @router.get("/rounds/{round_id}/readiness")
 def round_readiness(round_id: uuid.UUID, db: DBSession = Depends(get_db, scope="function"), settings: Settings = Depends(get_settings)) -> dict:
-    """Planning gate (no optimizer yet). `blockers` keeps its Phase 1 meaning: order-location
-    blockers. `configuration_blockers` adds the rider side: participating riders, depots,
-    starts, destinations and current confirmations. No destination coordinates are returned."""
+    """Planning gate. `blockers` keeps its Phase 1 meaning: order-location blockers.
+    `configuration_blockers` adds the rider side: participating riders, depots, starts,
+    destinations and current confirmations. `mode` and `planning_limits` (2C) let the planning
+    screen explain the run before it is requested; optimize still enforces every rule itself.
+    No destination coordinates are returned."""
     rnd = db.get(DeliveryRound, round_id)
     if rnd is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Round not found")
@@ -213,9 +215,13 @@ def round_readiness(round_id: uuid.UUID, db: DBSession = Depends(get_db, scope="
     blockers = readiness_blockers(list(orders), settings.service_area)
     orders_ready = not blockers and len(orders) > 0
     config_blockers, riders = configuration_blockers(db, round_id, settings.service_area)
+    limits = settings.planning
     return {"ready": orders_ready and not config_blockers, "orders": len(orders), "orders_ready": orders_ready,
             "blockers": blockers, "configuration_blockers": config_blockers, "riders": riders,
-            "input_version": rnd.input_version}
+            "input_version": rnd.input_version, "mode": rnd.mode,
+            "pending_orders": sum(1 for o in orders if o.status == "Pending"),
+            "planning_limits": {"max_pending_orders": limits.max_pending_orders, "max_riders": limits.max_riders,
+                                "max_locations": limits.max_locations, "solve_seconds": limits.solve_seconds}}
 
 
 class OrderPatch(BaseModel):

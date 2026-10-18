@@ -14,7 +14,9 @@ Copied on 12 October 2026 from the RouteWise development package. The copies are
 
 - [Implementation plan: steps 2A, 2B, 2C](phase2/IMPLEMENTATION-PLAN.md)
 - [Step 2A report](phase2/STEP-2A-REPORT.md): rider setup, depots, destinations, confirmations, readiness. Committed (`13de782`)
-- [Step 2B report](phase2/STEP-2B-REPORT.md): local Valhalla + OR-Tools planning, runs, versioned plans. Committed locally, **awaiting review**; 2C not started
+- [Step 2B report](phase2/STEP-2B-REPORT.md): local Valhalla + OR-Tools planning, runs, versioned plans. Committed (`9c0db08`)
+- [Step 2C report](phase2/STEP-2C-REPORT.md): configuration and planning screens, rider destination card, browser verification, with its correction pass. Committed (after `9c0db08`)
+- [Phase 2 report](phase2/PHASE2-REPORT.md): requirement-to-evidence checklist. **Awaiting final owner review**; not approved
 
 ## Phase 1 (accepted 13 Oct 2026 for local development, `fcac55e`)
 

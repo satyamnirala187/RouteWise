@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { api, ApiError, STATUSES, type AdminOrder, type Status } from "../api";
+import { api, ApiError, STATUSES, type AdminOrder, type RoundRider, type Status } from "../api";
 import { mapsUrl } from "./Badges";
 
 const input =
@@ -10,8 +10,9 @@ function parseCoords(text: string): [number, number] | null {
   return m ? [Number(m[1]), Number(m[2])] : null;
 }
 
-export default function OrderEditor({ order, onSaved, onClose, onUnauthorized }: {
+export default function OrderEditor({ order, riders = [], onSaved, onClose, onUnauthorized }: {
   order: AdminOrder;
+  riders?: RoundRider[];  // participating riders of the round (owner-lock choices)
   onSaved: (o: AdminOrder) => void;
   onClose: () => void;
   onUnauthorized: () => void;
@@ -25,6 +26,8 @@ export default function OrderEditor({ order, onSaved, onClose, onUnauthorized }:
   });
   const [coords, setCoords] = useState(order.location.lat != null ? `${order.location.lat}, ${order.location.lng}` : "");
   const [link, setLink] = useState(order.location_link);
+  const [lock, setLock] = useState(order.planning.locked_rider_id ?? "");
+  const [priority, setPriority] = useState(order.planning.first_priority);
   const [message, setMessage] = useState<{ kind: "error" | "ok" | "warn"; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -37,7 +40,8 @@ export default function OrderEditor({ order, onSaved, onClose, onUnauthorized }:
       setMessage(updated.warning ? { kind: "warn", text: updated.warning } : { kind: "ok", text: ok });
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) return onUnauthorized();
-      setMessage({ kind: "error", text: e instanceof ApiError ? e.message : "Save failed." });
+      const details = e instanceof ApiError && e.details.length ? ` (${e.details.join(", ")})` : "";
+      setMessage({ kind: "error", text: (e instanceof ApiError ? e.message : "Save failed.") + details });
     } finally {
       setBusy(false);
     }
@@ -75,6 +79,27 @@ export default function OrderEditor({ order, onSaved, onClose, onUnauthorized }:
     }), "Link checked.");
   }
 
+  function savePlanning(e: FormEvent) {
+    e.preventDefault();
+    run(async () => {
+      let current = order;
+      if ((current.planning.locked_rider_id ?? "") !== lock) {
+        current = await api<AdminOrder>(`/api/admin/orders/${order.id}/lock`, {
+          method: "PUT", json: { version: current.version, rider_id: lock || null },
+        });
+        onSaved(current);
+      }
+      if (current.planning.first_priority !== priority) {
+        current = await api<AdminOrder>(`/api/admin/orders/${order.id}/priority`, {
+          method: "PUT", json: { version: current.version, first_priority: priority },
+        });
+      }
+      return current;
+    }, "Planning settings saved.");
+  }
+
+  const names = Object.fromEntries(riders.map((r) => [r.rider_id, r.display_name]));
+  const assigned = order.planning.assigned_rider_id;
   const set = (k: keyof typeof form) => (e: { target: { value: string } }) => setForm({ ...form, [k]: e.target.value });
 
   return (
@@ -121,6 +146,29 @@ export default function OrderEditor({ order, onSaved, onClose, onUnauthorized }:
             href={mapsUrl(order.location.lat, order.location.lng)}>Check this pin in Google Maps ↗</a>
         )}
       </div>
+      <form onSubmit={savePlanning} className="space-y-3 border-t border-slate-200 pt-3" aria-label="Planning">
+        <h3 className="text-sm font-semibold">Planning</h3>
+        <p className="text-sm text-slate-700" data-testid="assigned-rider">
+          Assigned rider (from the current plan): <b>{assigned ? names[assigned] ?? "a rider not in this round" : "none yet"}</b>
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="text-sm font-medium">Owner lock
+            <select className={input} value={lock} onChange={(e) => setLock(e.target.value)} aria-describedby={`lock-help-${order.id}`}>
+              <option value="">No lock (the optimizer chooses)</option>
+              {riders.map((r) => <option key={r.rider_id} value={r.rider_id}>Lock to {r.display_name}</option>)}
+            </select>
+            <span id={`lock-help-${order.id}`} className="mt-1 block text-xs font-normal text-slate-600">
+              A lock keeps this order with that rider in every mode; manual mode needs one on every Pending order.
+            </span>
+          </label>
+          <label className="flex min-h-11 items-center gap-2 self-center text-sm font-medium">
+            <input type="checkbox" className="size-5" checked={priority} onChange={(e) => setPriority(e.target.checked)}
+              disabled={order.status !== "Pending" && !order.planning.first_priority} />
+            First delivery of its rider's route
+          </label>
+        </div>
+        <button disabled={busy} className="min-h-11 rounded-md bg-slate-800 px-4 font-semibold text-white disabled:opacity-60">Save planning</button>
+      </form>
       {message && (
         <p role={message.kind === "error" ? "alert" : "status"}
           className={`rounded-md px-3 py-2 text-sm ${message.kind === "error" ? "bg-red-50 text-red-800" : message.kind === "warn" ? "bg-orange-50 text-orange-900" : "bg-emerald-50 text-emerald-900"}`}>

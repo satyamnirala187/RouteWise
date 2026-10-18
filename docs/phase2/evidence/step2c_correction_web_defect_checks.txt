@@ -1,0 +1,19 @@
+# Step 2C correction pass: targeted web defect checks (19 Oct 2026 01:12 IST)
+# 9 earlier 2C checks (the 'stale round responses' one retargeted to the new guards) + 6 new for readiness refresh and mode saves.
+$ python3 scripts/web_defect_check.py <scratch dir>
+KILLED: polling not stopped on navigation/round switch  [  1 failed]
+KILLED: poll errors (session expiry) ignored  [    Error: expect(page).toHaveURL(expected) failed /   1 failed]
+KILLED: stale round responses accepted  [    Error: expect(locator).toBeChecked() failed /   2 failed]
+KILLED: Optimize enabled before readiness  [    Error: expect(locator).toBeDisabled() failed /   1 failed]
+KILLED: plan not reloaded after a run ends  [    Error: expect(locator).toBeVisible() failed /   1 failed]
+KILLED: rejected run presented as the current result  [    Error: expect(locator).toBeVisible() failed /   1 failed]
+KILLED: saving a destination also confirms  [    Error: expect(locator).toHaveText(expected) failed /   1 failed]
+KILLED: version conflict silently reloaded over  [    Error: expect(locator).toContainText(expected) failed /   1 failed]
+KILLED: owner lock shown as assignment  [    Error: expect(locator).toHaveCount(expected) failed /   1 failed]
+KILLED: no Refresh readiness action  [    Error: expect(locator).toHaveCount(expected) failed /   1 failed]
+KILLED: no refresh when the window regains focus  [    Error: expect(locator).toContainText(expected) failed /   1 failed]
+KILLED: readiness polled while idle  [  1 failed]
+KILLED: overlapping mode saves allowed  [    Error: expect(locator).toBeDisabled() failed /   1 failed]
+KILLED: Optimize enabled during a mode save  [    Error: expect(locator).toBeDisabled() failed /   1 failed]
+KILLED: pending mode save shared across rounds  [    Error: expect(locator).toBeChecked() failed /   1 failed]
+15/15 killed

@@ -1,0 +1,14 @@
+# cd apps/web && npm run build (18 Oct 2026). Exit code: 0
+> routewise-web@0.1.0 build
+> npm run typecheck && vite build
+> routewise-web@0.1.0 typecheck
+> tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json
+vite v8.3.1 building client environment for production...
+transforming...
+✓ 109 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.44 kB │ gzip:   0.28 kB
+dist/assets/index-3hfQGU4O.css   22.12 kB │ gzip:   5.20 kB
+dist/assets/index-DLuZH1J5.js   338.13 kB │ gzip: 101.34 kB
+✓ built in 435ms

@@ -1,0 +1,11 @@
+# Targeted web defect checks (not exhaustive): python3 scripts/web_defect_check.py <scratch> (18 Oct 2026). Exit code: 0
+KILLED: polling not stopped on navigation/round switch  [  1 failed]
+KILLED: poll errors (session expiry) ignored  [    Error: expect(page).toHaveURL(expected) failed /   1 failed]
+KILLED: stale round responses accepted  [    Error: expect(locator).toHaveAttribute(expected) failed /   1 failed]
+KILLED: Optimize enabled before readiness  [    Error: expect(locator).toBeDisabled() failed /   1 failed]
+KILLED: plan not reloaded after a run ends  [    Error: expect(locator).toBeVisible() failed /   1 failed]
+KILLED: rejected run presented as the current result  [    Error: expect(locator).toBeVisible() failed /   1 failed]
+KILLED: saving a destination also confirms  [    Error: expect(locator).toHaveText(expected) failed /   1 failed]
+KILLED: version conflict silently reloaded over  [    Error: expect(locator).toContainText(expected) failed /   1 failed]
+KILLED: owner lock shown as assignment  [    Error: expect(locator).toHaveCount(expected) failed /   1 failed]
+9/9 killed

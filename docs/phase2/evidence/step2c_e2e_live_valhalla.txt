@@ -1,0 +1,7 @@
+# Opt-in browser flow on REAL local Valhalla tiles: ROUTEWISE_E2E_LIVE=1 E2E_SHOTS_DIR=<scratch> scripts/e2e.sh e2e/phase2-live.spec.ts (18 Oct 2026). Exit code: 0
+Running 2 tests using 1 worker
+LIVE-BROWSER {"project":"desktop","provider":"valhalla-local (OpenStreetMap data)","real_road":true,"recorded":false,"profiles":["motor_scooter","motorcycle"],"total_road_distance_m":24349,"timings":{"points":12,"riders":3,"solve_s":0.293,"total_s":0.447,"matrix_s":0.154,"matrix_calls":2,"pending_orders":8},"browser_wait_s":1.429}
+  ✓  1 [desktop] › e2e/phase2-live.spec.ts:9:1 › live: a mixed-fleet round planned in the browser on real local Valhalla roads (2.8s)
+LIVE-BROWSER {"project":"mobile","provider":"valhalla-local (OpenStreetMap data)","real_road":true,"recorded":false,"profiles":["motor_scooter","motorcycle"],"total_road_distance_m":24349,"timings":{"points":12,"riders":3,"solve_s":0.289,"total_s":0.38,"matrix_s":0.092,"matrix_calls":2,"pending_orders":8},"browser_wait_s":1.411}
+  ✓  2 [mobile] › e2e/phase2-live.spec.ts:9:1 › live: a mixed-fleet round planned in the browser on real local Valhalla roads (2.6s)
+  2 passed (8.9s)

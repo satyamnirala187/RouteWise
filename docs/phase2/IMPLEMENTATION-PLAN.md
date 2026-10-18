@@ -1,6 +1,6 @@
 # Phase 2 implementation plan — routing and multi-rider constraints
 
-**Date:** 17 October 2026 · **Prepared by:** Claude Code · **Status: step 2A committed (`13de782`); step 2B committed locally, awaiting review** ([2A report](STEP-2A-REPORT.md), [2B report](STEP-2B-REPORT.md)). Step 2C has not started. Phase 2 is not complete.
+**Date:** 17 October 2026 · **Prepared by:** Claude Code · **Status: steps 2A (`13de782`) and 2B (`9c0db08`) committed; step 2C committed; Phase 2 awaiting final owner review** ([2A](STEP-2A-REPORT.md), [2B](STEP-2B-REPORT.md), [2C](STEP-2C-REPORT.md), [Phase 2 report](PHASE2-REPORT.md)). Phase 2 is not complete or approved.
 
 **Baseline:** Phase 1 accepted for local development on 13 October 2026 at `fcac55e` ([record](../phase1/OWNER-ACCEPTANCE-2026-10-13.md)); Phase 0 accepted at `2a34226` ([record](../phase0/OWNER-ACCEPTANCE-2026-10-13.md)) with decisions D04–D10. Scope: [01-Product](../source/notion/RouteWise/01-Product.md) R07–R13 and R19, roadmap [Phase 2](../source/notion/RouteWise/04-Roadmap.md), tasks P2-01…P2-05, acceptance cases A12–A14.
 
@@ -185,6 +185,12 @@ No Home/Custom coordinates are copied into plan tables; the plan records the end
 ---
 
 ## 5. Step 2C — admin planning screens and end-to-end verification
+
+> **Implemented 18 October 2026, awaiting final review.** The [step 2C report](STEP-2C-REPORT.md) records what was built and where it differs from this section:
+> - Depots and Home/Custom take coordinates only; there is no Maps-link entry.
+> - Pages are `SettingsPage` (Office & riders), `RoundSetupPage` (riders and destination status together) and `PlanPage`, with shared `PlanView`, `DestinationCard` and `ui` components.
+> - The e2e server injects the recorded matrices through `services/api/scripts/e2e_app.py` (test-only); `e2e_setup.py` adds four synthetic riders and a public-point workbook.
+> - Readiness also returns `mode`, `pending_orders` and `planning_limits` (additive).
 
 ### Behaviour (mobile-first, same Shell, Tailwind and API client as Phase 1)
 

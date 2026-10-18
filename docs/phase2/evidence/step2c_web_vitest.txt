@@ -1,0 +1,6 @@
+# cd apps/web && npx vitest run (18 Oct 2026). Exit code: 0
+ RUN  v5.0.2 <repo>/apps/web
+ Test Files  2 passed (2)
+      Tests  13 passed (13)
+   Start at  19:30:41
+   Duration  748ms (environment 93%, transform 4%, tests 2%, import 1%)

@@ -16,7 +16,9 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: "../../services/api/.venv/bin/uvicorn --factory routewise_api.main:get_app --app-dir ../../services/api --host 127.0.0.1 --port 8010 --log-level warning",
+      // scripts/e2e_app.py: the real app plus the test-only recorded DU matrices (or the real local
+      // Valhalla tiles with ROUTEWISE_E2E_LIVE=1). Never used outside browser tests.
+      command: "../../services/api/.venv/bin/uvicorn --factory scripts.e2e_app:get_app --app-dir ../../services/api --host 127.0.0.1 --port 8010 --log-level warning",
       url: `${API}/api/health`,
       reuseExistingServer: false,
       env: {

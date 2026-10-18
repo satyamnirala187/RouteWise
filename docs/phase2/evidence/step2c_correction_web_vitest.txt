@@ -1,0 +1,15 @@
+# Step 2C correction pass: web unit tests (19 Oct 2026 01:09 IST)
+$ npm test
+
+> routewise-web@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.2 <repo>/apps/web
+
+
+ Test Files  2 passed (2)
+      Tests  13 passed (13)
+   Start at  01:09:25
+   Duration  713ms (environment 93%, transform 4%, tests 2%, import 1%, worker 1%)
+
