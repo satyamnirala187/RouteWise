@@ -1,0 +1,20 @@
+# Dependabot version updates (security alerts and security updates are repository settings).
+# Weekly, few open pull requests, grouped minor/patch updates to keep review load small.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /apps/web
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 5
+    groups:
+      web-minor-and-patch: { update-types: [minor, patch] }
+  - package-ecosystem: pip
+    directory: /services/api
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 5
+    groups:
+      api-minor-and-patch: { update-types: [minor, patch] }
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 5
