@@ -17,7 +17,7 @@ from ..config import Settings
 from ..deps import CurrentUser, get_db, get_now, get_settings, require_admin
 from ..importer import MAX_FILE_BYTES, parse_workbook
 from ..locations import LocationResult, manual_pin, resolve_link
-from ..models import DeliveryRound, ImportBatch, Order
+from ..models import Assignment, DeliveryRound, ImportBatch, Order
 from ..orders import (
     apply_location,
     next_order_code,
@@ -196,8 +196,9 @@ def list_rounds(db: DBSession = Depends(get_db, scope="function")) -> list[dict]
 def list_orders(round_id: uuid.UUID, db: DBSession = Depends(get_db, scope="function"), settings: Settings = Depends(get_settings)) -> list[dict]:
     if db.get(DeliveryRound, round_id) is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Round not found")
-    orders = db.scalars(select(Order).where(Order.round_id == round_id).order_by(Order.source_row)).all()
-    return [order_view(o, settings.service_area) for o in orders]
+    rows = db.execute(select(Order, Assignment.rider_id).outerjoin(Assignment, Assignment.order_id == Order.id)
+                      .where(Order.round_id == round_id).order_by(Order.source_row)).all()
+    return [order_view(o, settings.service_area, owner) for o, owner in rows]
 
 
 @router.get("/rounds/{round_id}/readiness")
@@ -238,8 +239,15 @@ class LinkIn(BaseModel):
     link: str = Field(min_length=1, max_length=2048)
 
 
+def admin_order_view(db: DBSession, order: Order, settings: Settings) -> dict:
+    return order_view(order, settings.service_area, db.scalar(select(Assignment.rider_id)
+                                                              .where(Assignment.order_id == order.id)))
+
+
 def _locked_order(db: DBSession, order_id: uuid.UUID, version: int) -> Order:
-    order = db.get(Order, order_id, with_for_update=True)
+    # FOR NO KEY UPDATE: serialises order edits but never blocks the KEY SHARE locks that plan
+    # commits take through foreign keys while holding the round lock (no deadlock cycle).
+    order = db.get(Order, order_id, with_for_update={"key_share": True})
     if order is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Order not found")
     if order.version != version:
@@ -285,7 +293,7 @@ def edit_order(order_id: uuid.UUID, body: OrderPatch, db: DBSession = Depends(ge
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(exc)) from None
     _bump(order, now)
     _bump_if_planning_input_changed(db, order, before)
-    return order_view(order, settings.service_area)
+    return admin_order_view(db, order, settings)
 
 
 @router.post("/orders/{order_id}/pin")
@@ -299,7 +307,7 @@ def set_manual_pin(order_id: uuid.UUID, body: PinIn, db: DBSession = Depends(get
     apply_location(order, loc)
     _bump(order, now)
     _bump_if_planning_input_changed(db, order, before)
-    view = order_view(order, settings.service_area)
+    view = admin_order_view(db, order, settings)
     if not view["location"]["in_service_area"]:
         view["warning"] = "This pin is outside the DU North Campus service area and will block planning."
     return view
@@ -316,4 +324,4 @@ def set_location_link(order_id: uuid.UUID, body: LinkIn, db: DBSession = Depends
                                        deadline=deadline))
     _bump(order, now)
     _bump_if_planning_input_changed(db, order, before)
-    return order_view(order, settings.service_area)
+    return admin_order_view(db, order, settings)

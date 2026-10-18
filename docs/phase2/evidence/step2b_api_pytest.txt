@@ -1,0 +1,2 @@
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+302 passed, 1 skipped, 3 warnings in 133.02s (0:02:13)

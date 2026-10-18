@@ -1,6 +1,6 @@
 """Database schema. Phase 1 tables, Phase 2A rider/round configuration (depots, round riders,
-rider-chosen destinations and confirmations), and the assignments table Phase 2B fills.
-No optimizer, plan, rerouting or offline structures exist yet."""
+rider-chosen destinations and confirmations) and Phase 2B planning (modes, locks, priorities,
+planning runs, versioned plans and assignment linkage). No rerouting or offline structures."""
 
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ from sqlalchemy import (
     Double,
     ForeignKey,
     ForeignKeyConstraint,
+    Index,
     Integer,
     String,
     Text,
@@ -33,6 +34,11 @@ VEHICLES = ("scooter", "bike")  # bike = motorbike; never routed with a bicycle 
 DEPOT_KINDS = ("office", "warehouse")
 START_KINDS = DEPOT_KINDS
 DESTINATION_KINDS = ("office", "warehouse", "home", "last_stop", "custom")
+DISTRIBUTION_MODES = ("equal", "smart", "manual")
+RUN_STATES = ("queued", "running", "succeeded", "failed", "stale", "interrupted")
+ACTIVE_RUN_STATES = ("queued", "running")
+PROFILES = ("motor_scooter", "motorcycle")  # scooter → motor_scooter, bike → motorcycle; never bicycle or car
+PLAN_ORDER_ROLES = ("active", "postponed", "completed")
 MAX_CAPACITY = 1000  # orders (D06); the import limit, so one rider can always hold a whole round
 
 
@@ -118,13 +124,17 @@ class DeliveryRound(Base):
     statuses). Phase 2B compares it before committing a plan, so stale output cannot win."""
 
     __tablename__ = "delivery_rounds"
-    __table_args__ = (CheckConstraint("input_version >= 1", name="ck_rounds_input_version"),)
+    __table_args__ = (
+        CheckConstraint("input_version >= 1", name="ck_rounds_input_version"),
+        CheckConstraint("mode IN ('equal','smart','manual')", name="ck_rounds_mode"),
+    )
 
     id: Mapped[uuid.UUID] = _uuid_pk()
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     created_by: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
     created_at: Mapped[datetime] = _ts()
     input_version: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("1"))
+    mode: Mapped[str] = mapped_column(String(16), nullable=False, server_default=text("'smart'"))
 
 
 class Depot(Base):
@@ -241,6 +251,9 @@ class Order(Base):
     lat: Mapped[float | None] = mapped_column(Double, nullable=True)
     lng: Mapped[float | None] = mapped_column(Double, nullable=True)
     building_id: Mapped[str | None] = mapped_column(String(64), nullable=True)  # validated shared entrance (Phase 4)
+    locked_rider_id: Mapped[uuid.UUID | None] = mapped_column(  # admin owner lock (manual assignment)
+        ForeignKey("riders.id", ondelete="RESTRICT"), nullable=True, index=True)
+    first_priority: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("false"))
     status: Mapped[str] = mapped_column(String(16), nullable=False, server_default=text("'Pending'"))
     version: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("1"))
     created_at: Mapped[datetime] = _ts()
@@ -248,10 +261,122 @@ class Order(Base):
 
 
 class Assignment(Base):
-    """Exactly one rider owns an assigned order. Populated by Phase 2 planning."""
+    """Exactly one rider owns an assigned order (primary key on order_id). Written by plan
+    commits; `plan_id` is the plan version that last confirmed this ownership."""
 
     __tablename__ = "assignments"
 
     order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"), primary_key=True)
     rider_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("riders.id", ondelete="RESTRICT"), nullable=False, index=True)
     assigned_at: Mapped[datetime] = _ts()
+    plan_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("route_plans.id", ondelete="SET NULL"),
+                                                      nullable=True, index=True)
+
+
+class PlanningRun(Base):
+    """One optimization request. The input snapshot lives only in the worker's memory; the
+    database keeps its versions and keyed fingerprint. A run never becomes `succeeded` without
+    its plan being committed in the same transaction."""
+
+    __tablename__ = "planning_runs"
+    __table_args__ = (
+        CheckConstraint("state IN ('queued','running','succeeded','failed','stale','interrupted')",
+                        name="ck_planning_runs_state"),
+        CheckConstraint("input_version >= 1", name="ck_planning_runs_input_version"),
+        Index("uq_planning_runs_one_active", "round_id", unique=True,
+              postgresql_where=text("state IN ('queued','running')")),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    round_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("delivery_rounds.id", ondelete="CASCADE"), nullable=False,
+                                                index=True)
+    state: Mapped[str] = mapped_column(String(16), nullable=False)
+    requested_by: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    input_version: Mapped[int] = mapped_column(Integer, nullable=False)
+    input_fingerprint: Mapped[str] = mapped_column(String(64), nullable=False)  # HMAC-SHA256, hex
+    mode: Mapped[str] = mapped_column(String(16), nullable=False)
+    error_code: Mapped[str | None] = mapped_column(String(48), nullable=True)
+    error_message: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    error_details: Mapped[list | None] = mapped_column(JSONB, nullable=True)  # order codes / rider names only
+    timings: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+
+
+class RoutePlan(Base):
+    """A committed plan version. At most one current plan per round (partial unique index)."""
+
+    __tablename__ = "route_plans"
+    __table_args__ = (
+        UniqueConstraint("round_id", "version", name="uq_route_plans_round_version"),
+        CheckConstraint("version >= 1", name="ck_route_plans_version"),
+        CheckConstraint("mode IN ('equal','smart','manual')", name="ck_route_plans_mode"),
+        Index("uq_route_plans_one_current", "round_id", unique=True, postgresql_where=text("is_current")),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    round_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("delivery_rounds.id", ondelete="CASCADE"), nullable=False)
+    version: Mapped[int] = mapped_column(Integer, nullable=False)
+    run_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("planning_runs.id", ondelete="CASCADE"), nullable=False,
+                                              unique=True)
+    is_current: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    mode: Mapped[str] = mapped_column(String(16), nullable=False)
+    input_version: Mapped[int] = mapped_column(Integer, nullable=False)
+    input_fingerprint: Mapped[str] = mapped_column(String(64), nullable=False)
+    distance_label: Mapped[str] = mapped_column(String(300), nullable=False)
+    provenance: Mapped[dict] = mapped_column(JSONB, nullable=False)  # provider, profiles, real_road, recorded, solver; no coordinates
+    warnings: Mapped[list] = mapped_column(JSONB, nullable=False)
+    summary: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    created_by: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    superseded_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class PlanRoute(Base):
+    """One rider's route in a plan. Distances count real road edges only; an open (Last stop)
+    route's artificial final arc is never included."""
+
+    __tablename__ = "plan_routes"
+    __table_args__ = (
+        CheckConstraint("vehicle IN ('scooter','bike')", name="ck_plan_routes_vehicle"),
+        CheckConstraint("profile IN ('motor_scooter','motorcycle')", name="ck_plan_routes_profile"),
+        CheckConstraint("(vehicle = 'scooter') = (profile = 'motor_scooter')", name="ck_plan_routes_vehicle_profile"),
+        CheckConstraint("start_kind IN ('office','warehouse')", name="ck_plan_routes_start"),
+        CheckConstraint("endpoint_kind IN ('office','warehouse','home','last_stop','custom')",
+                        name="ck_plan_routes_endpoint"),
+        CheckConstraint("open_route = (endpoint_kind = 'last_stop')", name="ck_plan_routes_open_route"),
+        CheckConstraint("road_distance_m >= 0 AND road_duration_s >= 0", name="ck_plan_routes_costs"),
+    )
+
+    plan_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("route_plans.id", ondelete="CASCADE"), primary_key=True)
+    rider_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("riders.id", ondelete="RESTRICT"), primary_key=True)
+    vehicle: Mapped[str] = mapped_column(String(16), nullable=False)
+    profile: Mapped[str] = mapped_column(String(16), nullable=False)
+    capacity: Mapped[int] = mapped_column(Integer, nullable=False)
+    start_kind: Mapped[str] = mapped_column(String(16), nullable=False)
+    endpoint_kind: Mapped[str] = mapped_column(String(16), nullable=False)
+    open_route: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    road_distance_m: Mapped[int] = mapped_column(Integer, nullable=False)
+    road_duration_s: Mapped[int] = mapped_column(Integer, nullable=False)
+
+
+class PlanOrder(Base):
+    """Every order a plan covers, exactly once per plan (primary key). `active` orders carry
+    their stop position; Postponed and Completed orders are held by their existing owner."""
+
+    __tablename__ = "plan_orders"
+    __table_args__ = (
+        ForeignKeyConstraint(["plan_id", "rider_id"], ["plan_routes.plan_id", "plan_routes.rider_id"],
+                             ondelete="CASCADE", name="fk_plan_orders_route"),
+        CheckConstraint("role IN ('active','postponed','completed')", name="ck_plan_orders_role"),
+        CheckConstraint("(role = 'active') = (stop_seq IS NOT NULL)", name="ck_plan_orders_seq_iff_active"),
+        CheckConstraint("stop_seq IS NULL OR stop_seq >= 1", name="ck_plan_orders_seq"),
+        Index("ix_plan_orders_route_seq", "plan_id", "rider_id", "stop_seq"),
+    )
+
+    plan_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True)
+    order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"), primary_key=True)
+    rider_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    role: Mapped[str] = mapped_column(String(16), nullable=False)
+    stop_seq: Mapped[int | None] = mapped_column(Integer, nullable=True)

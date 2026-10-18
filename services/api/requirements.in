@@ -10,3 +10,6 @@ psycopg[binary]==3.3.6
 argon2-cffi==25.1.0
 python-multipart==0.0.32
 defusedxml==0.7.1
+# Phase 2B routing core: the versions accepted in Phase 0 (spikes/routing/requirements*.lock).
+ortools==9.15.6755
+pyvalhalla==3.9.1  # in-process local Valhalla (MIT); OpenStreetMap tiles are built locally, never downloaded at runtime

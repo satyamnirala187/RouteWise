@@ -105,6 +105,8 @@ export interface AdminOrder {
   status: Status;
   version: number;
   warning?: string;
+  // Phase 2B planning inputs and current owner (no planning screens yet; 2C)
+  planning: { locked_rider_id: string | null; first_priority: boolean; assigned_rider_id: string | null };
 }
 
 export interface RoundSummary { id: string; name: string; created_at: string; orders: number; needs_pin: number; }

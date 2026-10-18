@@ -154,3 +154,21 @@ def test_every_rider_mutation_requires_the_sessions_csrf_token(app):
         assert rider.send(method, url, headers={"X-CSRF-Token": other.csrf}, csrf=False).status_code == 403, \
             ("token of another session", method, path)
         assert rider.send(method, url, origin="https://evil.example").status_code == 403, ("origin", method, path)
+
+
+PHASE_2B_ROUTES = {
+    ("PUT", "/api/admin/rounds/{round_id}/mode"), ("PUT", "/api/admin/orders/{order_id}/lock"),
+    ("POST", "/api/admin/rounds/{round_id}/locks"), ("PUT", "/api/admin/orders/{order_id}/priority"),
+    ("POST", "/api/admin/rounds/{round_id}/optimize"), ("GET", "/api/admin/planning-runs/{run_id}"),
+    ("GET", "/api/admin/rounds/{round_id}/planning-runs"), ("GET", "/api/admin/rounds/{round_id}/plan"),
+    ("GET", "/api/admin/rounds/{round_id}/plans"), ("GET", "/api/admin/rounds/{round_id}/plans/{version}"),
+}
+
+
+def test_phase_2b_routes_exist_and_are_admin_only(app):
+    """The generic tests above already require 401 (anonymous), 403 (rider) and the CSRF/origin
+    checks on every one of these; this pins the inventory so none is missed or added silently."""
+    routes = set(all_api_routes(app))
+    assert PHASE_2B_ROUTES <= routes
+    planning = {(m, p) for m, p in routes if any(k in p for k in ("optimize", "plan", "/locks", "/lock", "priority", "/mode"))}
+    assert planning == PHASE_2B_ROUTES and all(p.startswith("/api/admin/") for _, p in planning)

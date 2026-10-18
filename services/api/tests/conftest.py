@@ -26,8 +26,8 @@ from routewise_api.security import hash_password  # noqa: E402
 
 API_DIR = Path(__file__).resolve().parents[1]
 ORIGIN = "http://localhost:5173"
-TABLES = ("rider_endpoints, round_riders, depots, assignments, orders, import_batches, delivery_rounds, sessions, "
-          "login_failures, riders, users")
+TABLES = ("plan_orders, plan_routes, route_plans, planning_runs, rider_endpoints, round_riders, depots, assignments, "
+          "orders, import_batches, delivery_rounds, sessions, login_failures, riders, users")
 
 
 def _test_url() -> str:
@@ -89,6 +89,7 @@ def app(settings, clock):
         conn.execute(text(f"TRUNCATE {TABLES} RESTART IDENTITY CASCADE"))
         conn.execute(text("ALTER SEQUENCE order_code_seq RESTART WITH 1001"))
     yield application
+    application.state.planning.shutdown()
     application.state.engine.dispose()
 
 

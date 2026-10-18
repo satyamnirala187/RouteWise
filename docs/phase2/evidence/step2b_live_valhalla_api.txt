@@ -1,0 +1,2 @@
+LIVE {"timings": {"points": 15, "riders": 3, "solve_s": 0.465, "total_s": 0.652, "matrix_s": 0.186, "matrix_calls": 2, "pending_orders": 11}, "provider": "valhalla-local (OpenStreetMap data)", "response_status": "in-process Actor OK, 127 ms", "profile": "motor_scooter (scooter), motorcycle (bike)", "requested_at": "2026-10-17T12:36:57+00:00", "solver_status": "SUCCESS", "total_road_distance_m": 22848}
+1 passed, 3 warnings in 1.51s

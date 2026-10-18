@@ -36,6 +36,20 @@ class ServiceArea:
 
 
 @dataclass(frozen=True)
+class PlanningLimits:
+    """Local planning bounds (step 2B). Values come from the local DU measurements recorded in
+    docs/phase2/STEP-2B-REPORT.md; they are conservative application limits, not owner decisions."""
+
+    max_pending_orders: int = 80       # Pending orders planned in one run (measured up to 120; see the 2B report)
+    max_riders: int = 8                # participating riders in one run
+    max_locations: int = 100           # distinct matrix points (orders, starts, fixed destinations)
+    solve_seconds: int = 30            # OR-Tools safety limit per strategy, as in the accepted spike (≤ 3 strategies)
+    workers: int = 1                   # planning threads per API process
+    queue_size: int = 4                # queued runs per API process beyond the running ones
+    stale_after_s: int = 900           # a queued/running run older than this is reported as interrupted
+
+
+@dataclass(frozen=True)
 class Settings:
     env: str
     database_url: str
@@ -49,6 +63,8 @@ class Settings:
     import_link_budget_s: float = 30.0   # all short links in one import, in total
     max_concurrent_imports: int = 2      # upload parsing/link checks run on bounded worker threads
     service_area: ServiceArea = field(default_factory=ServiceArea)
+    valhalla_tiles: Path = REPO_ROOT / "spikes" / "valhalla" / "data" / "valhalla_tiles"  # git-ignored, built locally
+    planning: PlanningLimits = field(default_factory=PlanningLimits)
 
     @property
     def cookie_name(self) -> str:
@@ -77,6 +93,8 @@ def load_settings(database_url: str | None = None) -> Settings:
             if o.strip()
         ),
         resolve_short_links=os.environ.get("ROUTEWISE_RESOLVE_SHORT_LINKS", "true").lower() == "true",
+        valhalla_tiles=Path(os.environ.get("ROUTEWISE_VALHALLA_TILES")
+                            or REPO_ROOT / "spikes" / "valhalla" / "data" / "valhalla_tiles"),
     )
     if not settings.database_url:
         raise RuntimeError("DATABASE_URL is not set (run scripts/dev-db.sh init)")

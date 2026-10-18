@@ -1,0 +1,30 @@
+# 2B correction pass, 18 Oct 2026. Targeted 2B mutants on a scratch copy of services/api:
+#   .venv/bin/python tools/mutation_check.py <copy> <python> "2B:"   (full suite per mutant, -x)
+# The 17 Oct run (9/10, "commit without the round lock" survived) is kept in step2b_targeted_defect_checks.txt.
+KILLED: 2B: order edits lock FOR UPDATE (deadlocks with plan commits)
+KILLED: 2B: stale result committed
+KILLED: 2B: fingerprint not compared
+KILLED: 2B: commit without the round lock
+KILLED: 2B: missing road priced zero
+KILLED: 2B: bike routed as scooter
+KILLED: 2B: Postponed orders re-planned
+KILLED: 2B: held orders ignored in capacity
+KILLED: 2B: synthetic matrix accepted
+KILLED: 2B: unfinished runs not recovered
+KILLED: 2B: deactivation does not bump rounds
+KILLED: 2B: deactivation skips the participation recheck
+KILLED: 2B: capture without the account lock
+13/13 killed
+
+# Focused re-run of "2B: commit without the round lock" against the race tests only (no -x):
+#   pytest tests/test_planning_concurrency.py tests/test_account_deactivation.py
+# Failing under the mutant (each: "plan saved over an input change committed before it"):
+#   test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[pin|status|lock|priority|destination|capacity|mode]
+# Passing under the mutant:
+#   ...[depot]  (a depot edit takes the depot row FOR UPDATE, which conflicts with the commit's FOR SHARE)
+# Also failing under the mutant:
+#   test_deactivation_during_the_final_check_waits_for_the_commit
+#   psycopg.errors.DeadlockDetected while locking tuple in relation "users": the deactivation holds the
+#   round row and waits for the user row; the commit holds the user row FOR SHARE and waits on the round
+#   row (KEY SHARE through the route_plans foreign key).
+# Source restored after the run (diff against the working tree: identical).

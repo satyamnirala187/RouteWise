@@ -1,0 +1,3 @@
+# 2B correction pass, 18 Oct 2026: cd services/api && .venv/bin/python -m pytest -q
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+320 passed, 1 skipped, 3 warnings in 164.40s (0:02:44)

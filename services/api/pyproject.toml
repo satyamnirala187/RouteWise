@@ -8,3 +8,4 @@ requires-python = ">=3.14,<3.15"
 testpaths = ["tests"]
 addopts = "-ra"
 filterwarnings = ["ignore:.*httpx2.*"]
+markers = ["live: opt-in checks against the local Valhalla tiles (ROUTEWISE_LIVE_TESTS=1)"]

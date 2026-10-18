@@ -1,6 +1,6 @@
 # Phase 2 implementation plan — routing and multi-rider constraints
 
-**Date:** 17 October 2026 · **Prepared by:** Claude Code · **Status: step 2A implemented, awaiting review** ([step 2A report](STEP-2A-REPORT.md)). Steps 2B and 2C have not started. Phase 2 is not complete.
+**Date:** 17 October 2026 · **Prepared by:** Claude Code · **Status: step 2A committed (`13de782`); step 2B committed locally, awaiting review** ([2A report](STEP-2A-REPORT.md), [2B report](STEP-2B-REPORT.md)). Step 2C has not started. Phase 2 is not complete.
 
 **Baseline:** Phase 1 accepted for local development on 13 October 2026 at `fcac55e` ([record](../phase1/OWNER-ACCEPTANCE-2026-10-13.md)); Phase 0 accepted at `2a34226` ([record](../phase0/OWNER-ACCEPTANCE-2026-10-13.md)) with decisions D04–D10. Scope: [01-Product](../source/notion/RouteWise/01-Product.md) R07–R13 and R19, roadmap [Phase 2](../source/notion/RouteWise/04-Roadmap.md), tasks P2-01…P2-05, acceptance cases A12–A14.
 
@@ -98,6 +98,15 @@ Each step ends with the full regression run (section 6) and a short evidence not
 
 ## 4. Step 2B — local Valhalla + OR-Tools planning, persisted versioned plans
 
+> **Implemented 17 October 2026, awaiting review.** The [step 2B report](STEP-2B-REPORT.md) records what was built and where it differs from this section:
+> - Plan orders live in one `plan_orders` table (role `active`/`postponed`/`completed`, with the stop position), rather than separate `plan_stops`/`plan_stop_orders` tables.
+> - Run states include `interrupted`.
+> - Recorded matrices are test-only.
+> - No snap-distance guard is enforced: Q7 is still pending, and its limits are reported.
+> - The size limits were set from local measurements: 80 orders, 8 riders and 100 road points per run.
+> - Module layout: the files list below names `engine.py`, `adapter.py`, `runs.py` and `matrix/recorded.py`. The work is instead in `planning.py` (snapshot, prechecks, worker, commit, recovery) and `routers/admin_planning.py`. The routing package was ported from the spike at `2a34226`, and the recorded matrices are a test helper (`tests/recorded_matrix.py`).
+> - Correction pass, 18 October 2026: account deactivation is a shared operation (`accounts.deactivate_user`, used by the CLI). It advances `input_version` of the rider's rounds, so their saved plans show out of date, and it serialises with plan commits. Order edits lock their order rows before the round row (`FOR NO KEY UPDATE`), not only the round row as item 10 says. The commit's explicit round lock is what serialises edits with its final check; this is now covered by a commit-point race test.
+
 ### Behaviour
 
 1. **Inputs.** A planning run reads, in one consistent transaction: orders through `orders.planning_input()` (still the only path), participating round riders, confirmed endpoints, depots, locks, priorities and the round's mode. It records `input_version` and a content fingerprint (spike `fingerprint`, extended with endpoint and order versions).
@@ -107,11 +116,11 @@ Each step ends with the full regression run (section 6) and a short evidence not
 5. **Modes (D07).** *Smart:* minimise total road distance. *Equal:* near-equal order counts within capacity (water-filling band); an unmet band is a visible warning, not a silent change. *Manual:* every order needs an admin owner; only the sequence is optimised. Locks are honoured in all three modes.
 6. **Starts and endpoints.** Each rider starts at the configured Office/Warehouse and ends at their confirmed endpoint. Last stop is an open route via the spike's zero-cost virtual sink; that arc is never included in reported distance or duration.
 7. **First-delivery priority (D05).** Admin flags orders as first priority. A flagged stop can only follow a route start. Two flagged orders locked to one rider, or more flagged orders than riders, give `PRIORITY_CONFLICT` before solving.
-8. **No silent drops.** Every order is mandatory. Coded failures: `INSUFFICIENT_CAPACITY`, `LOCK_EXCEEDS_CAPACITY`, `INVALID_LOCK`, `MANUAL_ASSIGNMENT_MISSING`, `PRIORITY_CONFLICT`, `UNROUTABLE_LOCATION`, `UNROUTABLE_ENDPOINT`, `NO_FEASIBLE_PLAN`, `ROUND_TOO_LARGE`, `ROUTING_ENGINE_UNAVAILABLE`, `INPUTS_CHANGED`. On any failure no plan is written and the previous plan stays current.
+8. **No silent drops.** Every eligible (Pending) order is planned exactly once. Coded failures: `INSUFFICIENT_CAPACITY`, `LOCK_EXCEEDS_CAPACITY`, `INVALID_LOCK`, `MANUAL_ASSIGNMENT_MISSING`, `PRIORITY_CONFLICT`, `UNROUTABLE_LOCATION`, `UNROUTABLE_ENDPOINT`, `NO_FEASIBLE_PLAN`, `ROUND_TOO_LARGE`, `ROUTING_ENGINE_UNAVAILABLE`, `INPUTS_CHANGED`. On any failure no plan is written and the previous plan stays current.
 9. **Background run.** As proposed in the Phase 0 architecture record: an in-process worker (bounded pool, default 1 per API process, no new queue infrastructure) and a status endpoint the client polls. At most one queued/running run per round (DB partial unique index). On API start, runs left `running` are marked failed ("interrupted").
 10. **Atomic, versioned commit.** The worker locks the round row, re-reads `input_version` and recomputes the fingerprint. If either changed during the solve, the run ends `stale` (`INPUTS_CHANGED`) and nothing is written (A14). Otherwise, in one transaction: insert plan version N+1, mark it current, supersede the previous one, replace the round's `assignments` (one owner per order) and run `validate_plan` against the persisted rows. Every input mutation from 2A/2B takes the same round-row lock, so a mutation and a commit can never interleave.
-11. **Bounds.** Solver: insertion + Guided Local Search bounded by 1,000 solutions, 30 s safety limit per strategy (spike settings); a non-`SUCCESS` status is shown as a warning. Round size is capped (`ROUND_TOO_LARGE`) at the largest size measured on real Valhalla in this step (starting proposal: 100 orders / 8 riders, the largest benchmarked size; Q6). The spike configured Valhalla for 2,500 matrix pairs; 100 orders + 2 depots + 8 endpoints is ~12,100 pairs per profile, so the local limit is raised and memory/latency are measured.
-12. **Replanning and later changes: pending owner decisions Q1–Q2, not approved and not implemented.** The "only while every order is still Pending" restriction proposed in Q1 must **not** be built unless the owner approves it; operational replanning policy belongs to later work. What 2B does need regardless: any input change after a plan is issued marks that plan **out of date** (current `input_version`/fingerprint ≠ the plan's) without changing it. No automatic rerouting, no endpoint-change reoptimization (R23 is Phase 4).
+11. **Bounds.** Solver: insertion + Guided Local Search bounded by 1,000 solutions, 30 s safety limit per strategy (spike settings); a non-`SUCCESS` status is shown as a warning. Round size is capped (`ROUND_TOO_LARGE`) at conservative limits chosen from the 2B local measurements, recorded in the 2B report (100 orders / 8 riders was only a proposal; Q6). The spike configured Valhalla for 2,500 matrix pairs; 100 orders + 2 depots + 8 endpoints is ~12,100 pairs per profile, so the local limit is raised and memory/latency are measured.
+12. **Order statuses and plan replacement (corrected 17 Oct 2026).** Optimization is **not** refused because some orders are Postponed or Completed; the proposed "all orders must be Pending" rule (Q1) was never approved and is not built. A run plans every **Pending** order. **Completed** orders keep their history and existing owner and are never re-planned or reassigned. **Postponed** orders keep their existing owner and stay off the active sequence (D08), counting toward that rider's capacity. A case that would need later-phase behaviour (for example reassigning a Postponed or Completed order, or a Postponed order with no owner) gets an explicit coded "unsupported" response, and the existing data is left unchanged. Any input change after a plan is issued marks that plan **out of date** (current `input_version`/fingerprint ≠ the plan's) without changing it. No automatic rerouting and no endpoint-change reoptimization (R23 is Phase 4). Operational replanning policy (Q1–Q2) stays pending.
 13. **Rider visibility.** Riders keep the Phase 1 list of their assigned orders, now filled by the plan's assignments. Sequenced cards, next stop and navigation are Phase 3.
 
 ### Schema (migration `0003_phase2b_planning.py`)
@@ -130,7 +139,7 @@ No Home/Custom coordinates are copied into plan tables; the plan records the end
 
 ### Files
 
-- New package `routewise_api/routing/`: `domain.py`, `gate.py`, `planner.py`, `matrix/{base,recorded,valhalla_local}.py` (ported from the spike at `fcac55e`, attribution header), `engine.py` (provider selection; one Valhalla `Actor` per process behind a lock; tile path from `ROUTEWISE_VALHALLA_TILES`; provider `recorded` allowed only outside production, for tests and e2e), `adapter.py` (DB rows → domain round; uses `planning_input()`), `runs.py` (worker, commit, stale detection, interrupted-run recovery).
+- New package `routewise_api/routing/`: `domain.py`, `gate.py`, `planner.py`, `matrix/{base,recorded,valhalla_local}.py` (ported from the spike at `fcac55e`, attribution header), `engine.py` (one Valhalla `Actor` per process behind a lock; tile path from `ROUTEWISE_VALHALLA_TILES`; recorded matrices are injected by tests only, never selectable through configuration), `adapter.py` (DB rows → domain round; uses `planning_input()`), `runs.py` (worker, commit, stale detection, interrupted-run recovery).
 - New: `routers/admin_planning.py` (or section of `admin.py`), `migrations/versions/0003_…py`, tests listed below.
 - Changed: `requirements.in`/`requirements.lock` (add `ortools==9.15.6755`, `pyvalhalla==3.9.1`, the versions accepted in Phase 0, both with cp314 macOS arm64 wheels), `config.py` (provider, tile path, worker count, size cap), `main.py` (worker lifecycle), `models.py`, `orders.py` (lock/priority edits), `tests/test_permissions.py`, `tools/mutation_check.py`, `docs/DEVELOPMENT.md` (build tiles with `spikes/valhalla/build_tiles.sh`, point the API at them).
 - Unchanged: everything under `spikes/` and `tests/fixtures/`.
@@ -142,7 +151,7 @@ No Home/Custom coordinates are copied into plan tables; the plan records the end
 | `PUT /api/admin/rounds/{id}/mode` | equal / smart / manual |
 | `PUT /api/admin/orders/{id}/lock`, `POST /api/admin/rounds/{id}/locks` (bulk, for manual mode) | Set or clear an owner lock (expected versions) |
 | `PUT /api/admin/orders/{id}/priority` | First-delivery flag |
-| `POST /api/admin/rounds/{id}/optimize` | Precheck → 202 `{run_id}`; 409 gate / run in progress / round in progress; 422 infeasible precheck; 503 engine unavailable |
+| `POST /api/admin/rounds/{id}/optimize` | Precheck → 202 `{run_id}`; 409 gate not ready / run already queued or running; 422 infeasible or unsupported input; 503 engine unavailable or planning queue full |
 | `GET /api/admin/planning-runs/{run_id}` | State, error code and details |
 | `GET /api/admin/rounds/{id}/plan`, `…/plans`, `…/plans/{version}` | Current plan (with `out_of_date`), version list, a past version |
 
@@ -166,12 +175,12 @@ No Home/Custom coordinates are copied into plan tables; the plan records the end
 - **Gate through the API:** optimize with one unconfirmed rider → 409, no run row created.
 - **Stale plans (real PostgreSQL):** a test hook pauses the worker after solving; an endpoint change, status change, lock change and order pin edit each make the run `stale` with nothing written; with no change it commits version N+1.
 - **Concurrency:** two optimize requests for one round → one run, the other 409; a commit racing an input mutation is serialized by the round-row lock (same technique as Phase 1 `test_concurrency.py`).
-- **Persistence:** DB rejects two current plans per round and an order in two routes of one plan; assignments match the current plan exactly; interrupted runs are marked failed on start.
-- **Replanning rules:** re-optimize with all Pending → version 2 (version 1 kept, superseded); after one order is Postponed → refused.
+- **Persistence:** DB rejects two current plans per round and an order in two routes of one plan; assignments match the current plan exactly; interrupted runs are marked `interrupted` on start, never successful.
+- **Plan replacement and statuses:** re-optimizing gives version N+1 (the previous version is kept and superseded). With Postponed and Completed orders present, optimization still runs: Completed history and Postponed ownership are preserved exactly, and only Pending orders are planned. An operation that would reassign a Postponed or Completed order gets an explicit unsupported response, with data unchanged.
 - **Provider failure:** missing tiles / Valhalla error → `ROUTING_ENGINE_UNAVAILABLE`, previous plan kept, no fallback provider.
 - **Permissions/privacy:** inventory, roles, CSRF on every new mutation; plan responses and run errors carry no Home/Custom coordinates; logs carry no customer fields.
 - **Live (opt-in `ROUTEWISE_LIVE_TESTS=1`, local tiles):** a 20-order DU round with a scooter and a bike rider on real local Valhalla: provenance real, not recorded; both profiles used; every leg ≥ 0.8 × straight line − 300 m (spike check); benchmark at 20/50/100 orders (matrix latency, solve time, memory) saved to `docs/phase2/evidence/`.
-- **Mutation check additions:** zero-cost missing edge, sink counted as distance, gate bypass, lock ignored, capacity off-by-one, priority not first, stale commit accepted, bicycle/car profile mapping, recorded provider allowed in production.
+- **Targeted defect checks (not an exhaustive mutation run):** zero-cost missing edge, sink counted as distance, gate bypass, lock ignored, capacity off-by-one, priority not first, stale commit accepted, bicycle/car profile mapping, recorded provider allowed in production.
 
 ---
 

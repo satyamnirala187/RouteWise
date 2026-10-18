@@ -10,17 +10,20 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy.exc import ProgrammingError
 
 from .config import REPO_ROOT, Settings, load_settings
 from .db import make_engine, make_session_factory
 from .deps import utcnow
-from .routers import admin, admin_riders, auth, rider
+from .planning import PlanningService, recover_interrupted_runs
+from .routers import admin, admin_planning, admin_riders, auth, rider
 
 MAX_BODY_BYTES = 3 * 1024 * 1024  # covers the 2 MiB workbook limit plus multipart overhead
 WEB_DIST = REPO_ROOT / "apps" / "web" / "dist"
 
 # Never log request bodies or SQL; uvicorn's access log shows method, path (ids only) and status.
 logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+log = logging.getLogger("routewise")
 
 
 class BodySizeLimit:
@@ -84,6 +87,11 @@ def create_app(settings: Settings | None = None, clock: Callable[[], datetime] |
     app.state.engine = engine
     app.state.session_factory = make_session_factory(engine)
     app.state.clock = clock or utcnow
+    app.state.planning = PlanningService(settings, app.state.session_factory, app.state.clock)
+    try:  # runs left queued/running by a previous process are reported as interrupted, never successful
+        recover_interrupted_runs(app.state.session_factory, app.state.clock())
+    except ProgrammingError:
+        log.warning("planning tables missing; run `alembic upgrade head`")
 
     @app.middleware("http")
     async def security_headers(request: Request, call_next):
@@ -109,6 +117,7 @@ def create_app(settings: Settings | None = None, clock: Callable[[], datetime] |
     app.include_router(auth.router)
     app.include_router(admin.router)
     app.include_router(admin_riders.router)
+    app.include_router(admin_planning.router)
     app.include_router(rider.router)
 
     if WEB_DIST.is_dir():  # production-style single origin: built SPA served by the API

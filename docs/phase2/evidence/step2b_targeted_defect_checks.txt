@@ -1,0 +1,11 @@
+KILLED: 2B: order edits lock FOR UPDATE (deadlocks with plan commits)
+KILLED: 2B: stale result committed
+KILLED: 2B: fingerprint not compared
+SURVIVED: 2B: commit without the round lock
+KILLED: 2B: missing road priced zero
+KILLED: 2B: bike routed as scooter
+KILLED: 2B: Postponed orders re-planned
+KILLED: 2B: held orders ignored in capacity
+KILLED: 2B: synthetic matrix accepted
+KILLED: 2B: unfinished runs not recovered
+9/10 killed

@@ -14,11 +14,12 @@ import getpass
 import sys
 from datetime import datetime, timezone
 
-from sqlalchemy import select, update
+from sqlalchemy import select
 
+from .accounts import deactivate_user, revoke_sessions
 from .config import load_settings
 from .db import make_engine, make_session_factory
-from .models import Rider, Session, User
+from .models import Rider, User
 from .security import MIN_PASSWORD_LENGTH, hash_password
 
 
@@ -61,15 +62,18 @@ def main(argv: list[str] | None = None) -> int:
             user = db.scalar(select(User).where(User.username == username))
             if user is None:
                 raise SystemExit("No such user")
+            now = datetime.now(timezone.utc)
             if args.cmd == "set-password":
+                # Ends every existing session; not planning input, so no plan is invalidated.
                 user.password_hash = hash_password(_read_password())
+                revoke_sessions(db, user.id, now)
+                db.commit()
+                print(f"set-password: done for '{username}'")
             else:
-                user.active = False
-            # Either change ends every existing session of that user.
-            db.execute(update(Session).where(Session.user_id == user.id, Session.revoked_at.is_(None))
-                       .values(revoked_at=datetime.now(timezone.utc)))
-            db.commit()
-            print(f"{args.cmd}: done for '{username}'")
+                done = deactivate_user(db, user.id, now)
+                print(f"deactivate: done for '{username}'"
+                      + (f"; planning input changed in {len(done.rounds_invalidated)} round(s), re-plan them"
+                         if done.rounds_invalidated else ""))
     return 0
 
 

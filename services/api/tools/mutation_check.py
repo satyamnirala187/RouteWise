@@ -1,7 +1,8 @@
-"""Phase 1 + 2A mutation check: inject known security/correctness defects into a scratch copy of
+"""Phase 1, 2A and 2B mutation check: inject known security/correctness defects into a scratch copy of
 services/api and confirm the test suite fails for each.
 
-Usage: python tools/mutation_check.py <scratch copy of services/api> <python with API deps>
+Usage: python tools/mutation_check.py <scratch copy of services/api> <python with API deps> [name prefix]
+With a prefix (e.g. "2B:") only the matching targeted mutants run.
 Never run against the working tree: it rewrites source files in the given copy.
 The copy must have the same .env access as the real tree (tests use TEST_DATABASE_URL).
 """
@@ -36,7 +37,7 @@ MUTANTS = {
     # Correction pass (independent review findings)
     "import row lock removed": ("routers/admin.py", "with_for_update=True, populate_existing=True", "populate_existing=True"),
     "commit after response (scope=request)": (("deps.py", "routers/auth.py", "routers/admin.py", "routers/rider.py",
-                                               "routers/admin_riders.py"),
+                                               "routers/admin_riders.py", "routers/admin_planning.py"),
                                               'Depends(get_db, scope="function")', "Depends(get_db)", "all"),
     "import parsing on event loop": ("routers/admin.py", "def upload_import(", "async def upload_import("),
     "DNS without timeout": ("netsafe.py", "        addrs = future.result(timeout=min(DNS_TIMEOUT_S, _remaining(deadline, clock)))", "        addrs = resolver(host)"),
@@ -71,7 +72,34 @@ MUTANTS = {
                                         "    return order.location_state, order.lat, order.lng, order.status, order.customer_name"),
     "pin edit not planning input": ("routers/admin.py", "    if _planning_fields(order) != before:\n        bump_round_input(db, order.round_id)",
                                     "    if _planning_fields(order) != before:\n        pass"),
+    # Phase 2B, targeted at specific risks (run with the "2B:" prefix)
+    "2B: order edits lock FOR UPDATE (deadlocks with plan commits)": (
+        "routers/admin.py", 'order = db.get(Order, order_id, with_for_update={"key_share": True})',
+        "order = db.get(Order, order_id, with_for_update=True)"),
+    "2B: stale result committed": ("planning.py", "    if rnd.input_version != run.input_version or fingerprint(fresh, secret) != run.input_fingerprint:",
+                                   "    if False:"),
+    "2B: fingerprint not compared": ("planning.py", " or fingerprint(fresh, secret) != run.input_fingerprint:", ":"),
+    "2B: commit without the round lock": ("planning.py", "    rnd = lock_round(db, snap.round_id)\n    run = db.get(PlanningRun",
+                                          "    rnd = db.get(DeliveryRound, snap.round_id)\n    run = db.get(PlanningRun"),
+    "2B: missing road priced zero": ("routing/planner.py", "                    cost[a][b] = FORBIDDEN if c is None else c",
+                                     "                    cost[a][b] = 0 if c is None else c"),
+    "2B: bike routed as scooter": ("planning.py", 'DOMAIN_PROFILE = {Vehicle.SCOOTER: "motor_scooter", Vehicle.BIKE: "motorcycle"}',
+                                   'DOMAIN_PROFILE = {Vehicle.SCOOTER: "motor_scooter", Vehicle.BIKE: "motor_scooter"}'),
+    "2B: Postponed orders re-planned": ("planning.py", '        if o.status == "Pending":\n            pending.append(o)',
+                                        '        if o.status in ("Pending", "Postponed"):\n            pending.append(o)'),
+    "2B: held orders ignored in capacity": ("planning.py", "capacity=r.capacity - held_count.get(r.rider_id, 0),",
+                                            "capacity=r.capacity,"),
+    "2B: synthetic matrix accepted": ("planning.py", '    if not plan.provenance.get("real_road"):', "    if False:"),
+    "2B: unfinished runs not recovered": ("planning.py", "update(PlanningRun).where(PlanningRun.state.in_(ACTIVE_RUN_STATES))",
+                                          "update(PlanningRun).where(PlanningRun.state.in_(()))"),
+    # 2B correction pass: account deactivation and the commit-point lock
+    "2B: deactivation does not bump rounds": ("accounts.py", "            for round_id in invalidated:\n                bump_round_input(db, round_id)",
+                                              "            for round_id in invalidated:\n                pass"),
+    "2B: deactivation skips the participation recheck": ("accounts.py", "        if not now_rounds <= rounds:", "        if False:"),
+    "2B: capture without the account lock": ("planning.py", "        .with_for_update(read=True, of=User)\n", ""),
 }
+if len(sys.argv) > 3:
+    MUTANTS = {k: v for k, v in MUTANTS.items() if k.startswith(sys.argv[3])}
 
 killed = 0
 for name, (files, old, new, *mode) in MUTANTS.items():

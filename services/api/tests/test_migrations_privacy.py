@@ -12,7 +12,8 @@ from routewise_api.models import Base
 from .conftest import HEADER, PIN, alembic_config, reset_schema, upload, xlsx
 
 EXPECTED_TABLES = {"users", "riders", "sessions", "login_failures", "import_batches", "delivery_rounds",
-                   "orders", "assignments", "depots", "round_riders", "rider_endpoints", "alembic_version"}
+                   "orders", "assignments", "depots", "round_riders", "rider_endpoints", "planning_runs",
+                   "route_plans", "plan_routes", "plan_orders", "alembic_version"}
 
 
 def test_migrations_upgrade_downgrade_upgrade_and_match_models(db_url):
@@ -24,7 +25,7 @@ def test_migrations_upgrade_downgrade_upgrade_and_match_models(db_url):
     with eng.connect() as conn:
         diff = compare_metadata(MigrationContext.configure(conn, opts={"compare_type": True}), Base.metadata)
         assert diff == [], diff
-        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar_one() == "0002"
+        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar_one() == "0003"
         checks = {r[0] for r in conn.execute(text("SELECT conname FROM pg_constraint WHERE contype = 'c'"))}
         assert {"ck_orders_status", "ck_users_role", "ck_orders_resolved_has_coords"} <= checks
     command.downgrade(cfg, "base")

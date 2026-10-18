@@ -48,7 +48,7 @@ def validate_status(value: str) -> str:
     return value
 
 
-def order_view(o: Order, area: ServiceArea) -> dict:
+def order_view(o: Order, area: ServiceArea, assigned_rider_id=None) -> dict:
     return {
         "id": str(o.id),
         "order_code": o.order_code,
@@ -69,6 +69,11 @@ def order_view(o: Order, area: ServiceArea) -> dict:
         },
         "status": o.status,
         "version": o.version,
+        "planning": {
+            "locked_rider_id": str(o.locked_rider_id) if o.locked_rider_id else None,
+            "first_priority": o.first_priority,
+            "assigned_rider_id": str(assigned_rider_id) if assigned_rider_id else None,
+        },
     }
 
 

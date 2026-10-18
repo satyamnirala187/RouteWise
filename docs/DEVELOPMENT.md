@@ -1,4 +1,4 @@
-# Local development (Phase 1 and step 2A)
+# Local development (Phase 1, steps 2A and 2B)
 
 Everything runs on this Mac, at ₹0, with no admin rights, Docker or Homebrew. Secrets live only in the git-ignored `.env` at the repo root.
 
@@ -21,14 +21,20 @@ scripts/dev-db.sh init
 # 2. API
 cd services/api
 python3.14 -m venv .venv
-.venv/bin/python -m pip install -r requirements.lock
+.venv/bin/python -m pip install -r requirements.lock   # includes ortools 9.15.6755 and pyvalhalla 3.9.1 (2B)
 .venv/bin/alembic upgrade head
+
+# 2b. Local road routing (2B). Planning uses in-process Valhalla on locally built OpenStreetMap
+#     tiles; there is no fallback. Build them once (this needs spikes/routing/.venv-valhalla; see
+#     docs/phase0/VALHALLA-LOCAL.md); the API reads spikes/valhalla/data/valhalla_tiles by default.
+../../spikes/valhalla/build_tiles.sh            # or set ROUTEWISE_VALHALLA_TILES=/path/to/valhalla_tiles
 
 # 3. Users. No public sign-up: create accounts locally. The password is typed at a hidden prompt
 #    (or piped on stdin), never passed as an argument, never committed.
 .venv/bin/python -m routewise_api.cli create-user --username admin1 --role admin
 .venv/bin/python -m routewise_api.cli create-user --username rider1 --role rider --name "Rider One" --vehicle scooter
-#    later: set-password --username rider1 | deactivate --username rider1   (both end existing sessions)
+#    later: set-password --username rider1 | deactivate --username rider1   (both end existing sessions;
+#    deactivate also marks the plans of every round the rider participates in out of date)
 
 # 4. Web
 cd ../../apps/web
@@ -76,6 +82,25 @@ No optimizer exists yet. These endpoints store what Phase 2B will plan from. Eve
 | Rider | `POST /api/rider/rounds/{id}/confirm` | Confirm `{"config_version": n}`, the version shown; a changed setup returns 409 |
 
 The confirmation rules are in `services/api/routewise_api/riders.py` and [the step 2A report](phase2/STEP-2A-REPORT.md).
+
+## Planning (step 2B: API only, no screens yet)
+
+| Endpoint (admin) | Purpose |
+|---|---|
+| `PUT /api/admin/rounds/{id}/mode` | `equal`, `smart` (default) or `manual` |
+| `PUT /api/admin/orders/{id}/lock`, `POST /api/admin/rounds/{id}/locks` | Owner lock for one order, or all-or-nothing for many (manual assignment); `rider_id: null` clears |
+| `PUT /api/admin/orders/{id}/priority` | First delivery (Pending orders only) |
+| `POST /api/admin/rounds/{id}/optimize` | Validate, snapshot and queue a run → 202 with the run; coded 409/422/503 otherwise |
+| `GET /api/admin/planning-runs/{run_id}`, `GET /api/admin/rounds/{id}/planning-runs` | Run state, error code/details, timings |
+| `GET /api/admin/rounds/{id}/plan`, `…/plans`, `…/plans/{version}` | Current plan (with `out_of_date`), history, a past version |
+
+Local limits per run (`PlanningLimits` in `config.py`): 80 Pending orders, 8 riders, 100 road points, 30 s per solver strategy, 1 worker and 4 queued runs per API process. Run one API process per database: unfinished runs are marked `interrupted` when a process starts.
+
+```bash
+cd services/api
+ROUTEWISE_LIVE_TESTS=1 .venv/bin/python -m pytest -q -m live tests/test_planning_live.py   # API planning run on the real local tiles
+.venv/bin/python tools/benchmark_planning.py                                                # local timing benchmark → docs/phase2/evidence/
+```
 
 ## Database
 
