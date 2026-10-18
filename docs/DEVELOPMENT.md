@@ -1,4 +1,4 @@
-# Local development (Phase 1 and Phase 2 steps 2A–2C)
+# Local development (Phase 1, Phase 2 and Phase 3 step 3A)
 
 Everything runs on this Mac, at ₹0, with no admin rights, Docker or Homebrew. Secrets live only in the git-ignored `.env` at the repo root.
 
@@ -50,7 +50,7 @@ cd services/api && .venv/bin/uvicorn --factory routewise_api.main:get_app --host
 cd apps/web && npx vite                     # http://localhost:5173 (proxies /api to :8000)
 ```
 
-Open http://localhost:5173 and sign in. Admins land on **Orders**; the menu also has **Round setup**, **Plan**, **Import** and **Office & riders**. The selected round travels in the URL (`?round=`), never in browser storage. Riders land on their page: **My rounds** (choose, save, then confirm a destination for each round they take part in) and **My deliveries**.
+Open http://localhost:5173 and sign in. Admins land on **Orders**; the menu also has **Round setup**, **Plan**, **Import** and **Office & riders**. The selected round travels in the URL (`?round=`), never in browser storage. Riders land on **My deliveries**, one round at a time (`?round=`): the destination card for that round (choose, save, then confirm), then their own deliveries in the saved route order with Call and Navigate links (3A).
 
 A plan needs the local Valhalla tiles (step 2b above). Without them, Optimize reports `ROUTING_ENGINE_UNAVAILABLE`; there is no fallback.
 
@@ -63,12 +63,12 @@ cd services/api && .venv/bin/python -m pytest -q             # API: real Postgre
 cd apps/web && npm run typecheck && npx vitest run            # frontend type checks + unit tests
 E2E_SHOTS_DIR=/tmp/rw-shots scripts/e2e.sh                     # Playwright, desktop + mobile, isolated routewise_e2e DB (Phase 1 + Phase 2 specs)
 ROUTEWISE_E2E_LIVE=1 E2E_SHOTS_DIR=/tmp/rw-shots scripts/e2e.sh e2e/phase2-live.spec.ts   # opt-in: browser planning on the real local tiles
-python3 scripts/web_defect_check.py /tmp/rw-webmut            # optional: targeted 2C defect checks on a scratch copy of apps/web
+python3 scripts/web_defect_check.py /tmp/rw-webmut            # optional: targeted 2C/3A defect checks on a scratch copy of apps/web
 cd spikes/routing && .venv/bin/python -m pytest -q            # Phase 0 routing regression
 python3 services/api/tools/mutation_check.py <copy of services/api> services/api/.venv/bin/python   # optional
 ```
 
-Browser tests plan with the **recorded** real local-Valhalla DU matrices: `services/api/scripts/e2e_app.py` (used only by `playwright.config.ts`) injects them through the test-only seam, and every plan shown says "Recorded real-road distances". It also offers a hold file (`.local/e2e/hold-solve`) so a test can change input while a run is in progress. `ROUTEWISE_E2E_LIVE=1` uses the real tiles instead. Without `E2E_SHOTS_DIR`, the Phase 1 spec rewrites the accepted `docs/phase1/screenshots/`; the Phase 2 spec writes to `docs/phase2/screenshots/2c/` (override with `E2E_2C_SHOTS_DIR`).
+Browser tests plan with the **recorded** real local-Valhalla DU matrices: `services/api/scripts/e2e_app.py` (used only by `playwright.config.ts`) injects them through the test-only seam, and every plan shown says "Recorded real-road distances". It also offers a hold file (`.local/e2e/hold-solve`) so a test can change input while a run is in progress. `ROUTEWISE_E2E_LIVE=1` uses the real tiles instead. Without `E2E_SHOTS_DIR`, the Phase 1 spec rewrites the accepted `docs/phase1/screenshots/`; the Phase 2 spec writes to `docs/phase2/screenshots/2c/` (override with `E2E_2C_SHOTS_DIR`) and the Phase 3 spec to `docs/phase3/screenshots/3a/` (override with `E2E_3A_SHOTS_DIR`). To keep accepted screenshots untouched, point all three at a scratch directory.
 
 The mutation check rewrites files, so run it on a copy laid out as `<dir>/services/api`, with `<dir>/.env` and `<dir>/tests/fixtures` linked to the real ones: the code finds both relative to the package. It uses the same test database, so don't run the API suite at the same time.
 
@@ -106,6 +106,15 @@ cd services/api
 ROUTEWISE_LIVE_TESTS=1 .venv/bin/python -m pytest -q -m live tests/test_planning_live.py   # API planning run on the real local tiles
 .venv/bin/python tools/benchmark_planning.py                                                # local timing benchmark → docs/phase2/evidence/
 ```
+
+## Rider delivery view (step 3A, read-only)
+
+| Endpoint (rider) | Purpose |
+|---|---|
+| `GET /api/rider/delivery-rounds` | Rounds the rider takes part in or holds orders in, newest first, with own Pending/Postponed/Completed counts |
+| `GET /api/rider/rounds/{id}/deliveries` | Own orders in that round: Pending orders in the **current** plan's stop order (`sequence`), Pending orders outside it (`unsequenced`), `postponed`, `completed`; the plan's version, `out_of_date` and own route; own start/destination by kind and depot label only. A round the rider neither takes part in nor holds orders in is a 404 |
+
+Each order carries only name, product, contact (as stored), instructions, status and `location`, which is present only for a resolved pin inside the service area (otherwise `location_issue` says why). The web app builds `tel:` and Google Maps directions links from these in `apps/web/src/links.ts` (format: <https://developers.google.com/maps/documentation/urls/get-started#directions-action>); nothing opens without a tap, and the device location is never requested.
 
 ## Database
 

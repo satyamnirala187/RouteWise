@@ -10,13 +10,19 @@ Copied on 12 October 2026 from the RouteWise development package. The copies are
 - [Mac setup](source/development/MAC-SETUP.md) · [Kickoff](source/development/KICKOFF.md)
 - Tracker CSVs: [Phases](source/notion/RouteWise/Phases.csv), [Tasks](source/notion/RouteWise/Tasks.csv), [Acceptance cases](source/notion/RouteWise/Acceptance-Cases.csv), [Decisions](source/notion/RouteWise/Decisions.csv)
 
-## Phase 2 (in progress, not complete)
+## Phase 3 (in progress, not complete)
+
+- [Step 3A report](phase3/STEP-3A-REPORT.md): rider delivery view, call and Google Maps navigation links (read-only). Committed (after `41b37f8`), **awaiting owner review**; real-phone checks not done; 3B (status updates) not started
+
+## Phase 2 (accepted 19 Oct 2026 for local development, `41b37f8`)
+
+- [Owner acceptance record](phase2/OWNER-ACCEPTANCE-2026-10-19.md)
 
 - [Implementation plan: steps 2A, 2B, 2C](phase2/IMPLEMENTATION-PLAN.md)
 - [Step 2A report](phase2/STEP-2A-REPORT.md): rider setup, depots, destinations, confirmations, readiness. Committed (`13de782`)
 - [Step 2B report](phase2/STEP-2B-REPORT.md): local Valhalla + OR-Tools planning, runs, versioned plans. Committed (`9c0db08`)
 - [Step 2C report](phase2/STEP-2C-REPORT.md): configuration and planning screens, rider destination card, browser verification, with its correction pass. Committed (after `9c0db08`)
-- [Phase 2 report](phase2/PHASE2-REPORT.md): requirement-to-evidence checklist. **Awaiting final owner review**; not approved
+- [Phase 2 report](phase2/PHASE2-REPORT.md): requirement-to-evidence checklist (written before the approval)
 
 ## Phase 1 (accepted 13 Oct 2026 for local development, `fcac55e`)
 

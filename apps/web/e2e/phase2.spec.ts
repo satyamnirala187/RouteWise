@@ -142,6 +142,7 @@ test("full round: import, mixed fleet from both starts, rider confirmations, sma
   for (const [user, kind, at] of riders) {
     const rp = await newPage(browser);
     await signIn(rp, user);
+    await gotoRound(rp, "/rider", rid);  // one round at a time since 3A
     const c = card(rp, rid);
     await expect(c.getByTestId("confirmation")).toHaveText("Not confirmed");
     await expect(c.getByTestId("setup-summary")).toContainText(user === "p2_bilal" ? "Motorbike" : "Scooter");
@@ -334,6 +335,7 @@ test("a destination change during a solve rejects the result and keeps the previ
 
   const rp = await newPage(browser);
   await signIn(rp, "p2_chitra");
+  await gotoRound(rp, "/rider", rid);  // one round at a time since 3A
   const c = await chooseDestination(rp, rid, /^Warehouse/);
   await expect(c.getByTestId("confirmation")).toHaveText("Outdated — must confirm again");
   hold(false);
@@ -396,6 +398,7 @@ test("a configuration change after planning marks the plan out of date; stale ed
 
   const rp = await newPage(browser);
   await signIn(rp, "p2_asha");
+  await gotoRound(rp, "/rider", rid);  // one round at a time since 3A
   await expect(card(rp, rid).getByTestId("confirmation-text")).toContainText("Your setup changed after you confirmed it");
   await expect(card(rp, rid).getByTestId("setup-summary")).toContainText("6 orders");
   await shotOf(card(rp, rid), "20-rider-outdated");
@@ -567,6 +570,7 @@ test("readiness refresh shows riders' confirmations from other sessions; late re
   // The rider confirms in their own session; the admin page does not poll while idle.
   const rp = await newPage(browser);
   await signIn(rp, "p2_asha");
+  await gotoRound(rp, "/rider", a);  // since 3A the rider page shows one round at a time (Asha is in a and b)
   await expect(card(rp, a).getByTestId("confirmation")).toHaveText("Not confirmed");
   await card(rp, a).getByRole("button", { name: "Confirm this setup" }).click();
   await expect(card(rp, a).getByTestId("confirmation")).toHaveText("Confirmed");

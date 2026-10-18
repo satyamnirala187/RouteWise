@@ -1,5 +1,7 @@
 # Phase 2 implementation plan — routing and multi-rider constraints
 
+> **Update 19 October 2026:** the owner approved Phase 2 **for local development** at `41b37f8` ([record](OWNER-ACCEPTANCE-2026-10-19.md)). Not production readiness; the pending decisions and limitations below stay open. The text below is kept as written before the approval.
+
 **Date:** 17 October 2026 · **Prepared by:** Claude Code · **Status: steps 2A (`13de782`) and 2B (`9c0db08`) committed; step 2C committed; Phase 2 awaiting final owner review** ([2A](STEP-2A-REPORT.md), [2B](STEP-2B-REPORT.md), [2C](STEP-2C-REPORT.md), [Phase 2 report](PHASE2-REPORT.md)). Phase 2 is not complete or approved.
 
 **Baseline:** Phase 1 accepted for local development on 13 October 2026 at `fcac55e` ([record](../phase1/OWNER-ACCEPTANCE-2026-10-13.md)); Phase 0 accepted at `2a34226` ([record](../phase0/OWNER-ACCEPTANCE-2026-10-13.md)) with decisions D04–D10. Scope: [01-Product](../source/notion/RouteWise/01-Product.md) R07–R13 and R19, roadmap [Phase 2](../source/notion/RouteWise/04-Roadmap.md), tasks P2-01…P2-05, acceptance cases A12–A14.

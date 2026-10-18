@@ -1,0 +1,11 @@
+# Step 3A: targeted backend defect checks (19 Oct 2026 02:00 IST); 3A mutants only, earlier phases not repeated
+$ python services/api/tools/mutation_check.py <scratch copy of services/api> services/api/.venv/bin/python "3A:"
+KILLED: 3A: deliveries ignore ownership
+KILLED: 3A: another rider's round reachable
+KILLED: 3A: superseded plan used
+KILLED: 3A: other riders' plan rows sequenced
+KILLED: 3A: unusable location navigable
+KILLED: 3A: out-of-date plan not reported
+KILLED: 3A: Postponed kept in the route
+KILLED: 3A: private destination coordinates in the view
+8/8 killed

@@ -1,8 +1,8 @@
-"""Phase 1, 2A and 2B mutation check: inject known security/correctness defects into a scratch copy of
+"""Phase 1, 2A, 2B and 3A mutation check: inject known security/correctness defects into a scratch copy of
 services/api and confirm the test suite fails for each.
 
 Usage: python tools/mutation_check.py <scratch copy of services/api> <python with API deps> [name prefix]
-With a prefix (e.g. "2B:") only the matching targeted mutants run.
+With a prefix (e.g. "2B:" or "3A:") only the matching targeted mutants run.
 Never run against the working tree: it rewrites source files in the given copy.
 The copy must have the same .env access as the real tree (tests use TEST_DATABASE_URL).
 """
@@ -97,6 +97,22 @@ MUTANTS = {
                                               "            for round_id in invalidated:\n                pass"),
     "2B: deactivation skips the participation recheck": ("accounts.py", "        if not now_rounds <= rounds:", "        if False:"),
     "2B: capture without the account lock": ("planning.py", "        .with_for_update(read=True, of=User)\n", ""),
+    # Phase 3A: the rider's read-only delivery view (run with the "3A:" prefix)
+    "3A: deliveries ignore ownership": ("routers/rider.py", ".where(Assignment.rider_id == me, Order.round_id == round_id)",
+                                        ".where(Order.round_id == round_id)"),
+    "3A: another rider's round reachable": ("routers/rider.py", "    if rnd is None or not (joined or orders):", "    if rnd is None:"),
+    "3A: superseded plan used": ("routers/rider.py", "select(RoutePlan).where(RoutePlan.round_id == round_id, RoutePlan.is_current.is_(True)))",
+                                 "select(RoutePlan).where(RoutePlan.round_id == round_id).order_by(RoutePlan.version))"),
+    "3A: other riders' plan rows sequenced": ("routers/rider.py", "PlanOrder.plan_id == plan.id, PlanOrder.rider_id == me,",
+                                              "PlanOrder.plan_id == plan.id,"),
+    "3A: unusable location navigable": ("routers/rider.py", " and o.lng is not None and area.contains(o.lat, o.lng)", " and o.lng is not None"),
+    "3A: out-of-date plan not reported": ("routers/rider.py", '"out_of_date": plan.input_version != rnd.input_version, "superseded_versions"',
+                                          '"out_of_date": False, "superseded_versions"'),
+    "3A: Postponed kept in the route": ("routers/rider.py", '        if o.status == "Postponed":\n            postponed.append(item)',
+                                        '        if False:\n            postponed.append(item)'),
+    "3A: private destination coordinates in the view": (
+        "routers/rider.py", '"destination": _place(endpoint.kind if endpoint else None, depots),',
+        '"destination": {"kind": endpoint.kind, "lat": endpoint.lat, "lng": endpoint.lng} if endpoint else None,'),
 }
 if len(sys.argv) > 3:
     MUTANTS = {k: v for k, v in MUTANTS.items() if k.startswith(sys.argv[3])}

@@ -1,0 +1,10 @@
+# Step 3A: targeted web defect checks (19 Oct 2026 02:01 IST); 3A checks only, the 15 earlier 2C checks not repeated
+$ python3 scripts/web_defect_check.py <scratch dir> "3A:"
+KILLED: 3A: dial link from an unvalidated contact  [ Test Files  1 failed | 2 passed (3) /       Tests  1 failed | 16 passed (17)]
+KILLED: 3A: dial link for too few digits  [    Error: expect(locator).toHaveCount(expected) failed /   1 failed]
+KILLED: 3A: navigation link without a usable location  [    Error: expect(locator).toHaveCount(expected) failed /   1 failed]
+KILLED: 3A: out-of-date warning hidden  [    Error: expect(locator).toContainText(expected) failed /   1 failed]
+KILLED: 3A: saved order presented as a fresh route  [    Error: expect(locator).toBeVisible() failed /   1 failed]
+KILLED: 3A: Completed orders get call and navigation  [    Error: expect(locator).toHaveCount(expected) failed /   1 failed]
+KILLED: 3A: late response for another round shown  [    Error: expect(locator).toHaveAttribute(expected) failed /   1 failed]
+7/7 killed

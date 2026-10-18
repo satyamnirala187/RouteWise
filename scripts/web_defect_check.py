@@ -1,5 +1,6 @@
-"""Step 2C targeted defect checks for the web app: inject one known defect at a time into a
-scratch copy of apps/web and confirm the named browser tests fail. Not an exhaustive run.
+"""Step 2C and 3A targeted defect checks for the web app: inject one known defect at a time into
+a scratch copy of apps/web and confirm the named tests fail (browser tests filtered by title, or
+the vitest unit tests when the filter is "vitest"). Not an exhaustive run.
 
     python3 scripts/web_defect_check.py <empty scratch dir> [name prefix]
 
@@ -46,6 +47,27 @@ MUTANTS = {
         "      setConflict(false); onReload();\n    } finally {\n      setBusy(false);\n    }\n  }\n\n  function save", "configuration change after planning"),
     "owner lock shown as assignment": (
         "src/pages/OrdersPage.tsx", "      {p.assigned_rider_id && (", "      {(p.assigned_rider_id || p.locked_rider_id) && (", "equal and manual"),
+    # Step 3A: the rider's delivery view (e2e/phase3.spec.ts and src/links.test.ts).
+    "3A: dial link from an unvalidated contact": (
+        "src/links.ts", '  if (!CONTACT_CHARS.test(s) || s.lastIndexOf("+") > 0) {', "  if (false) {", "vitest"),
+    "3A: dial link for too few digits": (
+        "src/links.ts", "  if (digits.length < 7 || digits.length > 15 || /^0+$/.test(digits)) {", "  if (!digits) {", "safe call and navigation"),
+    "3A: navigation link without a usable location": (
+        "src/links.ts", "  if (!location) return { href: null, issue: fallback };",
+        '  if (!location) return { href: "https://www.google.com/maps/", issue: null };', "unusable locations"),
+    "3A: out-of-date warning hidden": (
+        "src/components/DeliveryView.tsx", "            {plan.out_of_date && (", "            {false && (", "unusable locations"),
+    "3A: saved order presented as a fresh route": (
+        "src/components/DeliveryView.tsx", 'title={plan?.out_of_date ? "Pending deliveries — saved order (out of date)" : "Pending deliveries in route order"}',
+        'title="Pending deliveries in route order"', "unusable locations"),
+    "3A: Completed orders get call and navigation": (
+        "src/components/DeliveryView.tsx", "      {!done && (", "      {true && (", "unusable locations"),
+    "3A: late response for another round shown": (
+        "src/pages/RiderPage.tsx",
+        ("    viewAc.current?.abort();\n    const ac", "if (!ac.signal.aborted && current.current === id) { setView(v)",
+         "    return () => { viewAc.current?.abort(); viewAc.current = null; };", "{view && view.round_id === roundId ?"),
+        ("    const ac", "if (true) { setView(v)", "    return () => { viewAc.current = null; };", "{view ?"),
+        "switching rounds"),
     # 2C correction pass: readiness refresh and serialized mode changes.
     "no Refresh readiness action": (
         "src/pages/PlanPage.tsx", "onClick={() => roundId && refresh(roundId)}", "onClick={() => undefined}", "readiness refresh"),
@@ -81,7 +103,8 @@ def main() -> int:
         link = scratch / name
         if not link.exists():
             link.symlink_to(ROOT / name)
-    env = {**os.environ, "E2E_SHOTS_DIR": str(scratch / "shots1"), "E2E_2C_SHOTS_DIR": str(scratch / "shots2c")}
+    env = {**os.environ, "E2E_SHOTS_DIR": str(scratch / "shots1"), "E2E_2C_SHOTS_DIR": str(scratch / "shots2c"),
+           "E2E_3A_SHOTS_DIR": str(scratch / "shots3a")}
     killed = total = 0
     for name, (rel, old, new, grep) in MUTANTS.items():
         if not name.startswith(only):
@@ -98,12 +121,14 @@ def main() -> int:
                             f'"{ROOT}/scripts/dev-db.sh" create-db routewise_e2e >/dev/null && '
                             f'export E2E_STATE="$("{ROOT}/services/api/.venv/bin/python" "{ROOT}/services/api/scripts/e2e_setup.py")" && '
                             f'export E2E_DATABASE_URL="$(python3 -c \'import json,sys; print(json.load(open(sys.argv[1]))["database_url"])\' "$E2E_STATE")" && '
-                            f'rm -f "{ROOT}/.local/e2e/hold-solve" && npx playwright test e2e/phase2.spec.ts --project desktop -g "{grep}"'],
+                            f'rm -f "{ROOT}/.local/e2e/hold-solve" && ' + (
+                                "npx vitest run" if grep == "vitest" else
+                                f'npx playwright test e2e/phase2.spec.ts e2e/phase3.spec.ts --project desktop -g "{grep}"')],
                            env=env, capture_output=True, text=True)
         path.write_text(orig)
         status = "KILLED" if r.returncode else "SURVIVED"
         killed += r.returncode != 0
-        tail = [ln for ln in r.stdout.splitlines() if "passed" in ln or "failed" in ln]
+        tail = [ln for ln in r.stdout.splitlines() if "passed" in ln or "failed" in ln or "Tests" in ln]
         print(f"{status}: {name}  [{' / '.join(tail[-2:])}]", flush=True)
     print(f"{killed}/{total} killed")
     return 0

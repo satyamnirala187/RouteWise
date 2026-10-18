@@ -1,0 +1,15 @@
+# Step 3A: web unit tests (19 Oct 2026 01:43 IST)
+$ npm test
+
+> routewise-web@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.2 <repo>/apps/web
+
+
+ Test Files  3 passed (3)
+      Tests  17 passed (17)
+   Start at  01:43:41
+   Duration  834ms (environment 91%, transform 6%, import 1%, tests 1%)
+

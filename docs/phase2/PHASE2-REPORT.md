@@ -1,5 +1,7 @@
 # Phase 2 report: routing and multi-rider constraints
 
+> **Update 19 October 2026:** the owner approved Phase 2 **for local development** at `41b37f8` ([record](OWNER-ACCEPTANCE-2026-10-19.md)). Not production readiness; the pending decisions and limitations below stay open. The text below is kept as written before the approval.
+
 **Date:** 18 October 2026; 2C correction pass 19 October 2026 · **Prepared by:** Claude Code · **Status: all three steps implemented, including the 2C correction pass; Phase 2 awaiting the owner's final review.** It is **not** owner-approved or complete. Nothing is deployed (a private GitHub repository for the history was authorized by the owner on 19 October 2026); ₹0 spent; Notion not accessed (the tracker changes proposed in section 6 are for a human to apply after approval).
 
 **Scope baseline:** [01-Product](../source/notion/RouteWise/01-Product.md) R07–R13 and R19 (R24 for privacy), [roadmap Phase 2](../source/notion/RouteWise/04-Roadmap.md), acceptance cases A12–A14, and [the Phase 2 plan](IMPLEMENTATION-PLAN.md). Delivery area: DU North Campus, Delhi. Routing: self-hosted local Valhalla only.

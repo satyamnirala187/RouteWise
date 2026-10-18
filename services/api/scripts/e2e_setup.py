@@ -9,6 +9,8 @@ Phase 2 (step 2C spec): four more synthetic riders (two scooters, two bikes) and
 whose synthetic customers sit exactly on public DU North Campus OSM points from
 tests/fixtures/public_locations_du_north.json, so the recorded real-road matrices cover them.
 Office, Warehouse and destinations are not seeded: the browser tests set them through the UI.
+
+Phase 3 (step 3A spec): one more synthetic rider who is never added to a round (empty state).
 """
 
 from __future__ import annotations
@@ -38,6 +40,7 @@ PHASE2_RIDERS = {  # username: (display name, default vehicle); synthetic
     "p2_chitra": ("Chitra", "scooter"),
     "p2_dev": ("Dev", "bike"),
 }
+PHASE3_RIDERS = {"p3_nia": ("Nia", "scooter")}  # synthetic; never added to a round
 PHASE2_POINTS = ["kirori_mal", "hansraj", "hindu_college", "st_stephens", "miranda_house", "ramjas", "srcc",
                  "daulat_ram"]
 
@@ -53,7 +56,7 @@ def main() -> int:
     cfg.cmd_opts = type("o", (), {"x": [f"url={url}"]})()
     command.upgrade(cfg, "head")
 
-    creds = {name: secrets.token_urlsafe(18) for name in ("admin_e2e", "rider_a_e2e", "rider_b_e2e", *PHASE2_RIDERS)}
+    creds = {name: secrets.token_urlsafe(18) for name in ("admin_e2e", "rider_a_e2e", "rider_b_e2e", *PHASE2_RIDERS, *PHASE3_RIDERS)}
     with Session(eng) as db:
         users = {}
         for name, pw in creds.items():
@@ -61,8 +64,8 @@ def main() -> int:
             db.add(u)
             db.flush()
             users[name] = u
-            if name in PHASE2_RIDERS:
-                display, vehicle = PHASE2_RIDERS[name]
+            if name in PHASE2_RIDERS or name in PHASE3_RIDERS:
+                display, vehicle = {**PHASE2_RIDERS, **PHASE3_RIDERS}[name]
                 db.add(Rider(user_id=u.id, display_name=display, vehicle=vehicle))
             elif u.role == "rider":
                 db.add(Rider(user_id=u.id, display_name="Rider A" if "_a_" in name else "Rider B", vehicle="scooter"))

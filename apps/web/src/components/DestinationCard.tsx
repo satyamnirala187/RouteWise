@@ -18,8 +18,9 @@ const STATE_TEXT = {
 
 /** One round's setup for the signed-in rider: choose a destination, save it, then confirm the
  * whole setup version shown. Coordinates stay in component state only. */
-export default function DestinationCard({ roundId, roundName, onUnauthorized }: {
+export default function DestinationCard({ roundId, roundName, onUnauthorized, onChanged }: {
   roundId: string; roundName: string; onUnauthorized: () => void;
+  onChanged?: () => void;  // after a save, confirm or reload, e.g. to refresh the delivery view
 }) {
   const [setup, setSetup] = useState<RiderSetup | null>(null);
   const [kind, setKind] = useState<DestinationKind | "">("");
@@ -52,10 +53,12 @@ export default function DestinationCard({ roundId, roundName, onUnauthorized }: 
     setBusy(true); setNote(null);
     try {
       await fn();
+      onChanged?.();
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) return onUnauthorized();
       if (e instanceof ApiError && e.code === "configuration_changed") {
         await load().catch(() => undefined);  // show the current version before asking again
+        onChanged?.();
         return setNote({ kind: "warn", text: e.message });
       }
       setNote({ kind: "error", text: e instanceof ApiError ? e.message : "Something went wrong.", details: e instanceof ApiError ? e.details : [] });

@@ -249,14 +249,27 @@ export interface ImportPreview {
   rows: PreviewRow[];
 }
 
-export interface RiderOrder {
-  id: string;
-  order_code: string;
-  customer_name: string;
-  product: string;
-  contact: string;
-  instructions: string | null;
-  lat: number | null;
-  lng: number | null;
-  status: Status;
+/** Phase 3A delivery view (`/api/rider/delivery-rounds`, `/api/rider/rounds/{id}/deliveries`). */
+export interface DeliveryRoundSummary {
+  round_id: string; round_name: string; participating: boolean; confirmation: ConfirmationState | null;
+  has_plan: boolean; orders: { pending: number; postponed: number; completed: number };
+}
+export interface DeliveryItem {
+  id: string; order_code: string; customer_name: string; product: string; contact: string;
+  instructions: string | null; status: Status;
+  location: { lat: number; lng: number } | null;  // only a resolved pin inside the service area
+  location_issue: string | null;
+}
+export interface DeliveryPlace { kind: DestinationKind; label: string | null; }
+export interface DeliveryView {
+  round_id: string; round_name: string; participating: boolean;
+  setup: { start: DeliveryPlace; destination: DeliveryPlace | null; vehicle: Vehicle; confirmation: ConfirmationState } | null;
+  plan: {
+    version: number; is_current: true; created_at: string; out_of_date: boolean; superseded_versions: number;
+    real_road: boolean; recorded: boolean;
+    route: { vehicle: Vehicle; start: DeliveryPlace; destination: DeliveryPlace; open_route: boolean;
+             road_distance_m: number; road_duration_s: number } | null;
+  } | null;
+  sequence: { seq: number; orders: DeliveryItem[] }[];
+  unsequenced: DeliveryItem[]; postponed: DeliveryItem[]; completed: DeliveryItem[];
 }
