@@ -206,7 +206,10 @@ export interface Provenance {
   notes?: string; solver_status?: string; solver_strategy?: string; [k: string]: unknown;
 }
 export interface Plan {
-  id: string; round_id: string; version: number; is_current: boolean; out_of_date: boolean; input_version: number;
+  id: string; round_id: string; version: number; is_current: boolean; input_version: number;
+  out_of_date: boolean;           // the saved routes are no longer usable (3B: not set by riders' delivery progress)
+  progress_since_plan: boolean;   // only riders' delivery progress since the plan; the remaining sequence is valid
+  unplanned_pending: string[];    // Pending orders the current plan does not route (e.g. returned from Postponed)
   mode: Mode; created_at: string; run_id: string; superseded_at: string | null; distance_label: string;
   provenance: Provenance; warnings: string[];
   summary: {
@@ -218,7 +221,7 @@ export interface Plan {
   routes: PlanRoute[]; attribution: string;
 }
 export interface PlanVersion {
-  version: number; is_current: boolean; out_of_date: boolean; mode: Mode; created_at: string;
+  version: number; is_current: boolean; out_of_date: boolean; progress_since_plan: boolean; mode: Mode; created_at: string;
   superseded_at: string | null; total_road_distance_m: number | null; planned_orders: number | null;
 }
 
@@ -257,6 +260,7 @@ export interface DeliveryRoundSummary {
 export interface DeliveryItem {
   id: string; order_code: string; customer_name: string; product: string; contact: string;
   instructions: string | null; status: Status;
+  version: number;  // sent back with a status update (3B)
   location: { lat: number; lng: number } | null;  // only a resolved pin inside the service area
   location_issue: string | null;
 }
@@ -265,7 +269,8 @@ export interface DeliveryView {
   round_id: string; round_name: string; participating: boolean;
   setup: { start: DeliveryPlace; destination: DeliveryPlace | null; vehicle: Vehicle; confirmation: ConfirmationState } | null;
   plan: {
-    version: number; is_current: true; created_at: string; out_of_date: boolean; superseded_versions: number;
+    version: number; is_current: true; created_at: string; out_of_date: boolean; progress_since_plan: boolean;
+    superseded_versions: number;
     real_road: boolean; recorded: boolean;
     route: { vehicle: Vehicle; start: DeliveryPlace; destination: DeliveryPlace; open_route: boolean;
              road_distance_m: number; road_duration_s: number } | null;
@@ -273,3 +278,5 @@ export interface DeliveryView {
   sequence: { seq: number; orders: DeliveryItem[] }[];
   unsequenced: DeliveryItem[]; postponed: DeliveryItem[]; completed: DeliveryItem[];
 }
+/** `POST /api/rider/orders/{id}/status` (3B). */
+export interface StatusResult { changed: boolean; order: DeliveryItem; view: DeliveryView; }

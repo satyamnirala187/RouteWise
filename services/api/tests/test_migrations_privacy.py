@@ -25,7 +25,7 @@ def test_migrations_upgrade_downgrade_upgrade_and_match_models(db_url):
     with eng.connect() as conn:
         diff = compare_metadata(MigrationContext.configure(conn, opts={"compare_type": True}), Base.metadata)
         assert diff == [], diff
-        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar_one() == "0003"
+        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar_one() == "0004"
         checks = {r[0] for r in conn.execute(text("SELECT conname FROM pg_constraint WHERE contype = 'c'"))}
         assert {"ck_orders_status", "ck_users_role", "ck_orders_resolved_has_coords"} <= checks
     command.downgrade(cfg, "base")

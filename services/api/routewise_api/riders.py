@@ -56,9 +56,15 @@ def lock_round_rider(db: DBSession, round_id: uuid.UUID, rider_id: uuid.UUID) ->
     return db.get(RoundRider, (round_id, rider_id), with_for_update=True, populate_existing=True)
 
 
-def bump_round_input(db: DBSession, round_id: uuid.UUID) -> None:
-    db.execute(update(DeliveryRound).where(DeliveryRound.id == round_id)
-               .values(input_version=DeliveryRound.input_version + 1))
+def bump_round_input(db: DBSession, round_id: uuid.UUID, *, route: bool = True) -> None:
+    """Record a planning-input change: `input_version` always (so any in-flight solve becomes
+    stale), and `route_version` too unless the change is a rider's own delivery progress
+    (`route=False`, used only by the rider status endpoint), which leaves the remaining saved
+    sequence usable. Every other change keeps marking the saved plan out of date."""
+    values = {"input_version": DeliveryRound.input_version + 1}
+    if route:
+        values["route_version"] = DeliveryRound.route_version + 1
+    db.execute(update(DeliveryRound).where(DeliveryRound.id == round_id).values(**values))
 
 
 def bump_config(db: DBSession, rr: RoundRider, now: datetime, *, bump_round: bool = True) -> None:

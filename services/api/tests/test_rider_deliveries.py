@@ -15,8 +15,8 @@ from .planning_world import PUBLIC_DU, add_orders, plan_now, world  # noqa: F401
 from .test_planning import PRIVATE, routes, set_status
 from .test_round_setup import choose, confirm, put_rider
 
-ITEM_FIELDS = {"id", "order_code", "customer_name", "product", "contact", "instructions", "status", "location",
-               "location_issue"}
+ITEM_FIELDS = {"id", "order_code", "customer_name", "product", "contact", "instructions", "status", "version",
+               "location", "location_issue"}  # version since 3B: status updates send the version they were shown
 
 
 def deliveries(b, rid):
@@ -46,7 +46,7 @@ def test_each_rider_sees_their_current_plan_sequence_and_nothing_else(world):
         mine = {o["order_code"] for o in all_items(view)}
         assert mine == set(expected) and not (mine & (everyone - set(expected)))
         for item in all_items(view):
-            assert set(item) == ITEM_FIELDS  # no source rows, links, notes, locks or versions
+            assert set(item) == ITEM_FIELDS  # no source rows, links, notes, locks or priority flags
             place = PUBLIC_DU[w.codes[item["order_code"]]]
             assert item["location"] == {"lat": place["lat"], "lng": place["lng"]} and item["location_issue"] is None
             assert item["status"] == "Pending" and item["customer_name"].startswith("Test Customer P")

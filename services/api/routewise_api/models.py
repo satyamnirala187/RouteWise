@@ -121,11 +121,18 @@ class DeliveryRound(Base):
 
     `input_version` increases with every change to the round's planning input (rider
     configuration, destinations, confirmations, referenced depot coordinates, order pins and
-    statuses). Phase 2B compares it before committing a plan, so stale output cannot win."""
+    statuses). Phase 2B compares it before committing a plan, so stale output cannot win.
+
+    `route_version` (3B) increases with the same changes EXCEPT a rider's own delivery progress
+    (Pending → Completed / Postponed, Postponed → Pending through the rider endpoint). A saved
+    plan records it; the plan is out of date (not usable as a route) when they differ. Delivery
+    progress therefore still makes any in-flight solve stale (`input_version`) without marking
+    every rider's remaining saved sequence out of date."""
 
     __tablename__ = "delivery_rounds"
     __table_args__ = (
         CheckConstraint("input_version >= 1", name="ck_rounds_input_version"),
+        CheckConstraint("route_version >= 1", name="ck_rounds_route_version"),
         CheckConstraint("mode IN ('equal','smart','manual')", name="ck_rounds_mode"),
     )
 
@@ -134,6 +141,7 @@ class DeliveryRound(Base):
     created_by: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
     created_at: Mapped[datetime] = _ts()
     input_version: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("1"))
+    route_version: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("1"))
     mode: Mapped[str] = mapped_column(String(16), nullable=False, server_default=text("'smart'"))
 
 
@@ -312,6 +320,7 @@ class RoutePlan(Base):
         UniqueConstraint("round_id", "version", name="uq_route_plans_round_version"),
         CheckConstraint("version >= 1", name="ck_route_plans_version"),
         CheckConstraint("mode IN ('equal','smart','manual')", name="ck_route_plans_mode"),
+        CheckConstraint("route_version >= 1", name="ck_route_plans_route_version"),
         Index("uq_route_plans_one_current", "round_id", unique=True, postgresql_where=text("is_current")),
     )
 
@@ -324,6 +333,7 @@ class RoutePlan(Base):
     mode: Mapped[str] = mapped_column(String(16), nullable=False)
     input_version: Mapped[int] = mapped_column(Integer, nullable=False)
     input_fingerprint: Mapped[str] = mapped_column(String(64), nullable=False)
+    route_version: Mapped[int] = mapped_column(Integer, nullable=False)  # the round's route_version at commit
     distance_label: Mapped[str] = mapped_column(String(300), nullable=False)
     provenance: Mapped[dict] = mapped_column(JSONB, nullable=False)  # provider, profiles, real_road, recorded, solver; no coordinates
     warnings: Mapped[list] = mapped_column(JSONB, nullable=False)

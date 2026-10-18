@@ -295,6 +295,7 @@ export default function PlanPage({ onUnauthorized }: { onUnauthorized: () => voi
                     <span className="text-slate-600">{new Date(v.created_at).toLocaleString()} · {v.mode} · {v.planned_orders ?? 0} orders · {v.total_road_distance_m != null ? km(v.total_road_distance_m) : "—"}</span>
                     {v.is_current && <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-900">Current</span>}
                     {v.out_of_date && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900">Out of date</span>}
+                    {v.progress_since_plan && <span className="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-semibold text-sky-900">Deliveries updated</span>}
                     <button type="button" className={`${secondaryButton} ml-auto`} onClick={() => view(v.version)}
                       aria-label={`View version ${v.version}`}>View</button>
                   </li>

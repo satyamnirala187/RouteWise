@@ -1,0 +1,5 @@
+# Step 3B: Phase 0 routing regression (19 Oct 2026 02:24 IST); run because planning-validity code changed (the routing core did not)
+$ cd spikes/routing && .venv/bin/python -m pytest -q
+SKIPPED [1] tests/test_env_costs_live.py:88: BLOCKED: STADIA_API_KEY not set (no account; matrix needs Standard+ or trial)
+SKIPPED [2] tests/test_valhalla_du.py:122: set ROUTEWISE_LIVE_TESTS=1 and build local tiles (spikes/valhalla/build_tiles.sh)
+264 passed, 5 skipped, 4 warnings in 86.24s (0:01:26)

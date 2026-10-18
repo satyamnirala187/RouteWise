@@ -1,0 +1,25 @@
+# Step 3B wording correction (19 Oct 2026 02:59 IST): an unconfirmed save now says "Could not confirm the save; showing the last confirmed status" (a lost answer does not prove failure). Affected checks rerun:
+$ npm run typecheck   -> OK
+$ npx vitest run      -> 17 passed
+$ npm run build       -> OK
+$ E2E_*_SHOTS_DIR=<scratch> scripts/e2e.sh e2e/phase3b.spec.ts
+Running 12 tests using 1 worker
+
+  ✓   1 [desktop] › e2e/phase3b.spec.ts:36:1 › a rider postpones, returns to Pending and completes their own orders; sections, counts and next stop follow (2.5s)
+  ✓   2 [desktop] › e2e/phase3b.spec.ts:102:1 › while a save is in flight every status action waits, and success appears only after the server confirms (1.2s)
+  ✓   3 [desktop] › e2e/phase3b.spec.ts:131:1 › a conflicting change elsewhere is reloaded and explained; nothing is overwritten (1.3s)
+  ✓   4 [desktop] › e2e/phase3b.spec.ts:149:1 › an unconfirmed save shows the last confirmed status and offers a retry; a retry after a lost answer changes nothing twice (1.5s)
+  ✓   5 [desktop] › e2e/phase3b.spec.ts:185:1 › an order returned from Postponed without a saved position needs planning (1.7s)
+  ✓   6 [desktop] › e2e/phase3b.spec.ts:208:1 › a late status answer for another round is ignored, and an expired session returns to sign-in (2.4s)
+  ✓   7 [mobile] › e2e/phase3b.spec.ts:36:1 › a rider postpones, returns to Pending and completes their own orders; sections, counts and next stop follow (2.7s)
+  ✓   8 [mobile] › e2e/phase3b.spec.ts:102:1 › while a save is in flight every status action waits, and success appears only after the server confirms (1.2s)
+  ✓   9 [mobile] › e2e/phase3b.spec.ts:131:1 › a conflicting change elsewhere is reloaded and explained; nothing is overwritten (1.3s)
+  ✓  10 [mobile] › e2e/phase3b.spec.ts:149:1 › an unconfirmed save shows the last confirmed status and offers a retry; a retry after a lost answer changes nothing twice (1.5s)
+  ✓  11 [mobile] › e2e/phase3b.spec.ts:185:1 › an order returned from Postponed without a saved position needs planning (1.7s)
+  ✓  12 [mobile] › e2e/phase3b.spec.ts:208:1 › a late status answer for another round is ignored, and an expired session returns to sign-in (2.3s)
+
+  12 passed (25.0s)
+
+$ python3 scripts/web_defect_check.py <scratch dir> "3B: unconfirmed"
+KILLED: 3B: unconfirmed save reported as saved
+1/1 killed

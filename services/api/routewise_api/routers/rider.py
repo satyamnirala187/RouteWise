@@ -3,7 +3,8 @@ destination for rounds they participate in. Ownership is checked in the query it
 another rider's order or round is indistinguishable from a missing one (404).
 
 Step 3A adds the read-only delivery view: the rider's own orders in a round, in the order of
-the round's current plan, with only the fields a delivery needs."""
+the round's current plan, with only the fields a delivery needs. Step 3B adds the rider's own
+status updates (Pending → Completed / Postponed, Postponed → Pending)."""
 
 from __future__ import annotations
 
@@ -20,6 +21,7 @@ from ..config import Settings
 from ..deps import CurrentUser, get_db, get_now, get_settings, require_rider
 from ..locations import manual_pin
 from ..models import Assignment, DeliveryRound, Depot, Order, PlanOrder, PlanRoute, RiderEndpoint, RoundRider, RoutePlan
+from ..orders import order_lock_options
 from ..riders import (
     PRIVATE_KINDS,
     bump_config,
@@ -31,6 +33,7 @@ from ..riders import (
     lock_round_rider,
     rider_config_view,
 )
+from ..planning import plan_validity
 
 router = APIRouter(prefix="/api/rider", tags=["rider"], dependencies=[Depends(require_rider)])
 
@@ -200,7 +203,7 @@ def _delivery_item(o: Order, area) -> dict:
                  else "This order's pin is outside the DU North Campus service area; ask your admin to check it.")
     return {
         "id": str(o.id), "order_code": o.order_code, "customer_name": o.customer_name, "product": o.product,
-        "contact": o.contact, "instructions": o.instructions, "status": o.status,
+        "contact": o.contact, "instructions": o.instructions, "status": o.status, "version": o.version,
         "location": {"lat": o.lat, "lng": o.lng} if usable else None, "location_issue": issue,
     }
 
@@ -255,8 +258,11 @@ def my_deliveries(round_id: uuid.UUID, current: CurrentUser = Depends(require_ri
     """The rider's own orders in one round. Pending orders follow the round's CURRENT plan
     (never a superseded one); nothing is recalculated or reassigned here. A round the rider
     neither takes part in nor holds orders in is a 404, exactly like a missing one."""
-    me = current.rider.id
-    rnd = db.get(DeliveryRound, round_id)
+    return _delivery_view(db, current.rider.id, round_id, settings)
+
+
+def _delivery_view(db: DBSession, me: uuid.UUID, round_id: uuid.UUID, settings: Settings) -> dict:
+    rnd = db.get(DeliveryRound, round_id, populate_existing=True)
     rr = db.get(RoundRider, (round_id, me)) if rnd is not None else None
     joined = rr is not None and rr.participating
     orders = db.scalars(select(Order).join(Assignment, Assignment.order_id == Order.id)
@@ -293,7 +299,7 @@ def my_deliveries(round_id: uuid.UUID, current: CurrentUser = Depends(require_ri
     if plan is not None:
         plan_out = {
             "version": plan.version, "is_current": True, "created_at": plan.created_at.isoformat(),
-            "out_of_date": plan.input_version != rnd.input_version, "superseded_versions": plan.version - 1,
+            **plan_validity(plan, rnd), "superseded_versions": plan.version - 1,
             "real_road": bool(plan.provenance.get("real_road")), "recorded": bool(plan.provenance.get("recorded")),
             "route": None if route is None else {
                 "vehicle": route.vehicle, "start": _place(route.start_kind, depots),
@@ -310,3 +316,70 @@ def my_deliveries(round_id: uuid.UUID, current: CurrentUser = Depends(require_ri
         "sequence": [{"seq": n, "orders": stops[n]} for n in sorted(stops)],
         "unsequenced": unsequenced, "postponed": postponed, "completed": completed,
     }
+
+
+# ------------------------------------------------------------------ status updates (step 3B)
+
+# The only changes a rider may make. Completed is final for riders (an admin can still edit it).
+RIDER_TRANSITIONS = {("Pending", "Completed"), ("Pending", "Postponed"), ("Postponed", "Pending")}
+
+
+class StatusIn(BaseModel):
+    status: Literal["Pending", "Postponed", "Completed"]
+    expected_version: StrictInt  # the order version the rider was shown
+
+
+def _status_conflict(code: str, message: str, order: Order | None = None) -> HTTPException:
+    detail = {"code": code, "message": message}
+    if order is not None:  # only ever for the rider's own order
+        detail |= {"current_status": order.status, "current_version": order.version}
+    return HTTPException(status.HTTP_409_CONFLICT, detail)
+
+
+@router.post("/orders/{order_id}/status")
+def update_my_order_status(order_id: uuid.UUID, body: StatusIn, current: CurrentUser = Depends(require_rider),
+                           db: DBSession = Depends(get_db, scope="function"), settings: Settings = Depends(get_settings),
+                           now: datetime = Depends(get_now)) -> dict:
+    """Change the status of one of the rider's own orders and return the refreshed delivery view.
+
+    Locks, in the order-edit order: the order row (FOR NO KEY UPDATE), then the round (FOR
+    UPDATE). A plan commit holds the round lock for its whole write, so once this request has the
+    round no commit is in progress, and ownership is checked again: an order a new plan has just
+    given to another rider is refused (409) and nothing changes. A request that wins the round
+    lock first bumps `input_version`, so the plan computed from the older input commits nothing.
+
+    Repeats are harmless: if the order already has the requested status nothing is written and
+    `changed` is false. Otherwise `expected_version` must equal the current version (409
+    `order_changed` if not), so a stale request never overwrites newer rider or admin work and
+    never reopens a Completed order."""
+    me = current.rider.id
+    # Ownership first, without locks: another rider's order is indistinguishable from a missing one.
+    if db.scalar(_own_orders(current).where(Order.id == order_id)) is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Order not found")
+    order = db.get(Order, order_id, **order_lock_options())
+    rnd = lock_round(db, order.round_id)
+    owner = db.scalar(select(Assignment.rider_id).where(Assignment.order_id == order_id)
+                      .execution_options(populate_existing=True))
+    if owner != me:
+        raise _status_conflict("order_reassigned", "This order is no longer assigned to you, so nothing was changed. "
+                                                   "Your list has been refreshed.")
+    if order.status == body.status:
+        return {"changed": False, "order": _delivery_item(order, settings.service_area),
+                "view": _delivery_view(db, me, rnd.id, settings)}
+    if order.version != body.expected_version:
+        raise _status_conflict("order_changed", "This order was changed since you loaded it (for example by your "
+                                                "admin). Nothing was overwritten; the latest status is shown.", order)
+    if (order.status, body.status) not in RIDER_TRANSITIONS:
+        message = ("Completed orders cannot be reopened by a rider. Ask your admin if this was a mistake."
+                   if order.status == "Completed" else
+                   f"A {order.status} order cannot be marked {body.status} directly.")
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, {"code": "transition_not_allowed", "message": message,
+                                                                    "current_status": order.status})
+    order.status = body.status
+    order.version += 1
+    order.updated_at = now
+    # Delivery progress: in-flight solves become stale; the remaining saved route stays usable.
+    bump_round_input(db, rnd.id, route=False)
+    db.flush()
+    return {"changed": True, "order": _delivery_item(order, settings.service_area),
+            "view": _delivery_view(db, me, rnd.id, settings)}

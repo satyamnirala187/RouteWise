@@ -1,0 +1,12 @@
+# Step 3B: targeted backend defect checks (19 Oct 2026 02:46 IST); 3B mutants only, earlier phases not repeated
+$ python services/api/tools/mutation_check.py <scratch copy of services/api> services/api/.venv/bin/python "3B:"
+KILLED: 3B: rider reopens Completed
+KILLED: 3B: ownership not re-checked under the round lock
+KILLED: 3B: round lock not taken before the re-check
+KILLED: 3B: stale version accepted
+KILLED: 3B: repeated request applied twice
+KILLED: 3B: order row not locked
+KILLED: 3B: progress invalidates every saved route
+KILLED: 3B: admin status edits stop invalidating
+KILLED: 3B: out of date judged on the input revision
+9/9 killed

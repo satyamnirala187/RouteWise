@@ -1,0 +1,9 @@
+# Step 3B: targeted web defect checks (19 Oct 2026 02:47 IST); 3B checks only, the 2C and 3A checks not repeated
+$ python3 scripts/web_defect_check.py <scratch dir> "3B:"
+KILLED: 3B: status buttons enabled during a save  [    Error: expect(locator).toBeDisabled() failed /   1 failed]
+KILLED: 3B: success shown before the server confirms  [    Error: expect(locator).toHaveCount(expected) failed /   1 failed]
+KILLED: 3B: network failure reported as saved  [  1 failed /     [desktop] › e2e/phase3b.spec.ts:149:1 › a failed request keeps the last saved status and offers a retry; a retry after a lost answer changes nothing twice ]
+KILLED: 3B: conflict not reloaded  [    Error: expect(locator).toHaveAttribute(expected) failed /   1 failed]
+KILLED: 3B: late status answer applied to another round  [    Error: expect(locator).toHaveAttribute(expected) failed /   1 failed]
+KILLED: 3B: delivered without the second tap  [    Error: expect(locator).toContainText(expected) failed /   1 failed]
+6/6 killed

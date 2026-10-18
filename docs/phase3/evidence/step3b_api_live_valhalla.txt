@@ -1,0 +1,6 @@
+# Step 3B: API planning run on the REAL local Valhalla tiles (19 Oct 2026 02:46 IST); run because the plan commit now records route_version (the routing engine did not change)
+$ ROUTEWISE_LIVE_TESTS=1 .venv/bin/python -m pytest -q -m live tests/test_planning_live.py
+
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 3 warnings in 1.73s

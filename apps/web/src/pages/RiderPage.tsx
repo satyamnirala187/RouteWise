@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
-import { api, ApiError, type DeliveryRoundSummary, type DeliveryView as View } from "../api";
-import DeliveryView from "../components/DeliveryView";
+import { api, ApiError, type DeliveryItem, type DeliveryRoundSummary, type DeliveryView as View, type Status, type StatusResult } from "../api";
+import DeliveryView, { type StatusActions } from "../components/DeliveryView";
 import DestinationCard from "../components/DestinationCard";
-import { inputClass, secondaryButton } from "../components/ui";
+import { inputClass, Message, secondaryButton, type Note } from "../components/ui";
 
 // The rider's page, one round at a time (the round is in the URL, never in browser storage):
 // the destination card from 2C for rounds they take part in, then (since 3A) their own
-// deliveries for that round in the saved route order. Status updates are step 3B.
+// deliveries for that round in the saved route order, and (since 3B) their own status changes.
 export default function RiderPage({ onUnauthorized }: { onUnauthorized: () => void }) {
   const [params, setParams] = useSearchParams();
   const [rounds, setRounds] = useState<DeliveryRoundSummary[] | null>(null);
@@ -16,6 +16,12 @@ export default function RiderPage({ onUnauthorized }: { onUnauthorized: () => vo
   const [loading, setLoading] = useState(false);
   const current = useRef<string | null>(null);
   const viewAc = useRef<AbortController | null>(null);
+  // Status changes (3B): one save at a time; the screen changes only when the server confirms.
+  const [saving, setSaving] = useState<StatusActions["saving"]>(null);
+  const [confirming, setConfirming] = useState<string | null>(null);
+  const [failed, setFailed] = useState<{ item: DeliveryItem; target: Status; message: string } | null>(null);
+  const [note, setNote] = useState<Note>(null);
+  const savingRef = useRef(false);
 
   const fail = useCallback((message: string) => (e: unknown) => {
     if (e instanceof DOMException && e.name === "AbortError") return;
@@ -52,7 +58,7 @@ export default function RiderPage({ onUnauthorized }: { onUnauthorized: () => vo
 
   useEffect(() => {
     if (!roundId) return;
-    setView(null); setError(null);
+    setView(null); setError(null); setNote(null); setFailed(null); setConfirming(null);
     loadView(roundId);
     return () => { viewAc.current?.abort(); viewAc.current = null; };
   }, [roundId, loadView]);
@@ -62,6 +68,47 @@ export default function RiderPage({ onUnauthorized }: { onUnauthorized: () => vo
     loadView(roundId);
     loadRounds().catch(fail("Could not load your rounds."));
   }, [roundId, loadView, loadRounds, fail]);
+
+  /** Save one status change. Duplicate taps are ignored while a save is in flight; a retry
+   * sends the same expected version, and the server treats a repeat as "already done". */
+  const change = useCallback(async (item: DeliveryItem, target: Status) => {
+    if (savingRef.current || !roundId) return;
+    const id = roundId;
+    savingRef.current = true;
+    setSaving({ id: item.id, target }); setNote(null); setFailed(null);
+    try {
+      const res = await api<StatusResult>(`/api/rider/orders/${item.id}/status`, {
+        method: "POST", json: { status: target, expected_version: item.version },
+      });
+      if (current.current !== id || res.view.round_id !== id) return;  // the rider moved to another round
+      viewAc.current?.abort();  // an older load must not replace this newer, server-confirmed view
+      setView(res.view); setConfirming(null);
+      setNote({ kind: "ok", text: res.changed ? `${item.order_code} saved as ${target}.` : `${item.order_code} was already ${target}; nothing changed.` });
+      loadRounds().catch(() => undefined);  // picker counts; the list itself is already current
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 401) return onUnauthorized();
+      if (current.current !== id) return;
+      setConfirming(null);
+      if (e instanceof ApiError && e.status < 500) {
+        // Refused (changed elsewhere, reassigned, not allowed, gone): nothing was overwritten.
+        setNote({ kind: e.status === 409 ? "warn" : "error", text: e.message });
+        loadView(id);
+      } else {
+        // No answer is not proof of failure: the server may have saved it. Retry is safe (a repeat is "already done").
+        setFailed({ item, target, message: "Could not confirm the save; showing the last confirmed status. The change may or may not have reached the server. Check your connection and retry; if it was already saved, nothing changes twice." });
+      }
+    } finally {
+      savingRef.current = false;
+      setSaving(null);
+    }
+  }, [roundId, loadView, loadRounds, onUnauthorized]);
+
+  const actions: StatusActions = {
+    saving, confirming, failed: failed && { id: failed.item.id, target: failed.target, message: failed.message },
+    change: (item, target) => { void change(item, target); },
+    confirm: (oid) => { setConfirming(oid); setFailed(null); },
+    retry: () => { if (failed) void change(failed.item, failed.target); },
+  };
 
   const select = (id: string) => setParams((p) => { const next = new URLSearchParams(p); next.set("round", id); return next; });
   const needConfirm = rounds?.filter((r) => r.participating && r.confirmation !== "confirmed" && r.round_id !== roundId) ?? [];
@@ -121,7 +168,8 @@ export default function RiderPage({ onUnauthorized }: { onUnauthorized: () => vo
       )}
       <section className="space-y-2" aria-labelledby="my-round-deliveries">
         <h2 id="my-round-deliveries" className="sr-only">Deliveries for {selected?.round_name}</h2>
-        {view && view.round_id === roundId ? <DeliveryView view={view} /> : !error && <p role="status" className="text-slate-500">Loading deliveries…</p>}
+        <Message note={note} />
+        {view && view.round_id === roundId ? <DeliveryView view={view} actions={actions} /> : !error && <p role="status" className="text-slate-500">Loading deliveries…</p>}
       </section>
     </div>
   );

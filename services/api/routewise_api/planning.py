@@ -8,6 +8,11 @@ locks again, recaptures the input and commits the plan only if both the round's
 `input_version` and the fingerprint are unchanged; otherwise the run ends `stale` and the
 previous plan and assignments stay exactly as they were.
 
+Route validity (3B). Every status change bumps `input_version`, so a solve that started before
+it is stale. A rider's own delivery progress does not bump the round's `route_version`, which
+each committed plan records: the remaining saved sequence stays usable. Any other input change
+bumps both, and the saved plan is reported out of date (see models.DeliveryRound).
+
 Statuses. Only Pending orders are planned. Postponed orders keep their existing owner and stay
 off the active sequence; Completed orders keep their history and owner. Anything that would
 reset or reassign a Postponed or Completed order is refused with a coded "unsupported" error
@@ -16,8 +21,9 @@ and nothing is changed (operational rerouting is Phase 4).
 Lock order (shared with 2A and the Phase 1 order edits):
   configuration writes, confirmations, optimize requests, plan commits:
       depots (FOR SHARE; a depot edit takes FOR UPDATE) → round (FOR UPDATE) → round-rider / run rows
-  order edits (pins, statuses, text, locks, priority):
-      order rows (FOR NO KEY UPDATE, sorted by id) → round (UPDATE of input_version)
+  order edits (pins, statuses, text, locks, priority) and rider status updates (3B):
+      order rows (FOR NO KEY UPDATE, sorted by id) → round (UPDATE of input_version; the rider
+      endpoint takes the round FOR UPDATE first and re-checks ownership under it)
   account deactivation (`accounts.deactivate_user`):
       depots (FOR SHARE) → every round the rider participates in (FOR UPDATE, sorted) → user (FOR UPDATE)
 Plan commits never lock order rows; their foreign keys take KEY SHARE, which does not conflict
@@ -460,6 +466,9 @@ def commit_plan(db: DBSession, run_id: uuid.UUID, snap: Snapshot, prepared: Prep
     provenance["profiles_by_vehicle"] = VEHICLE_PROFILE
     row = RoutePlan(round_id=snap.round_id, version=version, run_id=run.id, is_current=True, mode=snap.mode,
                     input_version=run.input_version, input_fingerprint=run.input_fingerprint,
+                    # Read under the round lock after the final check: no input change (and so no
+                    # route_version change) has committed since the snapshot.
+                    route_version=rnd.route_version,
                     distance_label=plan.distance_label[:300], provenance=provenance,
                     warnings=[_names(w, names) for w in [*plan.warnings, *prepared.warnings]],
                     summary=summary, created_by=run.requested_by, created_at=now)
@@ -509,6 +518,15 @@ def commit_plan(db: DBSession, run_id: uuid.UUID, snap: Snapshot, prepared: Prep
         raise RuntimeError("completed history changed")
     _finish(run, "succeeded", now)
     return "succeeded"
+
+
+def plan_validity(plan: RoutePlan, rnd: DeliveryRound) -> dict:
+    """3B. `out_of_date`: the saved routes are no longer usable (any planning-input change other
+    than a rider's own delivery progress since the plan). `progress_since_plan`: only riders'
+    delivery progress has happened since; the remaining saved sequence is still valid."""
+    out_of_date = plan.route_version != rnd.route_version
+    return {"out_of_date": out_of_date,
+            "progress_since_plan": not out_of_date and plan.input_version != rnd.input_version}
 
 
 # ------------------------------------------------------------------ worker

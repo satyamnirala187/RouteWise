@@ -1,13 +1,27 @@
 import type { ReactNode } from "react";
-import { KIND_LABEL, VEHICLE_LABEL, type DeliveryItem, type DeliveryPlace, type DeliveryView as View } from "../api";
+import { KIND_LABEL, VEHICLE_LABEL, type DeliveryItem, type DeliveryPlace, type DeliveryView as View, type Status } from "../api";
 import { directionsLink, telLink } from "../links";
 import { km, trafficFree } from "../planning";
 import { StatusPill } from "./Badges";
 import { card } from "./ui";
 
-// Step 3A: the rider's own deliveries for one round, read-only. Pending orders follow the round's
-// CURRENT saved plan; an out-of-date plan is shown as the saved order, never as a new route.
-// Call and Navigate are plain links the rider taps; nothing is opened or marked automatically.
+// The rider's own deliveries for one round (3A). Pending orders follow the round's CURRENT saved
+// plan; an out-of-date plan is shown as the saved order, never as a new route. Call and Navigate
+// are plain links the rider taps; nothing is opened or marked automatically. Since 3B each card
+// offers the rider's own status changes; the page saves them one at a time and shows the result
+// only once the server has confirmed it.
+
+/** Status actions, owned by the page (one save at a time). */
+export interface StatusActions {
+  saving: { id: string; target: Status } | null;  // the one save in flight; every status button waits
+  confirming: string | null;                       // order id awaiting "Yes, delivered"
+  failed: { id: string; target: Status; message: string } | null;  // save not confirmed (network); retry offered
+  change: (item: DeliveryItem, target: Status) => void;
+  confirm: (id: string | null) => void;
+  retry: () => void;
+}
+
+const statusButton = "inline-flex min-h-11 items-center justify-center rounded-md px-4 font-semibold disabled:cursor-not-allowed disabled:opacity-60";
 
 const actionLink = "inline-flex min-h-11 items-center justify-center gap-2 rounded-md px-4 font-semibold";
 
@@ -18,7 +32,7 @@ function placeText(p: DeliveryPlace | null | undefined, own = false): string {
   return p.label && p.label !== KIND_LABEL[p.kind] ? `${KIND_LABEL[p.kind]} — ${p.label}` : KIND_LABEL[p.kind];
 }
 
-export default function DeliveryView({ view }: { view: View }) {
+export default function DeliveryView({ view, actions }: { view: View; actions?: StatusActions }) {
   const { plan, setup } = view;
   const route = plan?.route ?? null;
   const pendingCount = view.sequence.reduce((n, s) => n + s.orders.length, 0) + view.unsequenced.length;
@@ -55,6 +69,11 @@ export default function DeliveryView({ view }: { view: View }) {
                 </p>
               </div>
             )}
+            {plan.progress_since_plan && !plan.out_of_date && (
+              <p className="text-slate-600" data-testid="progress-since-plan">
+                Deliveries have been updated since this plan was saved. The remaining stops keep their saved order.
+              </p>
+            )}
             {!route && <p className="text-slate-700" data-testid="no-route">The current plan has no route for you.</p>}
           </div>
         )}
@@ -75,7 +94,8 @@ export default function DeliveryView({ view }: { view: View }) {
         )}
         {route && (
           <p className="mt-2 text-sm text-slate-700" data-testid="route-distance">
-            Planned road distance {km(route.road_distance_m)}, {trafficFree(route.road_duration_s)}{plan!.out_of_date ? " — for the saved, out-of-date order" : ""}.
+            Planned road distance for the whole saved route {km(route.road_distance_m)}, {trafficFree(route.road_duration_s)}
+            {plan!.out_of_date ? " — for the saved, out-of-date order" : ""}. This is the plan, not the distance left.
           </p>
         )}
       </section>
@@ -92,21 +112,21 @@ export default function DeliveryView({ view }: { view: View }) {
             empty={plan ? "No Pending deliveries in your saved route." : "No route yet."}>
             <ol className="space-y-3">
               {view.sequence.map((stop, i) => stop.orders.map((o) => (
-                <OrderCard key={o.id} item={o} stop={stop.seq} next={i === 0} stale={!!plan?.out_of_date} />
+                <OrderCard key={o.id} item={o} stop={stop.seq} next={i === 0} stale={!!plan?.out_of_date} actions={actions} />
               )))}
             </ol>
           </Section>
 
           {view.unsequenced.length > 0 && (
             <Section id="unsequenced" title="Pending, not in the saved route" count={view.unsequenced.length} testId="unsequenced"
-              note={plan ? "These orders are yours but are not in the current plan's route for you. Ask your admin to optimize the round again." : "No route has been planned yet, so these orders are listed by order code, not in delivery order."}>
-              <ul className="space-y-3">{view.unsequenced.map((o) => <OrderCard key={o.id} item={o} />)}</ul>
+              note={plan ? "These orders are yours but have no position in the current plan's route for you (for example an order returned from Postponed). They need planning: ask your admin to optimize the round again." : "No route has been planned yet, so these orders are listed by order code, not in delivery order."}>
+              <ul className="space-y-3">{view.unsequenced.map((o) => <OrderCard key={o.id} item={o} actions={actions} />)}</ul>
             </Section>
           )}
           {view.postponed.length > 0 && (
             <Section id="postponed" title="Postponed" count={view.postponed.length} testId="postponed"
-              note="Kept with you, outside the active route order.">
-              <ul className="space-y-3">{view.postponed.map((o) => <OrderCard key={o.id} item={o} />)}</ul>
+              note="Kept with you, outside the active route order. Return one to Pending when the customer is available; it goes back to its saved stop only if it had one in the current plan.">
+              <ul className="space-y-3">{view.postponed.map((o) => <OrderCard key={o.id} item={o} actions={actions} />)}</ul>
             </Section>
           )}
           {view.completed.length > 0 && (
@@ -132,7 +152,9 @@ function Section({ id, title, count, testId, note, empty, children }: {
   );
 }
 
-function OrderCard({ item, stop, next = false, stale = false }: { item: DeliveryItem; stop?: number; next?: boolean; stale?: boolean }) {
+function OrderCard({ item, stop, next = false, stale = false, actions }: {
+  item: DeliveryItem; stop?: number; next?: boolean; stale?: boolean; actions?: StatusActions;
+}) {
   const call = telLink(item.contact);
   const nav = directionsLink(item.location, item.location_issue);
   const done = item.status === "Completed";
@@ -153,21 +175,74 @@ function OrderCard({ item, stop, next = false, stale = false }: { item: Delivery
       )}
       <p className="mt-2 text-sm text-slate-700" data-testid="contact"><span className="font-medium">Contact:</span> {item.contact || "—"}</p>
       {!done && (
-        <div className="mt-3 grid gap-2 sm:flex sm:flex-wrap">
+        <div className="mt-3 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
           {call.href ? (
             <a href={call.href} className={`${actionLink} bg-brand-600 text-white hover:bg-brand-700`} data-testid="call-link"
               aria-label={`Call ${item.customer_name} (${item.order_code})`}>Call</a>
           ) : (
-            <p className="text-sm text-red-800" data-testid="call-unavailable">Calling unavailable: {call.issue}</p>
+            <p className="col-span-2 text-sm text-red-800" data-testid="call-unavailable">Calling unavailable: {call.issue}</p>
           )}
           {nav.href ? (
             <a href={nav.href} target="_blank" rel="noopener noreferrer" className={`${actionLink} ring-1 ring-slate-300 hover:bg-slate-50`}
               data-testid="navigate-link" aria-label={`Navigate to ${item.customer_name} (${item.order_code}) in Google Maps`}>Navigate</a>
           ) : (
-            <p className="text-sm text-red-800" data-testid="navigate-unavailable">Navigation unavailable: {nav.issue}</p>
+            <p className="col-span-2 text-sm text-red-800" data-testid="navigate-unavailable">Navigation unavailable: {nav.issue}</p>
           )}
         </div>
       )}
+      {!done && actions && <StatusControls item={item} actions={actions} />}
     </li>
+  );
+}
+
+const TARGETS: Record<"Pending" | "Postponed", { target: Status; label: string; style: string }[]> = {
+  Pending: [
+    { target: "Completed", label: "Mark delivered", style: "bg-emerald-700 text-white hover:bg-emerald-800" },
+    { target: "Postponed", label: "Postpone", style: "ring-1 ring-violet-400 text-violet-900 hover:bg-violet-50" },
+  ],
+  Postponed: [{ target: "Pending", label: "Return to Pending", style: "ring-1 ring-amber-400 text-amber-900 hover:bg-amber-50" }],
+};
+
+/** The rider's status actions for one Pending or Postponed order. Completed needs a second tap,
+ * because a rider cannot reopen it. While any save is in flight every button is disabled. */
+function StatusControls({ item, actions }: { item: DeliveryItem; actions: StatusActions }) {
+  const busy = actions.saving !== null;
+  const mine = actions.saving?.id === item.id;
+  const failed = actions.failed?.id === item.id ? actions.failed : null;
+  if (item.status === "Completed") return null;
+  if (actions.confirming === item.id) {
+    return (
+      <div className="mt-3 rounded-md bg-emerald-50 p-3 text-sm text-emerald-950 ring-1 ring-emerald-200" data-testid="confirm-delivered">
+        <p className="font-medium">Mark {item.order_code} delivered? You cannot undo this yourself.</p>
+        <div className="mt-2 grid grid-cols-2 gap-2 sm:flex">
+          <button type="button" className={`${statusButton} bg-emerald-700 text-white hover:bg-emerald-800`} disabled={busy}
+            aria-busy={mine} onClick={() => actions.change(item, "Completed")}>{mine ? "Saving…" : "Yes, delivered"}</button>
+          <button type="button" className={`${statusButton} ring-1 ring-slate-300 hover:bg-slate-50`} disabled={busy}
+            onClick={() => actions.confirm(null)}>Cancel</button>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="mt-3 space-y-2" data-testid="status-actions">
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+        {TARGETS[item.status].map((t, _, all) => (
+          <button key={t.target} type="button" className={`${statusButton} ${t.style} ${all.length === 1 ? "col-span-2" : ""}`} disabled={busy}
+            aria-busy={mine && actions.saving?.target === t.target}
+            aria-label={`${t.label}: ${item.order_code}`}
+            onClick={() => (t.target === "Completed" ? actions.confirm(item.id) : actions.change(item, t.target))}>
+            {mine && actions.saving?.target === t.target ? "Saving…" : t.label}
+          </button>
+        ))}
+      </div>
+      {failed && (
+        <div role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-900 ring-1 ring-red-200" data-testid="status-failed">
+          <p>{failed.message}</p>
+          <button type="button" className={`${statusButton} mt-2 bg-white ring-1 ring-red-300`} disabled={busy} onClick={actions.retry}>
+            Retry: mark {failed.target}
+          </button>
+        </div>
+      )}
+    </div>
   );
 }

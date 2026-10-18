@@ -1,8 +1,8 @@
-"""Phase 1, 2A, 2B and 3A mutation check: inject known security/correctness defects into a scratch copy of
+"""Phase 1, 2A, 2B, 3A and 3B mutation check: inject known security/correctness defects into a scratch copy of
 services/api and confirm the test suite fails for each.
 
 Usage: python tools/mutation_check.py <scratch copy of services/api> <python with API deps> [name prefix]
-With a prefix (e.g. "2B:" or "3A:") only the matching targeted mutants run.
+With a prefix (e.g. "2B:", "3A:" or "3B:") only the matching targeted mutants run.
 Never run against the working tree: it rewrites source files in the given copy.
 The copy must have the same .env access as the real tree (tests use TEST_DATABASE_URL).
 """
@@ -113,6 +113,24 @@ MUTANTS = {
     "3A: private destination coordinates in the view": (
         "routers/rider.py", '"destination": _place(endpoint.kind if endpoint else None, depots),',
         '"destination": {"kind": endpoint.kind, "lat": endpoint.lat, "lng": endpoint.lng} if endpoint else None,'),
+    # Phase 3B: rider status updates and route validity (run with the "3B:" prefix)
+    "3B: rider reopens Completed": ("routers/rider.py", 'RIDER_TRANSITIONS = {("Pending", "Completed"),',
+                                    'RIDER_TRANSITIONS = {("Completed", "Pending"), ("Pending", "Completed"),'),
+    "3B: ownership not re-checked under the round lock": ("routers/rider.py", "    if owner != me:\n        raise _status_conflict(",
+                                                          "    if False:\n        raise _status_conflict("),
+    "3B: round lock not taken before the re-check": ("routers/rider.py", "    rnd = lock_round(db, order.round_id)\n    owner =",
+                                                     "    rnd = db.get(DeliveryRound, order.round_id)\n    owner ="),
+    "3B: stale version accepted": ("routers/rider.py", "    if order.version != body.expected_version:", "    if False:"),
+    "3B: repeated request applied twice": ("routers/rider.py", "    if order.status == body.status:\n        return {\"changed\": False,",
+                                           "    if False:\n        return {\"changed\": False,"),
+    "3B: order row not locked": ("routers/rider.py", "    order = db.get(Order, order_id, **order_lock_options())",
+                                 "    order = db.get(Order, order_id)"),
+    "3B: progress invalidates every saved route": ("routers/rider.py", "    bump_round_input(db, rnd.id, route=False)",
+                                                   "    bump_round_input(db, rnd.id)"),
+    "3B: admin status edits stop invalidating": ("routers/admin.py", "    if _planning_fields(order) != before:\n        bump_round_input(db, order.round_id)",
+                                                 "    if _planning_fields(order) != before:\n        bump_round_input(db, order.round_id, route=order.status == before[3])"),
+    "3B: out of date judged on the input revision": ("planning.py", "    out_of_date = plan.route_version != rnd.route_version",
+                                                     "    out_of_date = plan.input_version != rnd.input_version"),
 }
 if len(sys.argv) > 3:
     MUTANTS = {k: v for k, v in MUTANTS.items() if k.startswith(sys.argv[3])}

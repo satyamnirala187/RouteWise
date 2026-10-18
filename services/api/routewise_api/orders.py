@@ -42,6 +42,13 @@ def validate_text(field: str, value: str | None, *, required: bool) -> str | Non
     return value
 
 
+def order_lock_options() -> dict:
+    """Row lock for any order edit: FOR NO KEY UPDATE. It serialises order edits but never blocks
+    the KEY SHARE locks that plan commits take through foreign keys while holding the round lock,
+    so the two lock groups cannot form a wait cycle. Always re-reads the row."""
+    return {"with_for_update": {"key_share": True}, "populate_existing": True}
+
+
 def validate_status(value: str) -> str:
     if value not in ORDER_STATUSES:
         raise ValueError("status must be one of Pending, Postponed, Completed")

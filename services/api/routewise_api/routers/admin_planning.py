@@ -30,7 +30,7 @@ from ..models import (
     RoutePlan,
 )
 from ..orders import readiness_blockers
-from ..planning import PlanningRefused, PlanningService, capture, expire_overdue, fingerprint, prepare
+from ..planning import PlanningRefused, PlanningService, capture, expire_overdue, fingerprint, plan_validity, prepare
 from ..riders import bump_round_input, configuration_blockers, lock_depots_shared, lock_round
 from ..routing.matrix.base import ProviderError
 from .admin import admin_order_view
@@ -289,7 +289,7 @@ def list_runs(round_id: uuid.UUID, db: DBSession = Depends(get_db, scope="functi
 # ------------------------------------------------------------------ plans
 
 
-def plan_view(db: DBSession, plan: RoutePlan, current_input_version: int) -> dict:
+def plan_view(db: DBSession, plan: RoutePlan, rnd: DeliveryRound) -> dict:
     names = dict(db.execute(select(Rider.id, Rider.display_name)).all())
     codes = dict(db.execute(select(Order.id, Order.order_code).where(Order.round_id == plan.round_id)).all())
     routes = db.scalars(select(PlanRoute).where(PlanRoute.plan_id == plan.id)).all()
@@ -313,13 +313,21 @@ def plan_view(db: DBSession, plan: RoutePlan, current_input_version: int) -> dic
             "postponed": [{"id": str(i.order_id), "order_code": codes[i.order_id]} for i in mine if i.role == "postponed"],
             "completed": [{"id": str(i.order_id), "order_code": codes[i.order_id]} for i in mine if i.role == "completed"],
         })
+    # Pending orders this plan does not route (e.g. returned from Postponed by a rider): they need
+    # planning. Shown for the current plan only; history is reported as it was saved.
+    unplanned: list[str] = []
+    if plan.is_current:
+        active = {it.order_id for it in items if it.role == "active"}
+        unplanned = sorted(c for oid, c, st in db.execute(select(Order.id, Order.order_code, Order.status)
+                                                         .where(Order.round_id == plan.round_id)).all()
+                           if st == "Pending" and oid not in active)
     summary = dict(plan.summary)
     summary["ownership_changes"] = [
         {"order_code": c["order_code"], "from_rider": names.get(uuid.UUID(c["from_rider_id"])),
          "to_rider": names.get(uuid.UUID(c["to_rider_id"]))} for c in summary.get("ownership_changes", [])]
     return {
         "id": str(plan.id), "round_id": str(plan.round_id), "version": plan.version, "is_current": plan.is_current,
-        "out_of_date": plan.input_version != current_input_version, "input_version": plan.input_version,
+        **plan_validity(plan, rnd), "unplanned_pending": unplanned, "input_version": plan.input_version,
         "mode": plan.mode, "created_at": plan.created_at.isoformat(), "run_id": str(plan.run_id),
         "superseded_at": plan.superseded_at.isoformat() if plan.superseded_at else None,
         "distance_label": plan.distance_label, "provenance": plan.provenance, "warnings": plan.warnings,
@@ -341,14 +349,14 @@ def current_plan(round_id: uuid.UUID, db: DBSession = Depends(get_db, scope="fun
     plan = db.scalar(select(RoutePlan).where(RoutePlan.round_id == round_id, RoutePlan.is_current.is_(True)))
     if plan is None:
         _err(404, "NO_PLAN", "This round has no plan yet.")
-    return plan_view(db, plan, rnd.input_version)
+    return plan_view(db, plan, rnd)
 
 
 @router.get("/rounds/{round_id}/plans")
 def list_plans(round_id: uuid.UUID, db: DBSession = Depends(get_db, scope="function")) -> list[dict]:
     rnd = _round(db, round_id)
     plans = db.scalars(select(RoutePlan).where(RoutePlan.round_id == round_id).order_by(RoutePlan.version.desc())).all()
-    return [{"version": p.version, "is_current": p.is_current, "out_of_date": p.input_version != rnd.input_version,
+    return [{"version": p.version, "is_current": p.is_current, **plan_validity(p, rnd),
              "mode": p.mode, "created_at": p.created_at.isoformat(),
              "superseded_at": p.superseded_at.isoformat() if p.superseded_at else None,
              "total_road_distance_m": p.summary.get("total_road_distance_m"),
@@ -361,4 +369,4 @@ def get_plan(round_id: uuid.UUID, version: int, db: DBSession = Depends(get_db, 
     plan = db.scalar(select(RoutePlan).where(RoutePlan.round_id == round_id, RoutePlan.version == version))
     if plan is None:
         _err(404, "NO_PLAN", "No plan with this version.")
-    return plan_view(db, plan, rnd.input_version)
+    return plan_view(db, plan, rnd)

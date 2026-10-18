@@ -26,15 +26,27 @@ export default function PlanView({ plan, title, orders }: { plan: Plan; title: s
           Riders' assignments are unchanged until you optimize again.
         </div>
       )}
+      {plan.progress_since_plan && (
+        <p role="status" data-testid="progress-since-plan" className="rounded-lg bg-sky-50 px-4 py-3 text-sm text-sky-950 ring-1 ring-sky-200">
+          Riders have updated deliveries since this plan was saved (orders marked Completed, Postponed or back to Pending).
+          The remaining saved stops are still valid; the totals below are as planned, not what is left.
+        </p>
+      )}
+      {plan.is_current && plan.unplanned_pending?.length > 0 && (
+        <div role="status" data-testid="unplanned-pending" className="rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-950 ring-1 ring-amber-300">
+          <b>{plan.unplanned_pending.length} Pending order(s) are not in this plan's routes:</b> {plan.unplanned_pending.join(", ")}.
+          For example, a rider returned a Postponed order to Pending. They need planning: optimize again to place them.
+        </div>
+      )}
 
       <div className="grid gap-3 text-sm sm:grid-cols-3">
         <p className="rounded-lg bg-white p-3 ring-1 ring-slate-200"><span className="block text-slate-500">Planned orders</span>
           <b className="text-lg">{s.planned_orders}</b>
           {(s.postponed_held > 0 || s.completed_held > 0) && <span className="block text-xs text-slate-600">plus {s.postponed_held} Postponed and {s.completed_held} Completed kept with their rider</span>}
         </p>
-        <p className="rounded-lg bg-white p-3 ring-1 ring-slate-200"><span className="block text-slate-500">Total road distance</span>
+        <p className="rounded-lg bg-white p-3 ring-1 ring-slate-200"><span className="block text-slate-500">Planned total road distance</span>
           <b className="text-lg" data-testid="total-distance">{km(s.total_road_distance_m)}</b></p>
-        <p className="rounded-lg bg-white p-3 ring-1 ring-slate-200"><span className="block text-slate-500">Total riding time</span>
+        <p className="rounded-lg bg-white p-3 ring-1 ring-slate-200"><span className="block text-slate-500">Planned total riding time</span>
           <b className="text-lg">{trafficFree(s.total_road_duration_s)}</b></p>
       </div>
 

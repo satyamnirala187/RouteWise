@@ -12,7 +12,8 @@ Copied on 12 October 2026 from the RouteWise development package. The copies are
 
 ## Phase 3 (in progress, not complete)
 
-- [Step 3A report](phase3/STEP-3A-REPORT.md): rider delivery view, call and Google Maps navigation links (read-only). Committed (after `41b37f8`), **awaiting owner review**; real-phone checks not done; 3B (status updates) not started
+- [Step 3A report](phase3/STEP-3A-REPORT.md): rider delivery view, call and Google Maps navigation links (read-only). Committed (`2b52cbc`), **awaiting owner review**; real-phone checks not done
+- [Step 3B report](phase3/STEP-3B-REPORT.md): riders' own delivery-status updates, progress versus route validity. Committed (after `2b52cbc`), **awaiting owner review**
 
 ## Phase 2 (accepted 19 Oct 2026 for local development, `41b37f8`)
 

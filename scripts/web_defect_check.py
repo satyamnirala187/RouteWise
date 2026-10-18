@@ -1,4 +1,4 @@
-"""Step 2C and 3A targeted defect checks for the web app: inject one known defect at a time into
+"""Step 2C, 3A and 3B targeted defect checks for the web app: inject one known defect at a time into
 a scratch copy of apps/web and confirm the named tests fail (browser tests filtered by title, or
 the vitest unit tests when the filter is "vitest"). Not an exhaustive run.
 
@@ -68,6 +68,25 @@ MUTANTS = {
          "    return () => { viewAc.current?.abort(); viewAc.current = null; };", "{view && view.round_id === roundId ?"),
         ("    const ac", "if (true) { setView(v)", "    return () => { viewAc.current = null; };", "{view ?"),
         "switching rounds"),
+    # Step 3B: status updates (e2e/phase3b.spec.ts).
+    "3B: status buttons enabled during a save": (
+        "src/components/DeliveryView.tsx", "  const busy = actions.saving !== null;", "  const busy = false;", "in flight"),
+    "3B: success shown before the server confirms": (
+        "src/pages/RiderPage.tsx", "    setSaving({ id: item.id, target }); setNote(null); setFailed(null);",
+        "    setSaving({ id: item.id, target }); setNote({ kind: \"ok\", text: `${item.order_code} saved as ${target}.` }); setFailed(null);",
+        "in flight"),
+    "3B: unconfirmed save reported as saved": (
+        "src/pages/RiderPage.tsx", "        setFailed({ item, target, message:",
+        "        setNote({ kind: \"ok\", text: `${item.order_code} saved as ${target}.` }); void ({ item, target, message:", "unconfirmed save"),
+    "3B: conflict not reloaded": (
+        "src/pages/RiderPage.tsx", "        setNote({ kind: e.status === 409 ? \"warn\" : \"error\", text: e.message });\n        loadView(id);",
+        "        setNote({ kind: e.status === 409 ? \"warn\" : \"error\", text: e.message });", "conflicting change"),
+    "3B: late status answer applied to another round": (
+        "src/pages/RiderPage.tsx", "      if (current.current !== id || res.view.round_id !== id) return;  // the rider moved to another round\n", "",
+        "late status answer"),
+    "3B: delivered without the second tap": (
+        "src/components/DeliveryView.tsx", '(t.target === "Completed" ? actions.confirm(item.id) : actions.change(item, t.target))',
+        "actions.change(item, t.target)", "postpones, returns"),
     # 2C correction pass: readiness refresh and serialized mode changes.
     "no Refresh readiness action": (
         "src/pages/PlanPage.tsx", "onClick={() => roundId && refresh(roundId)}", "onClick={() => undefined}", "readiness refresh"),
@@ -104,7 +123,7 @@ def main() -> int:
         if not link.exists():
             link.symlink_to(ROOT / name)
     env = {**os.environ, "E2E_SHOTS_DIR": str(scratch / "shots1"), "E2E_2C_SHOTS_DIR": str(scratch / "shots2c"),
-           "E2E_3A_SHOTS_DIR": str(scratch / "shots3a")}
+           "E2E_3A_SHOTS_DIR": str(scratch / "shots3a"), "E2E_3B_SHOTS_DIR": str(scratch / "shots3b")}
     killed = total = 0
     for name, (rel, old, new, grep) in MUTANTS.items():
         if not name.startswith(only):
@@ -123,7 +142,7 @@ def main() -> int:
                             f'export E2E_DATABASE_URL="$(python3 -c \'import json,sys; print(json.load(open(sys.argv[1]))["database_url"])\' "$E2E_STATE")" && '
                             f'rm -f "{ROOT}/.local/e2e/hold-solve" && ' + (
                                 "npx vitest run" if grep == "vitest" else
-                                f'npx playwright test e2e/phase2.spec.ts e2e/phase3.spec.ts --project desktop -g "{grep}"')],
+                                f'npx playwright test e2e/phase2.spec.ts e2e/phase3.spec.ts e2e/phase3b.spec.ts --project desktop -g "{grep}"')],
                            env=env, capture_output=True, text=True)
         path.write_text(orig)
         status = "KILLED" if r.returncode else "SURVIVED"
