@@ -68,6 +68,7 @@ test("a rider postpones, returns to Pending and completes their own orders; sect
   const done = orderCard(rp, b);
   for (const id of ["call-link", "navigate-link", "status-actions"]) await expect(done.getByTestId(id)).toHaveCount(0);
   await expect(done.getByRole("button")).toHaveCount(0);
+  await shot(rp, "02b-all-statuses");  // Pending, Postponed and Completed cards together
 
   // Explicit return to Pending: it goes back to its saved stop (it had one in this plan).
   await action(rp, "Return to Pending", a).click();

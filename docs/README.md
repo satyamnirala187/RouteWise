@@ -14,10 +14,13 @@ Copied on 12 October 2026 from the RouteWise development package. The copies are
 
 - [Security review before publication](SECURITY-REVIEW.md) (19 Oct 2026) and the [security policy](../SECURITY.md). The repository is public; the app is not deployed or production-ready
 
-## Phase 3 (in progress, not complete)
+## Phase 3 (accepted 19 Oct 2026 for local development)
 
-- [Step 3A report](phase3/STEP-3A-REPORT.md): rider delivery view, call and Google Maps navigation links (read-only). Committed (`2b52cbc`), **awaiting owner review**; real-phone checks not done
-- [Step 3B report](phase3/STEP-3B-REPORT.md): riders' own delivery-status updates, progress versus route validity. Committed (after `2b52cbc`), **awaiting owner review**
+- [Owner acceptance record](phase3/OWNER-ACCEPTANCE-2026-10-19.md)
+- [Phase 3 report](phase3/PHASE3-REPORT.md): 3A + 3B summary, evidence, acceptance criteria, delivery-card polish
+- [Real-phone test guide](phase3/PHONE-TEST-GUIDE.md) and [results](phase3/PHONE-TEST-RESULTS.md): owner-reported device results (OnePlus Nord 5, Chrome); functional checks on the original UI, visual check of the polished cards
+- [Step 3A report](phase3/STEP-3A-REPORT.md): rider delivery view, call and Google Maps navigation links (read-only). Committed (`2b52cbc`)
+- [Step 3B report](phase3/STEP-3B-REPORT.md): riders' own delivery-status updates, progress versus route validity. Committed (`e2139c1`)
 
 ## Phase 2 (accepted 19 Oct 2026 for local development, `41b37f8`)
 

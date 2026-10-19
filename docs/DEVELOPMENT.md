@@ -128,6 +128,10 @@ Two revisions per round (migration 0004):
 
 Plans also report `progress_since_plan` (only progress since; the remaining saved sequence is valid) and, for the current plan, `unplanned_pending` (Pending orders it does not route). Admin status edits still bump both. Details and locking: [the step 3B report](phase3/STEP-3B-REPORT.md).
 
+## Real-phone testing (Phase 3, local Wi-Fi only)
+
+`services/api/scripts/phone_setup.py` builds the isolated `routewise_phone` database: synthetic riders and customers on public DU points, planned on the local tiles. `scripts/phone-server.sh` serves only the app on this Mac's Wi-Fi address, port 8020; PostgreSQL stays on 127.0.0.1. Steps, checklist and shutdown: [docs/phase3/PHONE-TEST-GUIDE.md](phase3/PHONE-TEST-GUIDE.md). Credentials and expected stops go to the git-ignored `.local/phone/`.
+
 ## Database
 
 - Migrations: `services/api/migrations/versions/` (Alembic).
