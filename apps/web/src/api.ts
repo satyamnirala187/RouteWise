@@ -200,6 +200,13 @@ export interface PlanRoute {
   start: DepotKind; destination: DestinationKind; open_route: boolean;
   road_distance_m: number; road_duration_s: number;
   stops: { seq: number; orders: PlanOrderRef[] }[]; postponed: PlanOrderRef[]; completed: PlanOrderRef[];
+  // 4B: the rider's effective route for the current plan (null for superseded plans).
+  rider_route: {
+    revision: { number: number; trigger: "rider_request" | "endpoint_change"; origin_kind: OriginKind;
+                origin_order_code: string | null; created_at: string } | null;
+    destination: DestinationKind; open_route: boolean; road_distance_m: number; road_duration_s: number;
+    stops: { seq: number; orders: PlanOrderRef[] }[]; awaiting_recalculation: "destination_changed" | null;
+  } | null;
 }
 export interface Provenance {
   provider?: string; real_road?: boolean; recorded?: boolean; profile?: string; requested_at?: string;
@@ -217,6 +224,7 @@ export interface Plan {
     completed_without_owner?: string[]; completed_owner_not_participating?: string[];
     ownership_changes: { order_code: string; from_rider: string | null; to_rider: string | null }[];
     total_road_distance_m: number; total_road_duration_s: number;
+    rider_revisions_superseded?: string[];  // 4B: riders whose own recalculated route this plan replaced
   };
   routes: PlanRoute[]; attribution: string;
 }
@@ -274,9 +282,23 @@ export interface DeliveryView {
     real_road: boolean; recorded: boolean;
     route: { vehicle: Vehicle; start: DeliveryPlace; destination: DeliveryPlace; open_route: boolean;
              road_distance_m: number; road_duration_s: number } | null;
+    // 4B: the rider's effective route (their own recalculation, if any). `route` stays the admin plan's.
+    rider_route: {
+      revision: { number: number; trigger: "rider_request" | "endpoint_change"; origin_kind: OriginKind;
+                  origin_order_code: string | null; created_at: string } | null;
+      origin_label: string | null; vehicle: Vehicle; destination: DeliveryPlace; open_route: boolean;
+      road_distance_m: number; road_duration_s: number; awaiting_recalculation: "destination_changed" | null;
+    } | null;
   } | null;
   sequence: { seq: number; orders: DeliveryItem[] }[];
   unsequenced: DeliveryItem[]; postponed: DeliveryItem[]; completed: DeliveryItem[];
+  // 4B: what the rider may choose for their own reroute (the screens arrive in 4D).
+  reroute: {
+    available: boolean; blocked: { code: string; message: string } | null; in_progress_run_id: string | null;
+    last_completed_stop: { order_id: string; order_code: string; customer_name: string; label: string } | null;
+    configured_start_allowed: boolean; gps_limits: { max_accuracy_m: number; max_age_s: number };
+  } | null;
 }
+export type OriginKind = "current_position" | "last_completed_stop" | "configured_start";
 /** `POST /api/rider/orders/{id}/status` (3B). */
 export interface StatusResult { changed: boolean; order: DeliveryItem; view: DeliveryView; }

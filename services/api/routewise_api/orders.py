@@ -49,6 +49,18 @@ def order_lock_options() -> dict:
     return {"with_for_update": {"key_share": True}, "populate_existing": True}
 
 
+def set_status(order: Order, status: str, user_id, now) -> None:
+    """Change an order's status and keep its completion record honest (4B): becoming Completed
+    records now and who did it; leaving Completed clears both. Nothing is backfilled."""
+    if status == order.status:
+        return
+    order.status = status
+    if status == "Completed":
+        order.completed_at, order.completed_by = now, user_id
+    else:
+        order.completed_at = order.completed_by = None
+
+
 def validate_status(value: str) -> str:
     if value not in ORDER_STATUSES:
         raise ValueError("status must be one of Pending, Postponed, Completed")

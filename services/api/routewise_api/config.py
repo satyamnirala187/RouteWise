@@ -50,6 +50,17 @@ class PlanningLimits:
 
 
 @dataclass(frozen=True)
+class RerouteLimits:
+    """Step 4B: a rider's own reroute. PROVISIONAL local implementation defaults (the owner
+    authorized 4B with these values; they are not separately approved permanent product
+    decisions, see docs/phase4/IMPLEMENTATION-PLAN.md Q4-2). Configurable through the environment."""
+
+    gps_max_accuracy_m: float = 100.0  # a device fix less accurate than this is refused (fallbacks offered)
+    gps_max_age_s: float = 60.0        # a device fix older than this is refused; it is never reused later
+    solve_seconds: int = 10            # OR-Tools safety ceiling for one rider's re-sequence (4 stops took ~0.1 s on local tiles, 4B report)
+
+
+@dataclass(frozen=True)
 class Settings:
     env: str
     database_url: str
@@ -65,6 +76,7 @@ class Settings:
     service_area: ServiceArea = field(default_factory=ServiceArea)
     valhalla_tiles: Path = REPO_ROOT / "spikes" / "valhalla" / "data" / "valhalla_tiles"  # git-ignored, built locally
     planning: PlanningLimits = field(default_factory=PlanningLimits)
+    reroute: RerouteLimits = field(default_factory=RerouteLimits)
 
     @property
     def cookie_name(self) -> str:
@@ -95,6 +107,11 @@ def load_settings(database_url: str | None = None) -> Settings:
         resolve_short_links=os.environ.get("ROUTEWISE_RESOLVE_SHORT_LINKS", "true").lower() == "true",
         valhalla_tiles=Path(os.environ.get("ROUTEWISE_VALHALLA_TILES")
                             or REPO_ROOT / "spikes" / "valhalla" / "data" / "valhalla_tiles"),
+        reroute=RerouteLimits(
+            gps_max_accuracy_m=float(os.environ.get("ROUTEWISE_REROUTE_GPS_MAX_ACCURACY_M", RerouteLimits.gps_max_accuracy_m)),
+            gps_max_age_s=float(os.environ.get("ROUTEWISE_REROUTE_GPS_MAX_AGE_S", RerouteLimits.gps_max_age_s)),
+            solve_seconds=int(os.environ.get("ROUTEWISE_REROUTE_SOLVE_SECONDS", RerouteLimits.solve_seconds)),
+        ),
     )
     if not settings.database_url:
         raise RuntimeError("DATABASE_URL is not set (run scripts/dev-db.sh init)")

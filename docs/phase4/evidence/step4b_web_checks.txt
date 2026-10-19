@@ -1,0 +1,15 @@
+# Step 4B: web typecheck, unit tests and build (19 Oct 2026 21:36 IST)
+$ npm run typecheck
+typecheck exit 0
+$ npx vitest run
+ Test Files  4 passed (4)
+      Tests  23 passed (23)
+$ npm run build
+✓ built in 142ms
+build exit 0
+
+# Re-run 20 Oct 2026 after the final review edit to PlanView.tsx (a stray blank line between a doc comment and its function; no behaviour change)
+$ npm run typecheck   -> ok
+$ npx vitest run      -> Test Files 4 passed (4), Tests 23 passed (23)
+$ npm run build       -> built
+# The browser suite was not rerun: no web behaviour changed after the 19 Oct run above.

@@ -23,6 +23,7 @@ from ..orders import (
     next_order_code,
     order_view,
     readiness_blockers,
+    set_status,
     validate_status,
     validate_text,
 )
@@ -278,7 +279,8 @@ def _bump_if_planning_input_changed(db: DBSession, order: Order, before: tuple) 
 
 
 @router.patch("/orders/{order_id}")
-def edit_order(order_id: uuid.UUID, body: OrderPatch, db: DBSession = Depends(get_db, scope="function"),
+def edit_order(order_id: uuid.UUID, body: OrderPatch, current: CurrentUser = Depends(require_admin),
+               db: DBSession = Depends(get_db, scope="function"),
                settings: Settings = Depends(get_settings), now: datetime = Depends(get_now)) -> dict:
     order = _locked_order(db, order_id, body.version)
     before = _planning_fields(order)
@@ -294,7 +296,7 @@ def edit_order(order_id: uuid.UUID, body: OrderPatch, db: DBSession = Depends(ge
         elif body.instructions is not None:
             order.instructions = validate_text("instructions", body.instructions, required=False)
         if body.status is not None:
-            order.status = validate_status(body.status)
+            set_status(order, validate_status(body.status), current.user.id, now)
     except ValueError as exc:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(exc)) from None
     _bump(order, now)

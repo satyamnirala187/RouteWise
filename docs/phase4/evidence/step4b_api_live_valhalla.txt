@@ -1,0 +1,5 @@
+# Step 4B: opt-in API checks on the REAL local Valhalla tiles (19 Oct 2026 21:45 IST); no recording, no network
+$ ROUTEWISE_LIVE_TESTS=1 .venv/bin/python -m pytest -q -s -p no:cacheprovider tests/test_planning_live.py
+LIVE {"timings": {"points": 15, "riders": 3, "solve_s": 0.47, "total_s": 0.676, "matrix_s": 0.206, "matrix_calls": 2, "pending_orders": 11}, "provider": "valhalla-local (OpenStreetMap data)", "response_status": "in-process Actor OK, 138 ms", "profile": "motor_scooter (scooter), motorcycle (bike)", "requested_at": "2026-10-19T16:15:12+00:00", "solver_status": "SUCCESS", "total_road_distance_m": 22848}
+LIVE-REROUTE {"state": "succeeded", "origin_kind": "current_position", "stops": 4, "road_distance_m": 7068, "provider": "valhalla-local (OpenStreetMap data)", "solver_status": "SUCCESS", "timings": {"points": 6, "solve_s": 0.078, "total_s": 0.096, "matrix_s": 0.017, "matrix_calls": 1, "pending_orders": 4}}
+2 passed, 3 warnings in 3.44s

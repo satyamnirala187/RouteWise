@@ -285,7 +285,7 @@ def _lock(w):
     return w.admin.send("PUT", f"/api/admin/orders/{o['id']}/lock", json={"version": o["version"], "rider_id": w.ids["Rider B"]})
 
 
-@pytest.mark.parametrize("change", [_pin, _admin_status, _destination, _capacity, _depot, _mode, _lock],
+@pytest.mark.parametrize("change", [_pin, _admin_status, _capacity, _depot, _mode, _lock],
                          ids=lambda f: f.__name__.strip("_"))
 def test_genuine_changes_after_progress_still_mark_the_plan_out_of_date(world, change):
     w = world
@@ -298,6 +298,28 @@ def test_genuine_changes_after_progress_still_mark_the_plan_out_of_date(world, c
     assert current["out_of_date"] is True and current["progress_since_plan"] is False
     for b in w.browsers.values():
         assert deliveries(b, w.rid).json()["plan"]["out_of_date"] is True
+
+
+def test_a_riders_own_destination_change_after_progress_invalidates_only_their_route(world, db):
+    """4B (R23): a rider's own destination change is not a round-wide change. In-flight solves still
+    become stale (input_version), the rider's confirmation is reset and only their route awaits
+    recalculation; every other rider's saved route stays current and nobody else must reconfirm."""
+    w = world
+    plan_now(w)
+    _, codes = mine(w, "Rider A")
+    update(w, "Rider A", codes[0], "Completed")
+    input_before, route_before = round_versions(db, w.rid)
+    assert _destination(w).status_code == 200  # Rider C chooses the Office
+    assert round_versions(db, w.rid) == (input_before + 1, route_before)
+    current = w.admin.get(f"/api/admin/rounds/{w.rid}/plan").json()
+    assert current["out_of_date"] is False and current["progress_since_plan"] is True
+    flags = {r["rider"]: r["rider_route"]["awaiting_recalculation"] for r in current["routes"]}
+    assert flags == {"Rider A": None, "Rider B": None, "Rider C": "destination_changed"}
+    for name, b in w.browsers.items():
+        view = deliveries(b, w.rid).json()
+        assert view["plan"]["out_of_date"] is False
+        assert view["plan"]["rider_route"]["awaiting_recalculation"] == ("destination_changed" if name == "Rider C" else None)
+        assert view["setup"]["confirmation"] == ("outdated" if name == "Rider C" else "confirmed")
 
 
 def test_returning_to_pending_reuses_only_a_saved_position(world, db):

@@ -12,6 +12,37 @@ For the owner: this Mac plus one Android phone or iPhone on the **same trusted W
 
 ## A. Start (on the Mac, in Terminal, from the RouteWise folder)
 
+**Already have a `routewise_phone` from an earlier test? Do A0 first.** Starting fresh? Go to step 1.
+
+### A0. Bring an existing phone database up to date (since step 4B)
+
+Step 4B added database migration `0005`. A `routewise_phone` built before it is still on schema `0004`. The newer code cannot read it: sign-in or the rounds screen breaks with `column round_riders.route_version does not exist`.
+
+`scripts/phone-server.sh` now checks the schema before it builds or serves anything. If the database is out of date it prints the steps below and **does not start**. It never resets, rebuilds or migrates anything by itself.
+
+a. Stop the phone server if it is running (**Ctrl+C** in its window).
+
+b. Look (read-only, changes nothing):
+   ```bash
+   services/api/.venv/bin/python services/api/scripts/phone_db.py check
+   ```
+   `Database routewise_phone: schema 0005 (current).` means you can go to step 3. Otherwise it says what to do.
+
+c. **Upgrade and keep the data** (riders, passwords, orders, plan, statuses). You run this yourself:
+   ```bash
+   services/api/.venv/bin/python services/api/scripts/phone_db.py upgrade
+   ```
+   - It touches only `routewise_phone` and refuses any other database name. The development and test databases, and any other server, are not touched.
+   - It only adds columns and tables. Existing rows are kept, and each migration is one transaction, so a failure leaves the database as it was.
+   - The passwords in `.local/phone/credentials.txt` stay valid. You do not need to run `phone_setup.py`.
+   - Orders marked Completed before the upgrade have no completion time. A later reroute never uses them as the "last completed stop".
+
+d. Start the server (step 3).
+
+**Alternative, fresh data:** `phone_setup.py` (step 1) rebuilds `routewise_phone` and issues new passwords. That **deletes** what is in it, which is why the launcher never does it for you.
+
+**What 4B changes on the phone:** nothing you can see. Rerouting is API-only until step 4D, so the checks in C are the Phase 3 checks, unchanged. **Phone GPS has not been tested.** Device-position reroutes are covered only by automated tests with mocked positions.
+
 1. Build the test data:
    ```bash
    scripts/dev-db.sh create-db routewise_phone   # first time only ("already exists" is fine)
@@ -24,6 +55,7 @@ For the owner: this Mac plus one Android phone or iPhone on the **same trusted W
    - `.local/phone/credentials.txt`: user names and passwords;
    - `.local/phone/expected.txt`: Test Rider A's stops in order, each with its public place, pin, expected Google Maps link and contact.
 3. Start the server: `scripts/phone-server.sh`. It prints `Open on the phone: http://<address>:8020`.
+   - If it stops with "The phone-test database routewise_phone is on schema …", follow A0.
    - Leave this window open.
    - If macOS asks whether Python may accept incoming connections, choose **Allow**. That allows the local network only; no router change is needed.
 

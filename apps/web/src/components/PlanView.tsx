@@ -1,6 +1,13 @@
-import { KIND_LABEL, VEHICLE_LABEL, type AdminOrder, type Plan } from "../api";
+import { KIND_LABEL, VEHICLE_LABEL, type AdminOrder, type OriginKind, type Plan } from "../api";
 import { km, provenanceLabel, trafficFree } from "../planning";
 import { destinationLabel } from "./ui";
+
+// 4B: where a rider's own recalculation started (kinds only; never a position).
+const ORIGIN_TEXT: Record<OriginKind, string> = {
+  current_position: "their current position",
+  last_completed_stop: "their last completed stop",
+  configured_start: "their configured start",
+};
 
 /** One saved plan as a list (no map in Phase 2). `title` says whether this is the current plan
  * or a history version, so an older result is never mistaken for a new one. */
@@ -84,6 +91,17 @@ export default function PlanView({ plan, title, orders }: { plan: Plan; title: s
               <span className="text-sm text-slate-600">{VEHICLE_LABEL[r.vehicle]} · capacity {r.capacity}</span>
             </div>
             <p className="mt-1 text-sm"><b data-testid="route-distance">{km(r.road_distance_m)}</b> · {trafficFree(r.road_duration_s)}</p>
+            {r.rider_route?.awaiting_recalculation && (
+              <p className="mt-1 text-sm text-amber-900" data-testid="rider-awaiting-recalculation">
+                {r.rider ?? "This rider"} changed their destination after this plan. Only their route awaits recalculation; the other routes stay current.
+              </p>
+            )}
+            {r.rider_route?.revision && (
+              <p className="mt-1 text-sm text-slate-700" data-testid="rider-revision">
+                Recalculated by the rider at {new Date(r.rider_route.revision.created_at).toLocaleTimeString()} from {ORIGIN_TEXT[r.rider_route.revision.origin_kind]}:{" "}
+                {r.rider_route.stops.length} stops, {km(r.rider_route.road_distance_m)}. The stops below are the saved plan.
+              </p>
+            )}
             <ol className="mt-3 space-y-1 text-sm">
               <li className="text-slate-600" data-testid="route-start">Start: {KIND_LABEL[r.start]}</li>
               {r.stops.map((stop) => (

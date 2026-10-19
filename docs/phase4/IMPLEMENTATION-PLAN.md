@@ -1,15 +1,15 @@
 # Phase 4 implementation plan: quick call, rerouting and shared stops
 
-**Status: step 4A implemented, awaiting review ([report](STEP-4A-REPORT.md)); 4B, 4C and 4D not started. Phase 4 is incomplete.**
+**Status: step 4A committed (`e40e0b0`), awaiting review ([report](STEP-4A-REPORT.md)); step 4B committed ("Add RouteWise individual rider rerouting", after `e40e0b0`), awaiting review ([report](STEP-4B-REPORT.md)); 4C and 4D not started. Phase 4 is incomplete.**
 
-The owner authorized **step 4A only** on 19 October 2026. That is **not** approval of the rest of this plan: the proposed defaults (Q4-1…Q4-7, including the GPS thresholds and the grouping rule) remain pending, and 4B–4D each need their own approval.
+The owner authorized **step 4A**, then **step 4B**, on 19 October 2026, each on its own. For 4B the owner set local implementation defaults for Q4-2, Q4-3, Q4-4, Q4-5 and Q4-7 (§4). They are **provisional and configurable**, not separately approved permanent product decisions. Q4-1 (grouping) and Q4-6 (phone secure context) remain pending, and 4C and 4D each need their own approval.
 
 | | |
 |---|---|
 | Date | 19 October 2026 |
 | Prepared by | Claude Code |
 | Baseline | Phase 3, accepted for local development at `3fa1e40435981e98f040d896ca45b3ef8397fc5c` ([record](../phase3/OWNER-ACCEPTANCE-2026-10-19.md)) |
-| Approval | 4A authorized by the owner (19 Oct 2026). 4B–4D and decisions Q4-1…Q4-7 not approved |
+| Approval | 4A and 4B authorized by the owner (19 Oct 2026). 4C and 4D not approved. Q4-2/3/4/5/7 used as provisional 4B defaults; Q4-1 and Q4-6 pending |
 
 **Constraints:**
 - ₹0, using local Valhalla only (`spikes/valhalla/data/valhalla_tiles`).
@@ -198,7 +198,7 @@ Same shape as `planning.py`. **No transaction is open while matrices or the solv
 **Limits:**
 - Worker slots are shared with admin runs. When they are full, the rider gets 503 "busy, try again". Requests are never queued without a bound.
 - The existing per-run size limits apply.
-- A separate rider-run time limit (`reroute_solve_seconds`) is proposed; its default is set from 4B measurements.
+- A separate rider-run time limit: `RerouteLimits.solve_seconds`, default 10 s (`ROUTEWISE_REROUTE_SOLVE_SECONDS`). It is a ceiling: a four-stop recalculation took about 0.1 s on the local tiles ([4B report](STEP-4B-REPORT.md)).
 
 ### 2.5 Ownership checks at each point
 
@@ -381,6 +381,14 @@ Same shape as `planning.py`. **No transaction is open while matrices or the solv
 - **Priority within a stop:** the rider view does not carry the first-delivery flag. Within-stop priority ordering is therefore 4C work, alongside shared stops.
 
 ### 4B: Individual rerouting and endpoint-change recalculation
+
+*Implemented on 19 October 2026 (committed, awaiting review; [4B report](STEP-4B-REPORT.md)). Where the build differs from or adds to this plan:*
+- *The delivery view keeps `plan.route` as the admin plan's route and adds `plan.rider_route`, the effective route. The route summary card is unchanged.*
+- *The admin plan endpoint adds `rider_route` per rider. The admin plan page shows two one-line notes: "awaiting recalculation", and "recalculated by the rider … the stops below are the saved plan". Without them, a rider's destination change would have removed the admin's only visual signal.*
+- *`configured_start` is accepted only when the rider has no recorded completed stop (working flow §7).*
+- *`last_completed_stop` must name the order the rider was shown; a newer completion gives `ORIGIN_CHANGED`.*
+- *Only completions recorded by the rider's own account count; an admin's completion never does.*
+- *The rider-scoped fingerprint leaves out order versions, so customer-text edits never make a reroute stale.*
 
 **User-visible behaviour** (through the API in 4B; screens in 4D)
 - **Reroute:**
@@ -609,6 +617,15 @@ Defaults are proposals, not approvals.
 | Q4-7 | Does an admin round re-optimization supersede rider reroutes, and are rider reroutes refused while one runs? | Yes to both (§2.6) | 4B |
 | Q1 | Whole-round re-optimization after issue (pending since Phase 2) | Unchanged and not built. Interacts with §2.6 | — |
 | Q7 | Snap-distance guard (pending since Phase 2) | Unchanged; GPS origins use the existing unroutable checks | — |
+
+**Used in 4B as provisional local defaults.** The owner's 4B instructions set these values for the implementation; they are configurable and not permanent product decisions:
+- **Q4-2:** accuracy ≤ 100 m and fix age ≤ 60 s (`ROUTEWISE_REROUTE_GPS_MAX_ACCURACY_M`, `ROUTEWISE_REROUTE_GPS_MAX_AGE_S`), inside the service area.
+- **Q4-3:** no manual position entry.
+- **Q4-4:** the remaining first-priority order stays first.
+- **Q4-5:** admin edits keep round-wide invalidation.
+- **Q4-7:** new rider reroutes are refused while an admin optimization is active, and an admin plan supersedes rider revisions.
+
+**Still pending:** Q4-1 and Q4-6.
 
 ## 5. Blockers and limits
 

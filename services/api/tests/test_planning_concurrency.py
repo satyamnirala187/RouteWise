@@ -82,6 +82,16 @@ def _depot(w):
     return set_depot(w.admin, "office", PUBLIC_DU["gtb_nagar"], version=office["version"])
 
 
+def _invalidated(w, current, edit) -> bool:
+    """A change committed after the plan makes it unusable where the change applies: round-wide for
+    admin and configuration edits; only Rider C's own route for Rider C's destination change (4B,
+    R23), which never marks the other riders' routes out of date."""
+    if edit is _destination:
+        rc = next(r for r in current["routes"] if r["rider"] == "Rider C")
+        return current["out_of_date"] is False and rc["rider_route"]["awaiting_recalculation"] == "destination_changed"
+    return current["out_of_date"] is True
+
+
 def _capacity(w):
     v = setup_of(w.browsers["Rider A"], w.rid).json()["config_version"]
     r = put_rider(w.admin, w.rid, w.ids["Rider A"], version=v, capacity=6)
@@ -200,7 +210,7 @@ def test_plan_commit_racing_an_input_edit_serialises_without_deadlock(world, db,
     assert run["state"] in ("stale", "succeeded"), run
     current = w.admin.get(f"/api/admin/rounds/{w.rid}/plan").json()
     if run["state"] == "succeeded":
-        assert current["version"] == 2 and current["out_of_date"] is True
+        assert current["version"] == 2 and _invalidated(w, current, edit)
     else:
         assert current["version"] == 1
 
@@ -267,7 +277,7 @@ def test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome(wo
         assert current["version"] == 1 and owners(w) == before
     else:
         assert run["state"] == "succeeded", run
-        assert current["version"] == 2 and current["out_of_date"] is True
+        assert current["version"] == 2 and _invalidated(w, current, edit)
         assert plans(db, w.rid) == [(1, False), (2, True)]
     # With the explicit round lock held by the commit, the edit cannot be first at this point.
     assert not edit_first

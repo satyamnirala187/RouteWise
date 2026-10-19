@@ -1,12 +1,14 @@
-"""Phase 1, 2A, 2B, 3A and 3B mutation check: inject known security/correctness defects into a scratch copy of
+"""Phase 1, 2A, 2B, 3A, 3B and 4B mutation check: inject known security/correctness defects into a scratch copy of
 services/api and confirm the test suite fails for each.
 
 Usage: python tools/mutation_check.py <scratch copy of services/api> <python with API deps> [name prefix]
-With a prefix (e.g. "2B:", "3A:" or "3B:") only the matching targeted mutants run.
+With a prefix (e.g. "2B:", "3A:", "3B:" or "4B:") only the matching targeted mutants run.
+MUTATION_TESTS (optional, space-separated test paths) limits each run to those tests.
 Never run against the working tree: it rewrites source files in the given copy.
 The copy must have the same .env access as the real tree (tests use TEST_DATABASE_URL).
 """
 
+import os
 import pathlib
 import subprocess
 import sys
@@ -131,6 +133,39 @@ MUTANTS = {
                                                  "    if _planning_fields(order) != before:\n        bump_round_input(db, order.round_id, route=order.status == before[3])"),
     "3B: out of date judged on the input revision": ("planning.py", "    out_of_date = plan.route_version != rnd.route_version",
                                                      "    out_of_date = plan.input_version != rnd.input_version"),
+    # Phase 4B: rider route revisions (run with the "4B:" prefix; MUTATION_TESTS may select test files)
+    "4B: revision ignored by the delivery view": ("rider_routes.py", "    revision = current_revision(db, plan.id, rider_id)\n",
+                                                  "    revision = None\n"),
+    "4B: other riders' progress makes a reroute stale": ("reroute.py", '"plan": [t(snap.base_plan_id), snap.revision,',
+                                                        '"plan": [snap.input_version, t(snap.base_plan_id), snap.revision,'),
+    "4B: own status not part of the rider input": ("reroute.py", "        \"orders\": [[str(o.id), o.status, o.location_state,",
+                                                   "        \"orders\": [[str(o.id), o.location_state,"),
+    "4B: base plan not re-checked at commit": ("reroute.py", "    if fresh is None or fresh.base_plan_id != run.base_plan_id:",
+                                               "    if fresh is None:"),
+    "4B: destination change invalidates every rider": ("riders.py", "    bump_round_input(db, rr.round_id, route=False)\n",
+                                                       "    bump_round_input(db, rr.round_id)\n"),
+    "4B: confirmation invalidates every rider": ("routers/rider.py", "        bump_round_input(db, round_id, route=False)",
+                                                 "        bump_round_input(db, round_id)"),
+    "4B: inaccurate fix accepted": ("reroute.py", "    if req.accuracy_m > limits.gps_max_accuracy_m:", "    if False:"),
+    "4B: old fix accepted": ("reroute.py", "    if req.age_s > limits.gps_max_age_s:", "    if False:"),
+    "4B: position outside the service area accepted": ("reroute.py", "    if not settings.service_area.contains(req.lat, req.lng):",
+                                                       "    if False:"),
+    "4B: anyone's completion used as the last stop": ("reroute.py", "            and o.completed_by == snap.user_id and _usable(o, settings)]",
+                                                      "            and _usable(o, settings)]"),
+    "4B: configured start offered after a completion": ("reroute.py", "        if last is not None:\n            raise PlanningRefused(409, \"COMPLETED_STOP_AVAILABLE\"",
+                                                        "        if False:\n            raise PlanningRefused(409, \"COMPLETED_STOP_AVAILABLE\""),
+    "4B: reroute allowed while the admin replans": ("reroute.py", "    if active_round_run:\n", "    if False:\n"),
+    "4B: completion time not recorded": ("orders.py", "        order.completed_at, order.completed_by = now, user_id",
+                                         "        order.completed_at, order.completed_by = None, None"),
+    "4B: admin plan leaves rider revisions current": ("planning.py", ".values(is_current=False, superseded_at=now).returning(RouteRevision.rider_id)",
+                                                      ".where(False).values(is_current=False, superseded_at=now).returning(RouteRevision.rider_id)"),
+    "4B: Postponed orders re-sequenced": ("reroute.py", '        return [o for o in self.orders if o.status == "Pending"]',
+                                          '        return [o for o in self.orders if o.status != "Completed"]'),
+    "4B: wrong vehicle profile": ("reroute.py", "profile=VEHICLE_PROFILE[prepared.inp.vehicle.value],", 'profile="motor_scooter",'),
+    "4B: priority dropped on reroute": ("reroute.py", "                               first_priority=o.first_priority) for o in pending)",
+                                       "                               first_priority=False) for o in pending)"),
+    "4B: another rider can read a reroute run": ("routers/rider.py", 'if run is None or run.scope != "rider" or run.rider_id != current.rider.id:',
+                                                 'if run is None or run.scope != "rider":'),
 }
 if len(sys.argv) > 3:
     MUTANTS = {k: v for k, v in MUTANTS.items() if k.startswith(sys.argv[3])}
@@ -142,7 +177,8 @@ for name, (files, old, new, *mode) in MUTANTS.items():
     for path, orig in originals.items():
         assert old in orig, f"mutant target missing: {name} in {path.name}"
         path.write_text(orig.replace(old, new) if mode == ["all"] else orig.replace(old, new, 1))
-    r = subprocess.run([py, "-m", "pytest", "-q", "-x", "-p", "no:cacheprovider"], cwd=root, capture_output=True, text=True)
+    r = subprocess.run([py, "-m", "pytest", "-q", "-x", "-p", "no:cacheprovider", *os.environ.get("MUTATION_TESTS", "").split()],
+                       cwd=root, capture_output=True, text=True)
     for path, orig in originals.items():
         path.write_text(orig)
     status = "KILLED" if r.returncode else "SURVIVED"

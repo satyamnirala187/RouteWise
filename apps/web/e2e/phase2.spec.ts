@@ -347,7 +347,10 @@ test("a destination change during a solve rejects the result and keeps the previ
   await expect(status).toContainText("still version 1 from before this run");
   await expect(page.getByRole("heading", { name: "Current plan (the latest run did not replace it)" })).toBeVisible();
   await expect(page.getByTestId("plan-view")).toHaveAttribute("data-version", "1");
-  await expect(page.getByTestId("out-of-date")).toBeVisible();
+  // 4B (R23): Chitra's own destination change invalidates only her route, not the whole plan.
+  await expect(page.getByTestId("out-of-date")).toHaveCount(0);
+  await expect(page.getByTestId("plan-route").filter({ hasText: "Chitra" }).getByTestId("rider-awaiting-recalculation")).toBeVisible();
+  await expect(page.getByTestId("plan-route").filter({ hasText: "Asha" }).getByTestId("rider-awaiting-recalculation")).toHaveCount(0);
   await expect(optimizeButton(page)).toBeDisabled();  // Chitra must confirm the new destination first
   expect(await admin.json<unknown[]>(`/api/admin/rounds/${rid}/plans`)).toHaveLength(1);
   await expectNoHorizontalOverflow(page);

@@ -8,11 +8,11 @@ const item = (code: string, status: Status = "Pending"): DeliveryItem => ({
 });
 const plan = (out_of_date = false): DeliveryView["plan"] => ({
   version: 1, is_current: true, created_at: "2026-10-19T00:00:00Z", out_of_date, progress_since_plan: false,
-  superseded_versions: 0, real_road: true, recorded: true, route: null,
+  superseded_versions: 0, real_road: true, recorded: true, route: null, rider_route: null,
 });
 const view = (parts: Partial<DeliveryView>): DeliveryView => ({
   round_id: "r", round_name: "Round", participating: true, setup: null, plan: plan(),
-  sequence: [], unsequenced: [], postponed: [], completed: [], ...parts,
+  sequence: [], unsequenced: [], postponed: [], completed: [], reroute: null, ...parts,
 });
 
 describe("nextDelivery", () => {

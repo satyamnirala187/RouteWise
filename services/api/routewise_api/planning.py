@@ -37,6 +37,10 @@ can commit until the plan and its assignments are committed, and the edit then m
 plan out of date. Without it, an edit could commit between the check and the writes, and the
 plan would overwrite assignments with a result computed from older input.
 
+Rider reroutes (4B, routewise_api/reroute.py) run in the same bounded worker as rider-scoped runs
+and commit a route revision under the same depot → round lock order (then the rider's own
+round-rider row). A round plan commit supersedes every rider revision of the plan it replaces.
+
 Privacy. Snapshots (with Home/Custom coordinates) exist only in memory. Runs, plans, errors and
 logs carry order codes, rider ids/names and kinds, never destination coordinates.
 """
@@ -73,6 +77,7 @@ from .models import (
     RiderEndpoint,
     RoundRider,
     RoutePlan,
+    RouteRevision,
     User,
 )
 from .orders import readiness_blockers
@@ -142,6 +147,7 @@ class RiderSnap:
     capacity: int
     start_kind: str
     config_version: int
+    route_version: int  # 4B: rider-scoped route validity, recorded on the plan route
     confirmed: bool
     endpoint_kind: str | None
     endpoint_lat: float | None
@@ -180,7 +186,7 @@ def capture(db: DBSession, round_id: uuid.UUID) -> Snapshot:
     ).all()
     riders = tuple(
         RiderSnap(rr.rider_id, r.display_name, u.active, rr.vehicle, rr.capacity, rr.start_kind, rr.config_version,
-                  is_confirmed(rr), e.kind if e else None, e.lat if e else None, e.lng if e else None)
+                  rr.route_version, is_confirmed(rr), e.kind if e else None, e.lat if e else None, e.lng if e else None)
         for rr, r, u, e in rider_rows)
     order_rows = db.execute(
         select(Order, Assignment.rider_id)
@@ -446,8 +452,14 @@ def commit_plan(db: DBSession, run_id: uuid.UUID, snap: Snapshot, prepared: Prep
     previous = db.scalar(select(RoutePlan).where(RoutePlan.round_id == snap.round_id, RoutePlan.is_current.is_(True))
                          .with_for_update())
     version = (db.scalar(select(func.max(RoutePlan.version)).where(RoutePlan.round_id == snap.round_id)) or 0) + 1
+    superseded_revisions: list[str] = []
     if previous is not None:
         previous.is_current, previous.superseded_at = False, now
+        # 4B: riders' own recalculated routes belong to the plan being replaced; they are kept as
+        # history, marked superseded, and are never effective for the new plan.
+        superseded_revisions = sorted({str(rid) for rid in db.scalars(
+            update(RouteRevision).where(RouteRevision.plan_id == previous.id, RouteRevision.is_current.is_(True))
+            .values(is_current=False, superseded_at=now).returning(RouteRevision.rider_id)).all()})
         db.flush()  # the partial unique index allows one current plan; clear the old one first
 
     planned = {by_code[code].id: uuid.UUID(rid) for code, rid in plan.assignments.items()}
@@ -459,6 +471,7 @@ def commit_plan(db: DBSession, run_id: uuid.UUID, snap: Snapshot, prepared: Prep
         "completed_held": sum(1 for _, role in prepared.held.values() if role == "completed"),
         **prepared.excluded,
         "ownership_changes": changes,
+        "rider_revisions_superseded": superseded_revisions,  # rider ids whose own recalculated route this plan replaces
         "total_road_distance_m": sum(r.road_distance_m for r in plan.routes.values()),
         "total_road_duration_s": sum(r.road_duration_s for r in plan.routes.values()),
     }
@@ -479,7 +492,7 @@ def commit_plan(db: DBSession, run_id: uuid.UUID, snap: Snapshot, prepared: Prep
         db.add(PlanRoute(plan_id=row.id, rider_id=r.rider_id, vehicle=r.vehicle, profile=VEHICLE_PROFILE[r.vehicle],
                          capacity=r.capacity, start_kind=r.start_kind, endpoint_kind=r.endpoint_kind,
                          open_route=route.end_location_id is None, road_distance_m=route.road_distance_m,
-                         road_duration_s=route.road_duration_s))
+                         road_duration_s=route.road_duration_s, rider_route_version=r.route_version))
     db.flush()
     for rid, route in plan.routes.items():
         for seq, stop in enumerate(route.stops, start=1):
@@ -535,8 +548,9 @@ def plan_validity(plan: RoutePlan, rnd: DeliveryRound) -> dict:
 @dataclass
 class _Job:
     run_id: uuid.UUID
-    snap: Snapshot
-    prepared: Prepared
+    snap: object       # Snapshot, or reroute.RiderSnapshot for a rider run
+    prepared: object   # Prepared, or reroute.RiderPrepared
+    runner: object = None  # callable(job) for rider runs; None = round run (`PlanningService.run`)
 
 
 class PlanningService:
@@ -572,13 +586,13 @@ class PlanningService:
     def release(self) -> None:
         self._slots.release()
 
-    def submit(self, run_id: uuid.UUID, snap: Snapshot, prepared: Prepared) -> None:
+    def submit(self, run_id: uuid.UUID, snap: Snapshot, prepared: Prepared, runner=None) -> None:
         with self._start_lock:
             while len(self._threads) < self.limits.workers:
                 t = threading.Thread(target=self._loop, name=f"routewise-planning-{len(self._threads)}", daemon=True)
                 t.start()
                 self._threads.append(t)
-        self._queue.put(_Job(run_id, snap, prepared))
+        self._queue.put(_Job(run_id, snap, prepared, runner))
 
     def shutdown(self, timeout: float = 30) -> None:
         for _ in self._threads:
@@ -593,7 +607,7 @@ class PlanningService:
             if job is None:
                 return
             try:
-                self.run(job)
+                (job.runner or self.run)(job)
             except Exception:  # never let a worker thread die; the run is marked failed in run()
                 log.exception("planning worker error (run %s)", job.run_id)
             finally:

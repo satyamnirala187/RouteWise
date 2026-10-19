@@ -1,0 +1,35 @@
+# Step 4B: phone-test database schema preflight and upgrade (20 Oct 2026). Local only; counts and revisions only, no row contents.
+
+## 1. One-off manual check on a COPY of the real routewise_phone (the real database was only read, as a template)
+Procedure (the throwaway script was not kept; the repeatable version of the same check is test_upgrade_keeps_the_data_and_only_adds):
+  1. CREATE DATABASE routewise_upgrade_scratch TEMPLATE routewise_phone   (local cluster, superuser from the git-ignored .env)
+  2. phone_db.schema_state(scratch), then phone_db.upgrade(scratch, db_name="routewise_upgrade_scratch")
+  3. compare per-table row counts before and after; read round_riders.route_version and each rider's effective route through the 4B code
+  4. DROP DATABASE routewise_upgrade_scratch; confirm routewise_phone is unchanged
+Observed:
+  scratch state before: outdated 0004
+  Upgrading routewise_upgrade_scratch from 0004 to 0005 (data is kept) …
+  scratch state after : current 0005
+  pre-existing tables with identical row counts after upgrade: 15 of 15
+  new tables: ['revision_orders', 'route_revisions'] (rows: [0, 0])
+  round_riders rows: 2, route_version values: [1]
+  effective route (each of 2 riders): revision 0, 4 sequenced stops, awaiting=None
+  Completed orders with no completion time (expected for pre-0005 completions): 2
+  real routewise_phone: unchanged, still 0004
+The scratch database was dropped afterwards. routewise_phone itself has NOT been upgraded: the owner does that with
+`phone_db.py upgrade` (docs/phase3/PHONE-TEST-GUIDE.md, section A0).
+
+## 2. The launcher, run against the real routewise_phone (still on 0004), PHONE_HOST=127.0.0.1
+$ scripts/phone-server.sh
+  The phone-test database routewise_phone is on schema 0004, but this code needs 0005.
+  Nothing was changed.
+  (instructions: phone_db.py upgrade, and the data-deleting phone_setup.py named as the alternative)
+  The server was not started.
+  launcher exit=1
+Nothing was listening on port 8020 afterwards. The web app was not built and no server started.
+
+## 3. Repeatable tests (services/api/tests/test_phone_db.py, test database only, never routewise_phone)
+Current database passes; an outdated one is reported with instructions and left unchanged; upgrade keeps seeded rows and
+adds the new column and tables; upgrade refuses a database that is not the named one; uninitialised, unknown-revision and
+missing databases are reported and not touched, without echoing the connection; the launcher runs the check before it
+builds or serves and never migrates. Result: see step4b_api_pytest.txt.

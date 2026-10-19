@@ -74,6 +74,17 @@ def bump_config(db: DBSession, rr: RoundRider, now: datetime, *, bump_round: boo
         bump_round_input(db, rr.round_id)
 
 
+def bump_own_destination(db: DBSession, rr: RoundRider, now: datetime) -> None:
+    """4B (R23): the rider changed their own destination. Their confirmation is reset
+    (`config_version`) and in-flight solves become stale (`input_version`), but only THIS rider's
+    route is invalidated (`round_riders.route_version`); the round's `route_version`, and so every
+    other rider's saved route, is unchanged. The rider's own route shows "awaiting recalculation"."""
+    rr.config_version += 1
+    rr.route_version += 1
+    rr.updated_at = now
+    bump_round_input(db, rr.round_id, route=False)
+
+
 def is_confirmed(rr: RoundRider) -> bool:
     return rr.confirmed_version is not None and rr.confirmed_version == rr.config_version
 

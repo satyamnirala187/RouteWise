@@ -112,7 +112,9 @@ def test_only_the_current_plan_is_used_never_a_superseded_one(world):
     assert changed  # the two versions really differ, so the test can tell them apart
 
 
-def test_own_setup_change_after_planning_shows_saved_order_as_out_of_date(world):
+def test_own_destination_change_after_planning_keeps_the_saved_order_awaiting_recalculation(world):
+    """4B (R23): the rider's own change invalidates only their route (awaiting recalculation); the
+    round plan is not out of date and the saved order is still shown, never as a new route."""
     w = world
     plan = plan_now(w)
     b = w.browsers["Rider A"]
@@ -120,8 +122,13 @@ def test_own_setup_change_after_planning_shows_saved_order_as_out_of_date(world)
     view = deliveries(b, w.rid).json()
     assert view["setup"]["destination"]["kind"] == "warehouse" and view["setup"]["confirmation"] == "outdated"
     assert view["plan"]["route"]["destination"]["kind"] == "home"  # what the saved route was planned to
-    assert view["plan"]["out_of_date"] is True
+    assert view["plan"]["out_of_date"] is False
+    assert view["plan"]["rider_route"]["awaiting_recalculation"] == "destination_changed"
+    assert view["plan"]["rider_route"]["revision"] is None
+    assert view["reroute"]["blocked"]["code"] == "NOT_CONFIRMED"  # confirm first, then recalculate
     assert seq_codes(view) == [o["order_code"] for s in routes(plan)["Rider A"]["stops"] for o in s["orders"]]
+    other = deliveries(w.browsers["Rider B"], w.rid).json()
+    assert other["plan"]["rider_route"]["awaiting_recalculation"] is None and other["setup"]["confirmation"] == "confirmed"
 
 
 def test_no_plan_yet_and_assigned_orders_without_a_plan(app, admin, db, world):

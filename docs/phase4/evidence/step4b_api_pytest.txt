@@ -1,0 +1,29 @@
+# Step 4B: API test suite on PostgreSQL, recorded real-road matrices (19 Oct 2026 21:40 IST)
+$ cd services/api && .venv/bin/python -m pytest -q -p no:cacheprovider
+........................................................................ [ 18%]
+........................................................................ [ 37%]
+........................................................................ [ 55%]
+.............ss......................................................... [ 74%]
+........................................................................ [ 92%]
+.............................                                            [100%]
+=============================== warnings summary ===============================
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+387 passed, 2 skipped, 3 warnings in 266.15s (0:04:26)
+
+# Re-run 20 Oct 2026 after the review additions (phone-database schema preflight: services/api/scripts/phone_db.py, tests/test_phone_db.py with 8 tests).
+# The 19 Oct run above (387 passed) is kept as it was. The new tests run on the test database only, never routewise_phone.
+$ cd services/api && .venv/bin/python -m pytest -q -p no:cacheprovider
+........................................................................ [ 18%]
+........................................................................ [ 36%]
+........................................................................ [ 54%]
+.....................ss................................................. [ 72%]
+........................................................................ [ 90%]
+.....................................                                    [100%]
+=============================== warnings summary ===============================
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+395 passed, 2 skipped, 3 warnings in 271.52s (0:04:31)

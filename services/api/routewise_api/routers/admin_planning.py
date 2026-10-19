@@ -31,6 +31,7 @@ from ..models import (
 )
 from ..orders import readiness_blockers
 from ..planning import PlanningRefused, PlanningService, capture, expire_overdue, fingerprint, plan_validity, prepare
+from ..rider_routes import awaiting_recalculation, effective_routes, revision_view
 from ..riders import bump_round_input, configuration_blockers, lock_depots_shared, lock_round
 from ..routing.matrix.base import ProviderError
 from .admin import admin_order_view
@@ -224,7 +225,8 @@ def optimize(round_id: uuid.UUID, request: Request, current: CurrentUser = Depen
     rnd = lock_round(db, round_id)
     if rnd is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Round not found")
-    active = db.scalar(select(PlanningRun).where(PlanningRun.round_id == round_id,
+    # Riders' own reroutes (4B) never block the admin: a round plan supersedes them.
+    active = db.scalar(select(PlanningRun).where(PlanningRun.round_id == round_id, PlanningRun.scope == "round",
                                                  PlanningRun.state.in_(ACTIVE_RUN_STATES)))
     if active is not None:
         _err(409, "RUN_IN_PROGRESS", "A plan is already being computed for this round.", [str(active.id)])
@@ -277,7 +279,7 @@ def list_runs(round_id: uuid.UUID, db: DBSession = Depends(get_db, scope="functi
               settings: Settings = Depends(get_settings), now: datetime = Depends(get_now)) -> list[dict]:
     if db.get(DeliveryRound, round_id) is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Round not found")
-    runs = db.scalars(select(PlanningRun).where(PlanningRun.round_id == round_id)
+    runs = db.scalars(select(PlanningRun).where(PlanningRun.round_id == round_id, PlanningRun.scope == "round")
                       .order_by(PlanningRun.requested_at.desc(), PlanningRun.id).limit(50)).all()
     for run in runs:
         expire_overdue(db, run, now, settings.planning.stale_after_s)
@@ -298,6 +300,10 @@ def plan_view(db: DBSession, plan: RoutePlan, rnd: DeliveryRound) -> dict:
     by_rider: dict = {}
     for it in items:
         by_rider.setdefault(it.rider_id, []).append(it)
+    # 4B: for the current plan, each rider's effective route (their own revision, if any).
+    effective = effective_routes(db, plan) if plan.is_current else {}
+    setups = ({rr.rider_id: rr for rr in db.scalars(select(RoundRider).where(RoundRider.round_id == plan.round_id)).all()}
+              if plan.is_current else {})
     out_routes = []
     for r in sorted(routes, key=lambda r: (names.get(r.rider_id, ""), str(r.rider_id))):
         mine = by_rider.get(r.rider_id, [])
@@ -312,16 +318,19 @@ def plan_view(db: DBSession, plan: RoutePlan, rnd: DeliveryRound) -> dict:
             "stops": [{"seq": seq, "orders": stops[seq]} for seq in sorted(stops)],
             "postponed": [{"id": str(i.order_id), "order_code": codes[i.order_id]} for i in mine if i.role == "postponed"],
             "completed": [{"id": str(i.order_id), "order_code": codes[i.order_id]} for i in mine if i.role == "completed"],
+            "rider_route": _rider_route_view(effective.get(r.rider_id), setups.get(r.rider_id), codes),
         })
     # Pending orders this plan does not route (e.g. returned from Postponed by a rider): they need
     # planning. Shown for the current plan only; history is reported as it was saved.
     unplanned: list[str] = []
     if plan.is_current:
-        active = {it.order_id for it in items if it.role == "active"}
+        active = {oid for eff in effective.values() if eff for oid in eff.sequence}
         unplanned = sorted(c for oid, c, st in db.execute(select(Order.id, Order.order_code, Order.status)
                                                          .where(Order.round_id == plan.round_id)).all()
                            if st == "Pending" and oid not in active)
     summary = dict(plan.summary)
+    summary["rider_revisions_superseded"] = sorted(names.get(uuid.UUID(rid), rid)
+                                                   for rid in summary.get("rider_revisions_superseded", []))
     summary["ownership_changes"] = [
         {"order_code": c["order_code"], "from_rider": names.get(uuid.UUID(c["from_rider_id"])),
          "to_rider": names.get(uuid.UUID(c["to_rider_id"]))} for c in summary.get("ownership_changes", [])]
@@ -333,6 +342,23 @@ def plan_view(db: DBSession, plan: RoutePlan, rnd: DeliveryRound) -> dict:
         "distance_label": plan.distance_label, "provenance": plan.provenance, "warnings": plan.warnings,
         "summary": summary, "routes": out_routes,
         "attribution": "Road data © OpenStreetMap contributors (ODbL). Durations are traffic-free estimates.",
+    }
+
+
+def _rider_route_view(eff, rr, codes: dict) -> dict | None:
+    """A rider's effective route as the admin sees it: the revision (kinds and order codes; never a
+    position or a Home/Custom location), its sequence and distances, and whether it awaits the
+    rider's recalculation after their own destination change."""
+    if eff is None:
+        return None
+    stops: dict[int, list] = {}
+    for oid, seq in eff.sequence.items():
+        stops.setdefault(seq, []).append({"id": str(oid), "order_code": codes[oid]})
+    return {
+        "revision": revision_view(eff.revision, codes), "destination": eff.endpoint_kind, "open_route": eff.open_route,
+        "road_distance_m": eff.road_distance_m, "road_duration_s": eff.road_duration_s,
+        "stops": [{"seq": n, "orders": sorted(stops[n], key=lambda o: o["order_code"])} for n in sorted(stops)],
+        "awaiting_recalculation": awaiting_recalculation(eff, rr),
     }
 
 

@@ -68,7 +68,7 @@ cd spikes/routing && .venv/bin/python -m pytest -q            # Phase 0 routing 
 python3 services/api/tools/mutation_check.py <copy of services/api> services/api/.venv/bin/python   # optional
 ```
 
-Browser tests plan with the **recorded** real local-Valhalla DU matrices: `services/api/scripts/e2e_app.py` (used only by `playwright.config.ts`) injects them through the test-only seam, and every plan shown says "Recorded real-road distances". It also offers a hold file (`.local/e2e/hold-solve`) so a test can change input while a run is in progress. `ROUTEWISE_E2E_LIVE=1` uses the real tiles instead. Without `E2E_SHOTS_DIR`, the Phase 1 spec rewrites the accepted `docs/phase1/screenshots/`; the Phase 2 spec writes to `docs/phase2/screenshots/2c/` (override with `E2E_2C_SHOTS_DIR`) and the Phase 3 specs to `docs/phase3/screenshots/3a/` and `3b/` (override with `E2E_3A_SHOTS_DIR` and `E2E_3B_SHOTS_DIR`). To keep accepted screenshots untouched, point all of them at a scratch directory.
+Browser tests plan with the **recorded** real local-Valhalla DU matrices: `services/api/scripts/e2e_app.py` (used only by `playwright.config.ts`) injects them through the test-only seam, and every plan shown says "Recorded real-road distances". It also offers a hold file (`.local/e2e/hold-solve`) so a test can change input while a run is in progress. `ROUTEWISE_E2E_LIVE=1` uses the real tiles instead. Without `E2E_SHOTS_DIR`, the Phase 1 spec rewrites the accepted `docs/phase1/screenshots/`; the Phase 2 spec writes to `docs/phase2/screenshots/2c/` (override with `E2E_2C_SHOTS_DIR`), the Phase 3 specs to `docs/phase3/screenshots/3a/` and `3b/` (override with `E2E_3A_SHOTS_DIR` and `E2E_3B_SHOTS_DIR`), and the Phase 4 specs to `docs/phase4/screenshots/4a/` and `4b/` (override with `E2E_4A_SHOTS_DIR` and `E2E_4B_SHOTS_DIR`). To keep accepted screenshots untouched, point all of them at a scratch directory.
 
 The mutation check rewrites files, so run it on a copy laid out as `<dir>/services/api`, with `<dir>/.env` and `<dir>/tests/fixtures` linked to the real ones: the code finds both relative to the package. It uses the same test database, so don't run the API suite at the same time.
 
@@ -103,7 +103,7 @@ Local limits per run (`PlanningLimits` in `config.py`): 80 Pending orders, 8 rid
 
 ```bash
 cd services/api
-ROUTEWISE_LIVE_TESTS=1 .venv/bin/python -m pytest -q -m live tests/test_planning_live.py   # API planning run on the real local tiles
+ROUTEWISE_LIVE_TESTS=1 .venv/bin/python -m pytest -q -m live tests/test_planning_live.py   # API planning run and a rider reroute (4B) on the real local tiles
 .venv/bin/python tools/benchmark_planning.py                                                # local timing benchmark → docs/phase2/evidence/
 ```
 
@@ -128,9 +128,28 @@ Two revisions per round (migration 0004):
 
 Plans also report `progress_since_plan` (only progress since; the remaining saved sequence is valid) and, for the current plan, `unplanned_pending` (Pending orders it does not route). Admin status edits still bump both. Details and locking: [the step 3B report](phase3/STEP-3B-REPORT.md).
 
+## Rider reroute (step 4B API; screens in 4D)
+
+| Endpoint (rider) | Purpose |
+|---|---|
+| `POST /api/rider/rounds/{id}/reroute` | Body `{"origin": {...}, "expected_plan_version": n, "expected_revision": n}`. The origin is one of `{"kind": "current_position", "lat", "lng", "accuracy_m", "age_s"}`, `{"kind": "last_completed_stop", "order_id"}` or `{"kind": "configured_start"}`. Returns 202 with a run, or a coded 404/409/422/503. Re-sequences only the rider's own Pending orders |
+| `GET /api/rider/reroutes/{run_id}` | The rider's own run (another rider's: 404) |
+
+**Effective route.** The delivery view's `plan.rider_route` is the rider's current revision of the current plan, or the plan route. `plan.route` stays the admin plan's route. The admin plan adds `rider_route` per rider.
+
+**Versions (migration 0005).** A rider's own destination change bumps only `round_riders.route_version`, so only that rider's route shows "awaiting recalculation". A confirmation no longer invalidates the round.
+
+**Provisional limits** (configurable): `ROUTEWISE_REROUTE_GPS_MAX_ACCURACY_M` (100), `ROUTEWISE_REROUTE_GPS_MAX_AGE_S` (60) and `ROUTEWISE_REROUTE_SOLVE_SECONDS` (10).
+
+**Privacy.** Device positions are used in memory only, and never stored or logged.
+
+Details: [the step 4B report](phase4/STEP-4B-REPORT.md).
+
 ## Real-phone testing (Phase 3, local Wi-Fi only)
 
 `services/api/scripts/phone_setup.py` builds the isolated `routewise_phone` database: synthetic riders and customers on public DU points, planned on the local tiles. `scripts/phone-server.sh` serves only the app on this Mac's Wi-Fi address, port 8020; PostgreSQL stays on 127.0.0.1. Steps, checklist and shutdown: [docs/phase3/PHONE-TEST-GUIDE.md](phase3/PHONE-TEST-GUIDE.md). Credentials and expected stops go to the git-ignored `.local/phone/`.
+
+**Schema check (since 4B).** `scripts/phone-server.sh` first runs `services/api/scripts/phone_db.py check` (read-only) and does not start if `routewise_phone` is on an older migration than the code, printing what to do. It never resets, rebuilds or migrates. To bring an older phone database up to date **and keep its data**, run `services/api/.venv/bin/python services/api/scripts/phone_db.py upgrade` yourself; it touches only `routewise_phone`. `phone_setup.py` remains the explicit, data-deleting rebuild. See guide section A0.
 
 ## Database
 

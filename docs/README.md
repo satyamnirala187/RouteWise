@@ -16,8 +16,9 @@ Copied on 12 October 2026 from the RouteWise development package. The copies are
 
 ## Phase 4 (in progress, incomplete)
 
-- [Implementation plan](phase4/IMPLEMENTATION-PLAN.md): 4A quick next-customer call, 4B individual rerouting and endpoint-change recalculation, 4C same-building stops, 4D integration and device verification; rider route revisions on top of round plans. The owner authorized 4A only; decisions Q4-1…Q4-7 are pending
-- [Step 4A report](phase4/STEP-4A-REPORT.md): next-customer quick call and "Customer unavailable" (Postpone). Committed, **awaiting owner review**
+- [Implementation plan](phase4/IMPLEMENTATION-PLAN.md): 4A quick next-customer call, 4B individual rerouting and endpoint-change recalculation, 4C same-building stops, 4D integration and device verification; rider route revisions on top of round plans. The owner authorized 4A and 4B, each on its own; 4B uses provisional defaults for Q4-2/3/4/5/7; Q4-1 and Q4-6 are pending
+- [Step 4A report](phase4/STEP-4A-REPORT.md): next-customer quick call and "Customer unavailable" (Postpone). Committed (`e40e0b0`), **awaiting owner review**
+- [Step 4B report](phase4/STEP-4B-REPORT.md): rider route revisions on immutable round plans, explicit origins, rider-only destination recalculation (API; screens in 4D). Committed, **awaiting owner review**; API-only until 4D; GPS limits and related values are provisional defaults; phone GPS not tested
 
 ## Phase 3 (accepted 19 Oct 2026 for local development)
 

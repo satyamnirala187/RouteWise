@@ -4,8 +4,10 @@
 #   scripts/phone-server.sh          # serve on this Mac's Wi-Fi address, port 8020; Ctrl+C stops it
 #
 # Serves ONLY the RouteWise app (API + built web pages, one origin) against the isolated
-# database routewise_phone (create it with services/api/scripts/phone_setup.py). PostgreSQL stays
-# bound to 127.0.0.1; the app listens on the Wi-Fi address only. No tunnel, no router change.
+# database routewise_phone (create it with services/api/scripts/phone_setup.py; bring an older one
+# up to date, keeping its data, with services/api/scripts/phone_db.py upgrade). It checks the schema
+# first and does not start if the database is out of date. PostgreSQL stays bound to 127.0.0.1;
+# the app listens on the Wi-Fi address only. No tunnel, no router change.
 # Plain HTTP on a trusted Wi-Fi: cookies are not marked Secure, so use this only for the test.
 # The address is printed here and never written to a file.
 set -euo pipefail
@@ -19,6 +21,11 @@ set -a; . "$ROOT/.env"; set +a          # local secrets; never printed
 export DATABASE_URL="${DATABASE_URL%/*}/routewise_phone"
 export ROUTEWISE_ENV=development ROUTEWISE_COOKIE_SECURE=false ROUTEWISE_RESOLVE_SHORT_LINKS=false
 export ROUTEWISE_ALLOWED_ORIGINS="http://$HOST:$PORT"
+
+# Preflight (read-only): refuse to serve a database whose schema is older than this code, with
+# instructions. It never resets, rebuilds or migrates; upgrading is the explicit `phone_db.py upgrade`.
+"$ROOT/services/api/.venv/bin/python" "$ROOT/services/api/scripts/phone_db.py" check || {
+  echo; echo "The server was not started."; exit 1; }
 
 echo "Building the web app …"
 (cd "$ROOT/apps/web" && npm run -s build >/dev/null)

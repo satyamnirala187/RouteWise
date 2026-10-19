@@ -44,3 +44,34 @@ def test_live_local_valhalla_plan(app, admin, db):
                                 "response_status": prov["response_status"], "profile": prov["profile"],
                                 "requested_at": prov["requested_at"], "solver_status": prov["solver_status"],
                                 "total_road_distance_m": plan["summary"]["total_road_distance_m"]}))
+
+
+@pytest.mark.skipif(os.environ.get("ROUTEWISE_LIVE_TESTS") != "1", reason="set ROUTEWISE_LIVE_TESTS=1 (local tiles)")
+def test_live_local_valhalla_rider_reroute(app, admin, db):
+    """4B on the real local tiles: a rider reroutes their own remainder from a (synthetic) device
+    position; the revision is real road, not recorded, and matches the directed recorded costs."""
+    from .test_reroute import gps, planned, reroute_now
+    from .test_rider_deliveries import deliveries, seq_codes
+    from .test_rider_status import update
+
+    if not app.state.settings.valhalla_tiles.is_dir():
+        pytest.skip("local Valhalla tiles not built")
+    w = make_world(app, admin, db, live=True)
+    planned(w)
+    view = deliveries(w.browsers["Rider A"], w.rid).json()
+    update(w, "Rider A", seq_codes(view)[0], "Completed")
+    run = reroute_now(w, "Rider A", gps())
+    view = deliveries(w.browsers["Rider A"], w.rid).json()
+    rr = view["plan"]["rider_route"]
+    from routewise_api.models import PlanningRun, RouteRevision
+    db.expire_all()
+    rev = db.query(RouteRevision).one()
+    timings = db.get(PlanningRun, rev.run_id).timings
+    assert rev.provenance["real_road"] is True and rev.provenance["recorded"] is False
+    assert rev.provenance["provider"].startswith("valhalla-local") and rev.profile == "motor_scooter"
+    path = ["gps_r1"] + [w.codes[c] for c in seq_codes(view)] + ["home_r1"]
+    assert (rr["road_distance_m"], rr["road_duration_s"]) == recorded_cost("motor_scooter", path)
+    print("\nLIVE-REROUTE", json.dumps({"state": run["state"], "origin_kind": run["origin_kind"],
+                                        "stops": len(seq_codes(view)), "road_distance_m": rr["road_distance_m"],
+                                        "provider": rev.provenance["provider"], "solver_status": rev.provenance["solver_status"],
+                                        "timings": timings}))

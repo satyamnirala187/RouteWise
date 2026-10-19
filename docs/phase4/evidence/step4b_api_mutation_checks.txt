@@ -1,0 +1,33 @@
+# Step 4B: targeted backend defect checks (19 Oct 2026). One known defect at a time is injected into a scratch
+# copy of services/api (never the working tree); the selected tests must fail. 4B mutants only; earlier
+# phases not repeated. MUTATION_TESTS limits each run to the 4B-relevant test files.
+$ MUTATION_TESTS="tests/test_reroute.py tests/test_rider_deliveries.py tests/test_rider_status.py" \
+  python tools/mutation_check.py <scratch copy of services/api> services/api/.venv/bin/python "4B:"
+KILLED: 4B: revision ignored by the delivery view
+KILLED: 4B: other riders' progress makes a reroute stale
+SURVIVED: 4B: own status not part of the rider input
+KILLED: 4B: base plan not re-checked at commit
+KILLED: 4B: destination change invalidates every rider
+KILLED: 4B: confirmation invalidates every rider
+KILLED: 4B: inaccurate fix accepted
+KILLED: 4B: old fix accepted
+KILLED: 4B: position outside the service area accepted
+KILLED: 4B: anyone's completion used as the last stop
+KILLED: 4B: configured start offered after a completion
+KILLED: 4B: reroute allowed while the admin replans
+KILLED: 4B: completion time not recorded
+KILLED: 4B: admin plan leaves rider revisions current
+KILLED: 4B: Postponed orders re-sequenced
+KILLED: 4B: wrong vehicle profile
+KILLED: 4B: priority dropped on reroute
+KILLED: 4B: another rider can read a reroute run
+17/18 killed
+# The survivor showed a test gap, not a code defect: the "own status change during the solve" race completed
+# an order, which also changes the completion record (part of the fingerprint), so dropping `status` from the
+# fingerprint went unnoticed. A Postpone variant (status only) was added to the race test; rerun:
+$ ... tools/mutation_check.py <scratch copy> services/api/.venv/bin/python "4B: own status"
+KILLED: 4B: own status not part of the rider input
+1/1 killed
+# Result, stated exactly: the full 18-defect run killed 17 of 18 (above). The one survivor was a test gap; after the
+# coverage was added, a rerun of that single defect killed it (1/1). The full 18-defect set was NOT rerun after the
+# test fix, so there is no second complete 18-defect run.
