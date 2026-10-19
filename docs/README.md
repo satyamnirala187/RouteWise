@@ -14,6 +14,11 @@ Copied on 12 October 2026 from the RouteWise development package. The copies are
 
 - [Security review before publication](SECURITY-REVIEW.md) (19 Oct 2026) and the [security policy](../SECURITY.md). The repository is public; the app is not deployed or production-ready
 
+## Phase 4 (in progress, incomplete)
+
+- [Implementation plan](phase4/IMPLEMENTATION-PLAN.md): 4A quick next-customer call, 4B individual rerouting and endpoint-change recalculation, 4C same-building stops, 4D integration and device verification; rider route revisions on top of round plans. The owner authorized 4A only; decisions Q4-1…Q4-7 are pending
+- [Step 4A report](phase4/STEP-4A-REPORT.md): next-customer quick call and "Customer unavailable" (Postpone). Committed, **awaiting owner review**
+
 ## Phase 3 (accepted 19 Oct 2026 for local development)
 
 - [Owner acceptance record](phase3/OWNER-ACCEPTANCE-2026-10-19.md)

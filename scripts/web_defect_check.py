@@ -1,4 +1,4 @@
-"""Step 2C, 3A and 3B targeted defect checks for the web app: inject one known defect at a time into
+"""Step 2C, 3A, 3B and 4A targeted defect checks for the web app: inject one known defect at a time into
 a scratch copy of apps/web and confirm the named tests fail (browser tests filtered by title, or
 the vitest unit tests when the filter is "vitest"). Not an exhaustive run.
 
@@ -87,6 +87,31 @@ MUTANTS = {
     "3B: delivered without the second tap": (
         "src/components/DeliveryView.tsx", '(t.target === "Completed" ? actions.confirm(item.id) : actions.change(item, t.target))',
         "actions.change(item, t.target)", "postpones, returns"),
+    # Step 4A: the next-customer panel (e2e/phase4a.spec.ts and src/next.test.ts).
+    "4A: tapping Call records a status": (
+        "src/components/DeliveryView.tsx", 'data-testid="next-call"',
+        'data-testid="next-call" onClick={() => actions?.change(item, "Postponed")}', "tapping Call changes nothing"),
+    "4A: panel advances before the server confirms": (
+        "src/pages/RiderPage.tsx", "    setSaving({ id: item.id, target }); setNote(null); setFailed(null);",
+        "    setSaving({ id: item.id, target }); setNote(null); setFailed(null);\n"
+        "    setView((v) => v && { ...v, sequence: v.sequence.filter((st) => !st.orders.some((o) => o.id === item.id)) });",
+        "moves on only after"),
+    "4A: Customer unavailable enabled during a save": (
+        "src/components/DeliveryView.tsx", "disabled={busy} aria-busy={mine} aria-label={`Customer unavailable",
+        "disabled={false} aria-busy={mine} aria-label={`Customer unavailable", "moves on only after"),
+    "4A: Postponed or Completed order picked as next": (
+        "src/next.ts", '    const pending = stop.orders.filter((o) => o.status === "Pending");', "    const pending = stop.orders;", "vitest"),
+    "4A: order outside the saved route picked as next": (
+        "src/next.ts", '  if (unsequenced > 0) return { kind: "unsequenced", count: unsequenced, planned: !!view.plan };',
+        '  if (unsequenced > 0) return { kind: "next", item: view.unsequenced[0], stop: 0, others: 0, stale: false };', "empty states"),
+    "4A: out-of-date route shown as plain Next": (
+        "src/components/DeliveryView.tsx", 'data-testid="next-customer-label">\n          {stale ? "Next in saved order" : "Next"}',
+        'data-testid="next-customer-label">\n          {"Next"}', "uncertain save"),
+    "4A: uncertain save hidden from the panel": (
+        "src/components/DeliveryView.tsx", "      {failed && actions && (", "      {false && actions && (", "uncertain save"),
+    "4A: undialable contact dialled anyway": (
+        "src/components/DeliveryView.tsx", "  const call = telLink(item.contact);\n  const busy = !!actions?.saving;",
+        "  const call = { href: `tel:${item.contact}`, issue: null };\n  const busy = !!actions?.saving;", "cannot be dialled"),
     # 2C correction pass: readiness refresh and serialized mode changes.
     "no Refresh readiness action": (
         "src/pages/PlanPage.tsx", "onClick={() => roundId && refresh(roundId)}", "onClick={() => undefined}", "readiness refresh"),
@@ -123,7 +148,8 @@ def main() -> int:
         if not link.exists():
             link.symlink_to(ROOT / name)
     env = {**os.environ, "E2E_SHOTS_DIR": str(scratch / "shots1"), "E2E_2C_SHOTS_DIR": str(scratch / "shots2c"),
-           "E2E_3A_SHOTS_DIR": str(scratch / "shots3a"), "E2E_3B_SHOTS_DIR": str(scratch / "shots3b")}
+           "E2E_3A_SHOTS_DIR": str(scratch / "shots3a"), "E2E_3B_SHOTS_DIR": str(scratch / "shots3b"),
+           "E2E_4A_SHOTS_DIR": str(scratch / "shots4a")}
     killed = total = 0
     for name, (rel, old, new, grep) in MUTANTS.items():
         if not name.startswith(only):
@@ -142,7 +168,7 @@ def main() -> int:
                             f'export E2E_DATABASE_URL="$(python3 -c \'import json,sys; print(json.load(open(sys.argv[1]))["database_url"])\' "$E2E_STATE")" && '
                             f'rm -f "{ROOT}/.local/e2e/hold-solve" && ' + (
                                 "npx vitest run" if grep == "vitest" else
-                                f'npx playwright test e2e/phase2.spec.ts e2e/phase3.spec.ts e2e/phase3b.spec.ts --project desktop -g "{grep}"')],
+                                f'npx playwright test e2e/phase2.spec.ts e2e/phase3.spec.ts e2e/phase3b.spec.ts e2e/phase4a.spec.ts --project desktop -g "{grep}"')],
                            env=env, capture_output=True, text=True)
         path.write_text(orig)
         status = "KILLED" if r.returncode else "SURVIVED"

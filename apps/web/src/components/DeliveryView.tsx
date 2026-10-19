@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { KIND_LABEL, VEHICLE_LABEL, type DeliveryItem, type DeliveryPlace, type DeliveryView as View, type Status } from "../api";
 import { directionsLink, telLink } from "../links";
+import { nextDelivery, type NextDelivery } from "../next";
 import { km, trafficFree } from "../planning";
 import { card } from "./ui";
 
@@ -8,7 +9,8 @@ import { card } from "./ui";
 // plan; an out-of-date plan is shown as the saved order, never as a new route. Call and Navigate
 // are plain links the rider taps; nothing is opened or marked automatically. Since 3B each card
 // offers the rider's own status changes; the page saves them one at a time and shows the result
-// only once the server has confirmed it.
+// only once the server has confirmed it. Since 4A a next-customer panel above the Route card
+// offers a quick call and "Customer unavailable" (Postpone), with the same actions as the cards.
 
 /** Status actions, owned by the page (one save at a time). */
 export interface StatusActions {
@@ -41,6 +43,7 @@ export default function DeliveryView({ view, actions }: { view: View; actions?: 
 
   return (
     <div className="space-y-4" data-testid="delivery-view" data-round={view.round_id}>
+      {total > 0 && <NextCustomer view={view} actions={actions} />}
       <section className={card} aria-labelledby="plan-status-title" data-testid="plan-status">
         <h3 id="plan-status-title" className="text-lg font-semibold">Route</h3>
         {!plan ? (
@@ -136,6 +139,95 @@ export default function DeliveryView({ view, actions }: { view: View; actions?: 
         </>
       )}
     </div>
+  );
+}
+
+/** Why there is no next customer (an order outside the saved sequence is never picked). */
+function nextEmptyText(next: Exclude<NextDelivery, { kind: "next" | "none" }>): string {
+  switch (next.kind) {
+    case "unsequenced": {
+      const orders = next.count === 1 ? "1 Pending order" : `${next.count} Pending orders`;
+      return next.planned
+        ? `None in your saved route: ${orders} ${next.count === 1 ? "has" : "have"} no place in the saved route order (listed below), so none is picked as next. Ask your admin to optimize the round again.`
+        : `No route has been planned yet, so there is no next customer. Your ${orders} ${next.count === 1 ? "is" : "are"} listed below by order code.`;
+    }
+    case "postponed_only":
+      return `No Pending customers left. ${next.count === 1 ? "1 Postponed order stays" : `${next.count} Postponed orders stay`} with you; return one to Pending when the customer is available.`;
+    case "done":
+      return "All your deliveries in this round are completed.";
+  }
+}
+
+/** Step 4A: the next customer to call, above the Route card. It reads only the server-confirmed
+ * view and shares the page's status actions with the cards, so it moves on only after a save is
+ * confirmed and waits while any save is in flight. Calling opens the dialer and records nothing. */
+function NextCustomer({ view, actions }: { view: View; actions?: StatusActions }) {
+  const next = nextDelivery(view);
+  if (next.kind === "none") return null;
+  return (
+    <section className={`${card} border-l-[6px] border-l-brand-600`} aria-labelledby="next-customer-title"
+      data-testid="next-customer" data-order={next.kind === "next" ? next.item.order_code : undefined}>
+      <h3 id="next-customer-title" className={detailLabel}>Next customer</h3>
+      {next.kind === "next"
+        ? <NextCustomerBody next={next} actions={actions} />
+        : <p className="mt-1 text-sm text-slate-700" data-testid="next-empty">{nextEmptyText(next)}</p>}
+    </section>
+  );
+}
+
+function NextCustomerBody({ next, actions }: { next: Extract<NextDelivery, { kind: "next" }>; actions?: StatusActions }) {
+  const { item, stop, others, stale } = next;
+  const call = telLink(item.contact);
+  const busy = !!actions?.saving;
+  const mine = actions?.saving?.id === item.id && actions.saving.target === "Postponed";
+  const failed = actions?.failed?.id === item.id ? actions.failed : null;
+  return (
+    <>
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <span className="rounded-md bg-slate-900 px-2.5 py-1 text-sm font-bold text-white">Stop {stop}</span>
+        <span className="rounded-md bg-brand-600 px-2.5 py-1 text-sm font-bold text-white" data-testid="next-customer-label">
+          {stale ? "Next in saved order" : "Next"}
+        </span>
+      </div>
+      {stale && (
+        <p className="mt-2 text-sm text-amber-900" data-testid="next-stale">
+          Your route is out of date: this is the next stop in the saved order, not a newly optimized route.
+        </p>
+      )}
+      <p className="mt-2 text-lg font-semibold leading-snug text-slate-950" data-testid="next-name">{item.customer_name}</p>
+      <p className="text-base text-slate-800"><span className="sr-only">Product: </span>{item.product}</p>
+      <p className="mt-0.5 text-xs text-slate-600">
+        Order <span className="font-mono" data-testid="next-code">{item.order_code}</span>
+        {others > 0 && ` · ${others} more Pending ${others === 1 ? "customer" : "customers"} at this stop`}
+      </p>
+      <div className="mt-3 grid gap-2 sm:flex sm:flex-wrap">
+        {call.href ? (
+          <a href={call.href} className={`${actionLink} min-h-12 bg-brand-600 text-lg text-white hover:bg-brand-700`} data-testid="next-call"
+            aria-label={`Call ${item.customer_name}, next customer (${item.order_code})`}>Call {item.customer_name}</a>
+        ) : (
+          <p className="text-sm text-red-800" data-testid="next-call-unavailable">Calling unavailable: {call.issue}</p>
+        )}
+        {actions && (
+          <button type="button" className={`${statusButton} bg-white text-violet-900 ring-1 ring-violet-600 hover:bg-violet-50`}
+            disabled={busy} aria-busy={mine} aria-label={`Customer unavailable: postpone ${item.order_code}`} data-testid="next-unavailable"
+            onClick={() => actions.change(item, "Postponed")}>
+            {mine ? "Saving…" : "Customer unavailable"}
+          </button>
+        )}
+      </div>
+      <p className="mt-2 text-sm text-slate-600">
+        Calling only opens your phone's dialer; it does not record an answer or change this order.
+        {actions && " “Customer unavailable” postpones this order only; you can return it to Pending later."}
+      </p>
+      {failed && actions && (
+        <div role="alert" className="mt-2 rounded-md bg-red-50 px-3 py-2 text-sm text-red-900 ring-1 ring-red-200" data-testid="next-failed">
+          <p>{failed.message}</p>
+          <button type="button" className={`${statusButton} mt-2 bg-white ring-1 ring-red-300`} disabled={busy} onClick={actions.retry}>
+            Retry: mark {failed.target}
+          </button>
+        </div>
+      )}
+    </>
   );
 }
 

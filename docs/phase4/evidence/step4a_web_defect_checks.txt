@@ -1,0 +1,17 @@
+# Step 4A: targeted web defect checks (19 Oct 2026). One known defect at a time is injected into a scratch
+# copy of apps/web; the named 4A tests (desktop project, or vitest) must fail. Not an exhaustive run.
+$ python3 scripts/web_defect_check.py <scratch> "4A"
+# First run. The captured output starts at the second mutant (the line for "tapping Call records a status"
+# was cut off by the capture); it then stopped at the sixth mutant, whose target text also matched the
+# delivery card's "Next" badge (script error "mutant target missing or ambiguous").
+KILLED: 4A: panel advances before the server confirms  [Error: expect(locator).toHaveText(expected) failed / 1 failed]
+KILLED: 4A: Customer unavailable enabled during a save  [Error: expect(locator).toBeDisabled() failed / 1 failed]
+KILLED: 4A: Postponed or Completed order picked as next  [Test Files 1 failed | 3 passed (4) / Tests 1 failed | 22 passed (23)]
+KILLED: 4A: order outside the saved route picked as next  [1 failed / 1 passed]
+# The sixth target was narrowed to the panel's label. That mutant, the two after it, and "tapping Call"
+# (whose first result was not captured) were then run one at a time:
+KILLED: 4A: out-of-date route shown as plain Next  [Error: expect(locator).toHaveText(expected) failed / 1 failed]
+KILLED: 4A: uncertain save hidden from the panel  [expect(failed).toContainText("Could not confirm the save; ...") / 1 failed]
+KILLED: 4A: undialable contact dialled anyway  [Error: expect(locator).toHaveCount(expected) failed / 1 failed]
+KILLED: 4A: tapping Call records a status  [1 failed]
+8/8 killed

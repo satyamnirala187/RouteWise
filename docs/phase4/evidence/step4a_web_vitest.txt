@@ -1,0 +1,11 @@
+# Step 4A: web unit tests (19 Oct 2026 14:44 IST)
+$ npx vitest run
+
+ RUN  v5.0.2 /Users/satyamnirala/Projects/RouteWise/apps/web
+
+
+ Test Files  4 passed (4)
+      Tests  23 passed (23)
+   Start at  14:44:32
+   Duration  758ms (environment 93%, transform 4%, tests 1%, import 1%)
+

@@ -1,0 +1,7 @@
+# Step 4A: web typecheck (19 Oct 2026 14:44 IST)
+$ npm run typecheck
+
+> routewise-web@0.1.0 typecheck
+> tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json
+
+typecheck exit 0

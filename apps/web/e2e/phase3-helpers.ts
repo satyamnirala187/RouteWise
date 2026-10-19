@@ -6,8 +6,8 @@ import path from "node:path";
 import { Api, gotoRound, importRound, newPage, signIn, waitRun } from "./phase2-helpers";
 
 /** Screenshots for one step, in their own folder (env override); earlier evidence is never written. */
-export function shooter(envVar: string, folder: string) {
-  const dir = process.env[envVar] ? path.resolve(process.env[envVar]!) : path.resolve(import.meta.dirname, `../../../docs/phase3/screenshots/${folder}`);
+export function shooter(envVar: string, folder: string, phase = "phase3") {
+  const dir = process.env[envVar] ? path.resolve(process.env[envVar]!) : path.resolve(import.meta.dirname, `../../../docs/${phase}/screenshots/${folder}`);
   return async (page: Page, name: string) => {
     mkdirSync(dir, { recursive: true });
     await page.screenshot({ path: path.join(dir, `${test.info().project.name}-${name}.png`), fullPage: true });
