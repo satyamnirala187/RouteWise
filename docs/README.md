@@ -10,6 +10,10 @@ Copied on 12 October 2026 from the RouteWise development package. The copies are
 - [Mac setup](source/development/MAC-SETUP.md) · [Kickoff](source/development/KICKOFF.md)
 - Tracker CSVs: [Phases](source/notion/RouteWise/Phases.csv), [Tasks](source/notion/RouteWise/Tasks.csv), [Acceptance cases](source/notion/RouteWise/Acceptance-Cases.csv), [Decisions](source/notion/RouteWise/Decisions.csv)
 
+## Security
+
+- [Security review before publication](SECURITY-REVIEW.md) (19 Oct 2026) and the [security policy](../SECURITY.md). The repository is public; the app is not deployed or production-ready
+
 ## Phase 3 (in progress, not complete)
 
 - [Step 3A report](phase3/STEP-3A-REPORT.md): rider delivery view, call and Google Maps navigation links (read-only). Committed (`2b52cbc`), **awaiting owner review**; real-phone checks not done
