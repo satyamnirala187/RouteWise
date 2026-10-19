@@ -27,3 +27,9 @@ $ cd services/api && .venv/bin/python -m pytest -q -p no:cacheprovider
 SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
 SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
 395 passed, 2 skipped, 3 warnings in 271.52s (0:04:31)
+
+# GitHub Actions CI on the pushed commit e06e31c (20 Oct 2026): API job "1 failed, 394 passed, 2 skipped".
+# The failure was a defect in the NEW test test_a_missing_database_is_reported_without_echoing_the_connection: it read
+# make_url(db_url).password, and CI's test database URL has no password (None), so `None not in message` raised TypeError.
+# Product code was not involved. Fixed in a follow-up commit (the check now compares only the parts that are set); the 8 phone-database
+# tests pass locally after the fix. The CI result for the follow-up commit is reported in the hand-off message, not here.

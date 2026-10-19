@@ -135,7 +135,9 @@ def test_a_missing_database_is_reported_without_echoing_the_connection(phone_db,
     state = phone_db.schema_state(missing.render_as_string(hide_password=False))
     assert state.kind == "unreachable"
     message = phone_db.explain(state)
-    assert "create-db routewise_phone" in message and make_url(db_url).password not in message
+    url = make_url(db_url)  # CI's test database has no password, so only echo what is set
+    assert "create-db routewise_phone" in message and "://" not in message
+    assert not any(part and str(part) in message for part in (url.password, url.host, url.port))
 
 
 def test_the_launcher_runs_the_preflight_before_building_or_serving():

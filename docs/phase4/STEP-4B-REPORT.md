@@ -293,7 +293,8 @@ Q4-1 (grouping, 4C) and Q4-6 (phone secure context, 4D) remain pending.
 ## 8. Git state
 
 - **Baseline:** `main` at `e40e0b0` (4A), in sync with `origin/main` when 4B started.
-- **Committed:** every file in §5, the 4B evidence (`docs/phase4/evidence/step4b_*`), `docs/phase4/screenshots/4b/` and this report, as one commit, "Add RouteWise individual rider rerouting", pushed to `origin/main` without force. (A commit cannot contain its own hash; it is in the hand-off message and `git log`.)
+- **Committed:** every file in §5, the 4B evidence (`docs/phase4/evidence/step4b_*`), `docs/phase4/screenshots/4b/` and this report, in the commit "Add RouteWise individual rider rerouting", pushed to `origin/main` without force. A commit cannot contain its own hash; hashes are in the hand-off message and `git log`.
+- **Follow-up commit:** CI on that commit failed one of the new phone-database tests (394 passed, 1 failed): the test assumed the database URL has a password and CI's has none (a test-only defect, `evidence/step4b_api_pytest.txt`). A small follow-up commit fixes the test; the first commit was not rewritten.
 - **Not committed, by design:** databases, tiles, environments, caches, `.env`, and `.local/` (including the local phone-test credentials and expected stops).
 - **Not done:** nothing deployed; Notion not accessed; the separate stable preview was not touched; `routewise_phone` was **not** upgraded (the owner does that, §9). 4C and 4D have not been started.
 
