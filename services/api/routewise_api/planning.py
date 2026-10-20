@@ -37,6 +37,11 @@ can commit until the plan and its assignments are committed, and the edit then m
 plan out of date. Without it, an edit could commit between the check and the writes, and the
 plan would overwrite assignments with a result computed from older input.
 
+Stop groups (4C, routewise_api/stop_groups.py). `building_id` is part of the snapshot and of both
+fingerprints, so forming, changing or dissolving a group makes in-flight solves stale. A group
+change locks the order rows it touches (sorted by id, one statement) and then bumps the round, which
+is the order-edit order above; it adds no wait cycle.
+
 Rider reroutes (4B, routewise_api/reroute.py) run in the same bounded worker as rider-scoped runs
 and commit a route revision under the same depot → round lock order (then the rider's own
 round-rider row). A round plan commit supersedes every rider revision of the plan it replaces.
@@ -135,7 +140,7 @@ class OrderSnap:
     locked_rider_id: uuid.UUID | None
     first_priority: bool
     owner_rider_id: uuid.UUID | None
-    building_id: None = None  # same-building grouping is Phase 4; never grouped here
+    building_id: str | None = None  # 4C: admin-confirmed stop group (stop_groups.py); None = not grouped
 
 
 @dataclass(frozen=True)
@@ -197,7 +202,7 @@ def capture(db: DBSession, round_id: uuid.UUID) -> Snapshot:
     ).all()
     orders = tuple(
         OrderSnap(o.id, o.order_code, o.status, o.location_state, o.lat, o.lng, o.locked_rider_id, o.first_priority,
-                  owner)
+                  owner, o.building_id)
         for o, owner in order_rows)
     return Snapshot(round_id, rnd.input_version, rnd.mode, depots, riders, orders)
 
@@ -212,7 +217,7 @@ def fingerprint(snap: Snapshot, secret: str) -> str:
                     r.confirmed, r.endpoint_kind, r.endpoint_lat, r.endpoint_lng] for r in snap.riders],
         "orders": [[str(o.id), o.status, o.location_state, o.lat, o.lng,
                     str(o.locked_rider_id) if o.locked_rider_id else None, o.first_priority,
-                    str(o.owner_rider_id) if o.owner_rider_id else None] for o in snap.orders],
+                    str(o.owner_rider_id) if o.owner_rider_id else None, o.building_id] for o in snap.orders],
     }
     payload = json.dumps(state, sort_keys=True, separators=(",", ":")).encode()
     return hmac.new(secret.encode(), b"routewise-plan-input\0" + payload, hashlib.sha256).hexdigest()
@@ -355,7 +360,7 @@ def _domain(snap: Snapshot, pending: list[OrderSnap], held_count: dict[uuid.UUID
             start=StartKind(r.start_kind),
             endpoint=Endpoint(EndpointKind(r.endpoint_kind), end_loc if r.endpoint_kind in ("home", "custom") else None,
                               r.confirmed)))
-    orders = [DomainOrder(id=o.order_code, location_id=loc(o.lat, o.lng),
+    orders = [DomainOrder(id=o.order_code, location_id=loc(o.lat, o.lng), building_id=o.building_id,
                           locked_rider_id=str(o.locked_rider_id) if o.locked_rider_id else None,
                           first_priority=o.first_priority) for o in pending]
     domain = DomainRound(id=str(snap.round_id), depots=Depots(depot_ids["office"], depot_ids["warehouse"]),

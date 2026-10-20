@@ -1,8 +1,8 @@
-"""Phase 1, 2A, 2B, 3A, 3B and 4B mutation check: inject known security/correctness defects into a scratch copy of
+"""Phase 1, 2A, 2B, 3A, 3B, 4B and 4C mutation check: inject known security/correctness defects into a scratch copy of
 services/api and confirm the test suite fails for each.
 
 Usage: python tools/mutation_check.py <scratch copy of services/api> <python with API deps> [name prefix]
-With a prefix (e.g. "2B:", "3A:", "3B:" or "4B:") only the matching targeted mutants run.
+With a prefix (e.g. "2B:", "3A:", "3B:", "4B:" or "4C:") only the matching targeted mutants run.
 MUTATION_TESTS (optional, space-separated test paths) limits each run to those tests.
 Never run against the working tree: it rewrites source files in the given copy.
 The copy must have the same .env access as the real tree (tests use TEST_DATABASE_URL).
@@ -166,6 +166,50 @@ MUTANTS = {
                                        "                               first_priority=False) for o in pending)"),
     "4B: another rider can read a reroute run": ("routers/rider.py", 'if run is None or run.scope != "rider" or run.rider_id != current.rider.id:',
                                                  'if run is None or run.scope != "rider":'),
+    # Phase 4C: same-building stop groups (run with the "4C:" prefix; MUTATION_TESTS may select test files)
+    "4C: nearby pins count as the same pin": ("stop_groups.py", "        return (o.lat, o.lng)\n", "        return (round(o.lat, 3), round(o.lng, 3))\n"),
+    "4C: group accepted without identical pins": ("stop_groups.py", "    if len({pin_of(o) for o in listed}) != 1:", "    if False:"),
+    "4C: cross-round group accepted": ("stop_groups.py", "    if len(rounds) != len(ids) or any(r != round_id for r in rounds.values()):",
+                                       "    if len(rounds) != len(ids):"),
+    "4C: stale versions ignored when grouping": ("stop_groups.py", "    if stale:\n        raise GroupRefused(409, \"STALE_ORDERS\", \"These orders changed since you opened them; reload and try again.\", stale)",
+                                                 "    if False:\n        raise GroupRefused(409, \"STALE_ORDERS\", \"These orders changed since you opened them; reload and try again.\", stale)"),
+    "4C: invalid location accepted": ("stop_groups.py", "    if bad:\n        raise GroupRefused(422, \"LOCATION_NOT_VALID\"", "    if False:\n        raise GroupRefused(422, \"LOCATION_NOT_VALID\""),
+    "4C: group id not fresh": ("stop_groups.py", "    building_id = uuid.uuid4().hex\n    for o in listed:", "    building_id = \"fixedgroupid0001\"\n    for o in listed:"),
+    "4C: group request does not bump planning input": ("stop_groups.py", "    bump_round_input(db, round_id)\n    db.flush()\n    return True, listed",
+                                                       "    db.flush()\n    return True, listed"),
+    "4C: a changed pin keeps the order in its group": ("stop_groups.py", "    if order.building_id is None or pin_of(order) == before:\n        return None",
+                                                       "    return None"),
+    "4C: an unchanged pin leaves the group": ("stop_groups.py", "    if order.building_id is None or pin_of(order) == before:", "    if order.building_id is None:"),
+    "4C: a group of one survives ungrouping": ("stop_groups.py", "    if len(rest) == 1:  # a group of one is not a group", "    if False:"),
+    "4C: a group of one survives a pin change": ("stop_groups.py", "    if len(rest) == 1:\n        rest[0].building_id, rest[0].version, rest[0].updated_at = None, rest[0].version + 1, now\n        freed = [rest[0].order_code]",
+                                                 "    if False:\n        rest[0].building_id, rest[0].version, rest[0].updated_at = None, rest[0].version + 1, now\n        freed = [rest[0].order_code]"),
+    "4C: a pin edit does not lock its group": ("stop_groups.py", "    return lock_orders(db, {order_id} | (member_ids(db, round_id, building_id) if building_id else set()))",
+                                               "    return lock_orders(db, {order_id})"),
+    "4C: stale ungroup accepted": ("stop_groups.py", "    if order.version != version:\n        raise GroupRefused(409, \"STALE_ORDERS\", \"This order changed since you opened it; reload and try again.\",\n                           [order.order_code])",
+                                   "    if False:\n        raise GroupRefused(409, \"STALE_ORDERS\", \"This order changed since you opened it; reload and try again.\",\n                           [order.order_code])"),
+    "4C: group order rows not locked": ("stop_groups.py", "                      .with_for_update(key_share=True).execution_options(populate_existing=True)).all()",
+                                        "                      .execution_options(populate_existing=True)).all()"),
+    "4C: admin planning ignores groups": ("planning.py", "location_id=loc(o.lat, o.lng), building_id=o.building_id,", "location_id=loc(o.lat, o.lng),"),
+    "4C: reroute ignores groups": ("reroute.py", "location_id=loc(o.lat, o.lng), building_id=o.building_id,", "location_id=loc(o.lat, o.lng),"),
+    "4C: group left out of the reroute fingerprint": ("reroute.py", "t(o.completed_at), t(o.completed_by), o.building_id] for o in snap.orders],",
+                                                      "t(o.completed_at), t(o.completed_by)] for o in snap.orders],"),
+    "4C: group left out of the plan fingerprint": ("planning.py", "str(o.owner_rider_id) if o.owner_rider_id else None, o.building_id] for o in snap.orders],",
+                                                   "str(o.owner_rider_id) if o.owner_rider_id else None] for o in snap.orders],"),
+    "4C: same-pin badges ignore the service area": ("stop_groups.py", '        if suggestable(o, area):\n            by_pin.setdefault(pin_of(o), []).append(o)\n    out: dict[uuid.UUID, dict] = {}\n    for o in orders:\n        group = None\n        if o.building_id:\n            members = sorted(m.order_code for m in by_group[o.building_id])\n            group = {"id": o.building_id, "size": len(members), "members": members}\n        same = (sorted(m.order_code for m in by_pin[pin_of(o)] if m.id != o.id) if suggestable(o, area) else [])', '        if (pin_of(o) is not None and o.status != "Completed"):\n            by_pin.setdefault(pin_of(o), []).append(o)\n    out: dict[uuid.UUID, dict] = {}\n    for o in orders:\n        group = None\n        if o.building_id:\n            members = sorted(m.order_code for m in by_group[o.building_id])\n            group = {"id": o.building_id, "size": len(members), "members": members}\n        same = (sorted(m.order_code for m in by_pin[pin_of(o)] if m.id != o.id) if (pin_of(o) is not None and o.status != "Completed") else [])'),
+    "4C: group membership hidden for an invalid pin": ("stop_groups.py", "        if o.building_id:\n            members = sorted(m.order_code for m in by_group[o.building_id])",
+                                                       "        if o.building_id and valid_pin(o, area):\n            members = sorted(m.order_code for m in by_group[o.building_id])"),
+    "4C: identical pins grouped without confirmation": ("routing/planner.py", "key = (\"b\", o.building_id, o.location_id, o.locked_rider_id) if o.building_id else (\"o\", o.id)",
+                                                        "key = (\"b\", o.location_id, o.locked_rider_id)"),
+    "4C: owner locks ignored when grouping": ("routing/planner.py", "key = (\"b\", o.building_id, o.location_id, o.locked_rider_id) if o.building_id else (\"o\", o.id)",
+                                              "key = (\"b\", o.building_id, o.location_id) if o.building_id else (\"o\", o.id)"),
+    "4C: a group counts as one capacity unit": ("routing/planner.py", "        return len(self.order_ids)\n", "        return 1\n"),
+    "4C: priority customers not listed first": ("routing/planner.py", "        orders = sorted(orders, key=lambda o: not o.first_priority)  # stable: priority customers first",
+                                                "        orders = list(orders)"),
+    "4C: second stop at one building kept": ("routing/planner.py", "        if key is not None and key in at:", "        if False:"),
+    "4C: rider view ignores priority inside a stop": ("routers/rider.py", "    items = sorted(items, key=lambda i: (not orders_by_id[i[\"id\"]].first_priority, i[\"order_code\"]))",
+                                                      "    items = sorted(items, key=lambda i: (False, i[\"order_code\"]))"),
+    "4C: admin plan ignores priority inside a stop": ("routers/admin_planning.py", "    in_stop = lambda oid, code: (oid not in first, code)  # noqa: E731",
+                                                      "    in_stop = lambda oid, code: (False, code)  # noqa: E731"),
 }
 if len(sys.argv) > 3:
     MUTANTS = {k: v for k, v in MUTANTS.items() if k.startswith(sys.argv[3])}

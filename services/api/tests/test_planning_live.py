@@ -75,3 +75,45 @@ def test_live_local_valhalla_rider_reroute(app, admin, db):
                                         "stops": len(seq_codes(view)), "road_distance_m": rr["road_distance_m"],
                                         "provider": rev.provenance["provider"], "solver_status": rev.provenance["solver_status"],
                                         "timings": timings}))
+
+
+@pytest.mark.skipif(os.environ.get("ROUTEWISE_LIVE_TESTS") != "1", reason="set ROUTEWISE_LIVE_TESTS=1 (local tiles)")
+def test_live_local_valhalla_grouped_route(app, admin, db):
+    """4C on the real local tiles: three customers confirmed as one same-building stop are visited
+    ONCE (one point in the route, so the road distance equals the directed recorded costs along a path
+    that has the building a single time), in the admin plan and in the rider's own reroute. Routing is
+    real; the "device position" does not exist here (the reroute starts at the configured start)."""
+    from .test_planning import routes
+    from .test_reroute import reroute_now
+    from .test_rider_deliveries import deliveries
+    from .test_stop_groups import G3, GROUP_POINTS, group, lock_all, stops_of
+
+    if not app.state.settings.valhalla_tiles.is_dir():
+        pytest.skip("local Valhalla tiles not built")
+    w = make_world(app, admin, db, points=GROUP_POINTS, live=True)
+    lock_all(w, G3 + ["RW-P006", "RW-P007"], "Rider A")
+    assert group(w, G3).status_code == 200
+    run = wait_run(w, optimize(w).json()["id"], timeout=180)
+    assert run["state"] == "succeeded", run
+    plan = w.admin.get(f"/api/admin/rounds/{w.rid}/plan").json()
+    assert plan["provenance"]["real_road"] is True and plan["provenance"]["recorded"] is False
+    mine = routes(plan)["Rider A"]
+    at_building = [s for s in stops_of(plan, "Rider A") if set(s) & set(G3)]
+    assert len(at_building) == 1 and sorted(at_building[0]) == G3  # one navigation stop, three customers
+    path = route_points(w, mine)  # start, each stop once, destination
+    assert path.count(w.codes["RW-P001"]) == 1
+    assert (mine["road_distance_m"], mine["road_duration_s"]) == recorded_cost("motor_scooter", path)
+
+    reroute_now(w, "Rider A", {"kind": "configured_start"})
+    view = deliveries(w.browsers["Rider A"], w.rid).json()
+    rr = view["plan"]["rider_route"]
+    stops = [s for s in view["sequence"] if s["orders"][0]["order_code"] in G3]
+    assert len(stops) == 1 and sorted(o["order_code"] for o in stops[0]["orders"]) == G3
+    assert stops[0]["shared"] is True and stops[0]["customers"] == 3
+    path = ["office"] + [w.codes[s["orders"][0]["order_code"]] for s in view["sequence"]] + ["home_r1"]
+    assert (rr["road_distance_m"], rr["road_duration_s"]) == recorded_cost("motor_scooter", path)
+    print("\nLIVE-GROUP", json.dumps({
+        "plan_state": run["state"], "plan_stops_at_the_building": len(at_building), "customers_at_the_stop": len(at_building[0]),
+        "plan_road_distance_m": mine["road_distance_m"], "reroute_stops_at_the_building": len(stops),
+        "reroute_road_distance_m": rr["road_distance_m"], "provider": plan["provenance"]["provider"],
+        "solver_status": plan["provenance"]["solver_status"], "timings": run["timings"]}))

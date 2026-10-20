@@ -3,8 +3,11 @@
 Ported from spikes/routing/routewise_spike/planner.py at 2a34226 (accepted Phase 0). Keep behaviour
 in step with the spike; parity is tested in tests/test_routing_parity.py.
 The spike's in-memory PlanStore is replaced by the PostgreSQL commit in ..planning.
-Application changes, both marked "2B:" below: the depot check covers only depots that riders
+Application changes marked "2B:" below: the depot check covers only depots that riders
 use, and an isolated start or fixed destination is reported per rider (UNROUTABLE_ENDPOINT).
+Application changes marked "4C:": same-building stops. A group (a `building_id` the admin
+confirmed) lists its first-priority customers first, a rider never gets two navigation stops at one
+group (a later chunk joins the first), and the plan validator checks both.
 
 Contract (docs/source/notion/RouteWise/03-Architecture.md, "Routing contract"):
 - endpoint confirmation gate first; unresolved locations block planning
@@ -87,7 +90,10 @@ class SolveResult:
 def build_stops(rnd: DeliveryRound, order_ids: list[str], max_capacity: int) -> list[StopSpec]:
     """Group orders sharing a validated building id (and the same manual owner).
 
-    Proximity alone never groups. A manually split building stays split.
+    Proximity alone never groups. A manually split building stays split. Capacity counts orders:
+    a group of n demands n units, and a group larger than the rider it must fit (the largest
+    capacity, or its locked owner's) is split into chunks; no order is dropped or reassigned.
+    4C: first-priority customers come first, so they fill the first chunk and, in any stop, head its list.
     """
     groups: dict[tuple, list] = {}
     for oid in order_ids:
@@ -96,6 +102,7 @@ def build_stops(rnd: DeliveryRound, order_ids: list[str], max_capacity: int) -> 
         groups.setdefault(key, []).append(o)
     stops: list[StopSpec] = []
     for orders in groups.values():
+        orders = sorted(orders, key=lambda o: not o.first_priority)  # stable: priority customers first
         cap = max_capacity
         if orders[0].locked_rider_id:
             cap = rnd.rider(orders[0].locked_rider_id).capacity
@@ -279,6 +286,10 @@ def _reachability_hints(stops, vehicles, matrix: RoadMatrix) -> list[str]:
         incoming = [x for x in starts | {t.location_id for t in stops} if x != s.location_id]
         if all(matrix.cost(x, s.location_id) is None for x in incoming):
             hints.append(f"stop with orders {s.order_ids} cannot be reached by road from any start or stop")
+    groups = [s.order_ids for s in stops if s.demand > 1]
+    if groups:  # 4C: a group is split only for capacity or owner locks, never to make the packing fit
+        hints.append(f"same-building stops {groups} are kept together; if capacity is tight, ungroup one so its "
+                     "orders can go to different riders")
     return hints
 
 
@@ -297,13 +308,24 @@ def route_cost(matrix: RoadMatrix, path: list[str]) -> tuple[int, int]:
 
 
 def merge_building_stops(seq: list[StopSpec]) -> list[Stop]:
-    """Consecutive stops at the same validated building become one navigation stop."""
+    """Stops at the same validated building become one navigation stop per rider.
+
+    4C: not only consecutive ones. Chunks of one group (a capacity split that landed on the same
+    rider) and a group's orders with and without an owner lock can reach one rider as separate
+    stops; they join the FIRST of them, so the building is visited once and a first-priority chunk
+    (always first on its route) keeps its place. The route is costed afterwards from the merged stops.
+    """
     out: list[Stop] = []
+    at: dict[tuple[str, str], Stop] = {}
     for s in seq:
-        if out and s.building_id and out[-1].building_id == s.building_id and out[-1].location_id == s.location_id:
-            out[-1].order_ids.extend(s.order_ids)
-        else:
-            out.append(Stop(s.location_id, list(s.order_ids), s.building_id))
+        key = (s.building_id, s.location_id) if s.building_id else None
+        if key is not None and key in at:
+            at[key].order_ids.extend(s.order_ids)
+            continue
+        stop = Stop(s.location_id, list(s.order_ids), s.building_id)
+        out.append(stop)
+        if key is not None:
+            at[key] = stop
     return out
 
 
@@ -527,6 +549,24 @@ def optimize_round(
     return plan
 
 
+def stop_issues(rid: str, stops: list[Stop], order_of) -> list[str]:
+    """4C invariants of one rider's navigation stops (also used for a rider's own reroute)."""
+    v: list[str] = []
+    seen: set[tuple[str, str]] = set()
+    for s in stops:
+        if s.building_id:
+            key = (s.building_id, s.location_id)
+            if key in seen:
+                v.append(f"{rid} has two stops at one building group")
+            seen.add(key)
+        orders = [order_of(o) for o in s.order_ids]
+        if {o.location_id for o in orders} != {s.location_id}:
+            v.append(f"{rid} has a stop whose orders do not share its location")
+        if [o.first_priority for o in orders] != sorted((o.first_priority for o in orders), reverse=True):
+            v.append(f"{rid} lists a non-priority customer before a first-priority one in a stop")
+    return v
+
+
 def validate_plan(rnd: DeliveryRound, plan: Plan) -> list[str]:
     """Independent invariant check, used by the planner and by tests."""
     v: list[str] = []
@@ -550,6 +590,7 @@ def validate_plan(rnd: DeliveryRound, plan: Plan) -> list[str]:
         prio = [i for i, s in enumerate(route.stops) if any(rnd.order(o).first_priority for o in s.order_ids)]
         if prio and prio != [0]:
             v.append(f"{rid} first-priority stop is not the first active delivery")
+        v.extend(stop_issues(rid, route.stops, rnd.order))
     missing = {o.id for o in rnd.orders} - set(seen)
     if missing:
         v.append(f"orders without owner: {sorted(missing)}")

@@ -1,0 +1,7 @@
+# Step 4C: opt-in API checks on the REAL local Valhalla tiles (20 Oct 2026 02:35 IST); no recording, no network.
+# The "device position" does not exist in these checks: the grouped reroute starts at the rider's configured start.
+$ cd services/api && ROUTEWISE_LIVE_TESTS=1 .venv/bin/python -m pytest -q -s -p no:cacheprovider tests/test_planning_live.py
+LIVE {"timings": {"points": 15, "riders": 3, "solve_s": 0.501, "total_s": 0.743, "matrix_s": 0.243, "matrix_calls": 2, "pending_orders": 11}, "provider": "valhalla-local (OpenStreetMap data)", "response_status": "in-process Actor OK, 177 ms", "profile": "motor_scooter (scooter), motorcycle (bike)", "requested_at": "2026-10-19T21:05:41+00:00", "solver_status": "SUCCESS", "total_road_distance_m": 22848}
+LIVE-REROUTE {"state": "succeeded", "origin_kind": "current_position", "stops": 4, "road_distance_m": 7068, "provider": "valhalla-local (OpenStreetMap data)", "solver_status": "SUCCESS", "timings": {"points": 6, "solve_s": 0.062, "total_s": 0.079, "matrix_s": 0.017, "matrix_calls": 1, "pending_orders": 4}}
+LIVE-GROUP {"plan_state": "succeeded", "plan_stops_at_the_building": 1, "customers_at_the_stop": 3, "plan_road_distance_m": 8958, "reroute_stops_at_the_building": 1, "reroute_road_distance_m": 8958, "provider": "valhalla-local (OpenStreetMap data)", "solver_status": "SUCCESS", "timings": {"points": 10, "riders": 3, "solve_s": 0.263, "total_s": 0.361, "matrix_s": 0.098, "matrix_calls": 2, "pending_orders": 9}}
+3 passed, 3 warnings in 4.87s

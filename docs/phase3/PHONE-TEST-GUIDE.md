@@ -16,7 +16,7 @@ For the owner: this Mac plus one Android phone or iPhone on the **same trusted W
 
 ### A0. Bring an existing phone database up to date (since step 4B)
 
-Step 4B added database migration `0005`. A `routewise_phone` built before it is still on schema `0004`. The newer code cannot read it: sign-in or the rounds screen breaks with `column round_riders.route_version does not exist`.
+Step 4B added database migration `0005` and step 4C migration `0006`. A `routewise_phone` built before them is still on schema `0004`. The newer code cannot read it: sign-in or the rounds screen breaks with `column round_riders.route_version does not exist`. The upgrade below applies every missing migration.
 
 `scripts/phone-server.sh` now checks the schema before it builds or serves anything. If the database is out of date it prints the steps below and **does not start**. It never resets, rebuilds or migrates anything by itself.
 
@@ -26,7 +26,7 @@ b. Look (read-only, changes nothing):
    ```bash
    services/api/.venv/bin/python services/api/scripts/phone_db.py check
    ```
-   `Database routewise_phone: schema 0005 (current).` means you can go to step 3. Otherwise it says what to do.
+   `Database routewise_phone: schema 0006 (current).` (or the newest migration's number) means you can go to step 3. Otherwise it says what to do.
 
 c. **Upgrade and keep the data** (riders, passwords, orders, plan, statuses). You run this yourself:
    ```bash
@@ -41,7 +41,7 @@ d. Start the server (step 3).
 
 **Alternative, fresh data:** `phone_setup.py` (step 1) rebuilds `routewise_phone` and issues new passwords. That **deletes** what is in it, which is why the launcher never does it for you.
 
-**What 4B changes on the phone:** nothing you can see. Rerouting is API-only until step 4D, so the checks in C are the Phase 3 checks, unchanged. **Phone GPS has not been tested.** Device-position reroutes are covered only by automated tests with mocked positions.
+**What 4B and 4C change on the phone:** nothing you can see. Rerouting is API-only until step 4D, and the rider's shared-stop screens (one Navigate per shared stop) are 4D too, so the checks in C are the Phase 3 checks, unchanged. **Phone GPS has not been tested.** Device-position reroutes are covered only by automated tests with mocked positions.
 
 1. Build the test data:
    ```bash

@@ -1,15 +1,15 @@
 # Phase 4 implementation plan: quick call, rerouting and shared stops
 
-**Status: step 4A committed (`e40e0b0`), awaiting review ([report](STEP-4A-REPORT.md)); step 4B committed ("Add RouteWise individual rider rerouting", after `e40e0b0`), awaiting review ([report](STEP-4B-REPORT.md)); 4C and 4D not started. Phase 4 is incomplete.**
+**Status: step 4A committed (`e40e0b0`), awaiting review ([report](STEP-4A-REPORT.md)); step 4B committed ("Add RouteWise individual rider rerouting", after `e40e0b0`), awaiting review ([report](STEP-4B-REPORT.md)); step 4C committed ("Add RouteWise same-building stop grouping", after `1cab378`), awaiting review ([report](STEP-4C-REPORT.md)); 4D not started. Phase 4 is incomplete.**
 
-The owner authorized **step 4A**, then **step 4B**, on 19 October 2026, each on its own. For 4B the owner set local implementation defaults for Q4-2, Q4-3, Q4-4, Q4-5 and Q4-7 (§4). They are **provisional and configurable**, not separately approved permanent product decisions. Q4-1 (grouping) and Q4-6 (phone secure context) remain pending, and 4C and 4D each need their own approval.
+The owner authorized **step 4A**, then **step 4B** (19 October 2026), then **step 4C** (20 October 2026), each on its own. For 4B the owner set local implementation defaults for Q4-2, Q4-3, Q4-4, Q4-5 and Q4-7 (§4); for 4C the conservative grouping default for Q4-1 (identical resolved pins, explicit admin confirmation). They are **provisional**, not separately approved permanent product decisions. Q4-6 (phone secure context) remains pending, and 4D needs its own approval.
 
 | | |
 |---|---|
 | Date | 19 October 2026 |
 | Prepared by | Claude Code |
 | Baseline | Phase 3, accepted for local development at `3fa1e40435981e98f040d896ca45b3ef8397fc5c` ([record](../phase3/OWNER-ACCEPTANCE-2026-10-19.md)) |
-| Approval | 4A and 4B authorized by the owner (19 Oct 2026). 4C and 4D not approved. Q4-2/3/4/5/7 used as provisional 4B defaults; Q4-1 and Q4-6 pending |
+| Approval | 4A and 4B authorized by the owner (19 Oct 2026), 4C (20 Oct 2026). 4D not approved. Q4-2/3/4/5/7 used as provisional 4B defaults and Q4-1 as the provisional 4C default; Q4-6 pending |
 
 **Constraints:**
 - ₹0, using local Valhalla only (`spikes/valhalla/data/valhalla_tiles`).
@@ -471,6 +471,14 @@ Same shape as `planning.py`. **No transaction is open while matrices or the solv
 
 ### 4C: Same-building stops
 
+*Implemented on 20 October 2026 (committed, awaiting review; [4C report](STEP-4C-REPORT.md)). Where the build differs from or adds to this plan:*
+- *Migration 0006 adds a length check, a "group member has a resolved pin" check and a partial index; no table.*
+- *`GET /api/admin/rounds/{id}/stop-groups` was added (suggestions and groups for the Orders page). `POST` replaces the group with exactly the listed orders (a fresh id); an existing group touched by the request must be listed completely (`GROUP_INCOMPLETE`).*
+- *Locking is order rows (sorted, one statement) then the round, with version checks; no extra lock.*
+- *The rider's stops add `customers`, `shared`, `location` and `location_issue`. First-delivery customers are listed first within a stop in admin plans and the rider view.*
+- *A rider never gets two stops at one building: later chunks of a split group join the first (`merge_building_stops`, a deliberate change from the spike's consecutive-only merge).*
+- *A group is never split just to make capacities fit: tight packing fails with `NO_FEASIBLE_PLAN` and a hint to ungroup (limitation, see the report).*
+
 **User-visible behaviour**
 - **Admin, on the Orders page:**
   - Orders of the same round with **identical resolved pins** are marked "Same pin as RW-…".
@@ -625,7 +633,10 @@ Defaults are proposals, not approvals.
 - **Q4-5:** admin edits keep round-wide invalidation.
 - **Q4-7:** new rider reroutes are refused while an admin optimization is active, and an admin plan supersedes rider revisions.
 
-**Still pending:** Q4-1 and Q4-6.
+**Used in 4C as a provisional local default (owner instruction, 20 Oct 2026):**
+- **Q4-1:** suggest groups only for orders of one round with exactly identical resolved, valid pins; an admin must confirm before anything is grouped; nearby pins, names and address text never group; identical pins can stay separate.
+
+**Still pending:** Q4-6.
 
 ## 5. Blockers and limits
 

@@ -1,0 +1,11 @@
+# Step 4C review corrections: defect checks, NEW runs (20 Oct 2026)
+## Backend: two mutants for the single suggestion rule (tests/test_stop_groups.py)
+KILLED: 4C: same-pin badges ignore the service area
+1/1 killed
+KILLED: 4C: group membership hidden for an invalid pin
+1/1 killed
+## Browser: each old defect reintroduced into OrdersPage.tsx one at a time (restored afterwards); the two tests aimed at it must fail (desktop)
+DEFECT old: every failure claims 'Nothing was changed' ->   2 failed 
+DEFECT old: refresh only when a group notice exists ->   2 failed 
+DEFECT old: refreshes not tied to the selected round or the newest request ->   2 failed 
+# Not rerun: the full 27-mutant backend set.

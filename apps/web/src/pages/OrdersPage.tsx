@@ -1,6 +1,6 @@
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
-import { api, ApiError, type AdminOrder, type Readiness, type RoundRider } from "../api";
+import { api, ApiError, isDefiniteRefusal, type AdminOrder, type Readiness, type RoundRider, type StopGroupOrderRef, type StopGroupOverview } from "../api";
 import { LocationBadge, StatusPill } from "../components/Badges";
 import OrderEditor from "../components/OrderEditor";
 import { inputClass, Message, primaryButton, RoundPicker, secondaryButton, type Note } from "../components/ui";
@@ -26,9 +26,22 @@ function PlanningBadges({ order, names }: { order: AdminOrder; names: Record<str
       {p.first_priority && (
         <span className="rounded-full bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-900" data-testid="priority-badge">First delivery</span>
       )}
+      {order.stop_group && (
+        <span className="rounded-full bg-teal-100 px-2 py-0.5 text-xs font-semibold text-teal-900" data-testid="group-badge">
+          🏢 One stop with {order.stop_group.members.filter((c) => c !== order.order_code).join(", ")}
+        </span>
+      )}
+      {!order.stop_group && order.same_pin_as.length > 0 && (
+        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-950" data-testid="same-pin-badge">
+          Same pin as {order.same_pin_as.join(", ")}
+        </span>
+      )}
     </>
   );
 }
+
+/** What a refresh did to the data on screen (see `refresh`). */
+type Refreshed = "applied" | "failed" | "obsolete";
 
 export default function OrdersPage({ onUnauthorized }: { onUnauthorized: () => void }) {
   const [error, setError] = useState<string | null>(null);
@@ -37,32 +50,58 @@ export default function OrdersPage({ onUnauthorized }: { onUnauthorized: () => v
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [riders, setRiders] = useState<RoundRider[]>([]);
   const [readiness, setReadiness] = useState<Readiness | null>(null);
+  const [groups, setGroups] = useState<StopGroupOverview | null>(null);
   const [onlyNeedsPin, setOnlyNeedsPin] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
   const wide = useIsWide();
+  const selected = useRef<string | null>(null);  // the round on screen right now
+  selected.current = roundId;
+  const newest = useRef(0);                       // the most recent refresh request; older answers are dropped
 
-  const refresh = useCallback((id: string, signal?: AbortSignal) => {
-    Promise.all([
+  /** Reload orders, readiness, riders and the group overview of the round on screen. Answers apply only if this
+   * is still the newest request for the selected round, so a slow answer for an earlier request or another round
+   * can never replace what is shown. A request for a round that is no longer selected is not even sent.
+   * The result says what happened to the data on screen: "applied" (this round's data was loaded), "failed" (the
+   * load failed) or "obsolete" (another round was selected). A request overtaken by a newer one for the same
+   * round reports what that newer request produced. */
+  const latest = useRef<Promise<Refreshed>>(Promise.resolve("obsolete"));
+  const refresh = useCallback((id: string, signal?: AbortSignal): Promise<Refreshed> => {
+    if (id !== selected.current) return Promise.resolve("obsolete");
+    const mine = ++newest.current;
+    const onScreen = () => !signal?.aborted && id === selected.current;
+    const request: Promise<Refreshed> = Promise.all([
       api<AdminOrder[]>(`/api/admin/rounds/${id}/orders`, { signal }),
       api<Readiness>(`/api/admin/rounds/${id}/readiness`, { signal }),
       api<RoundRider[]>(`/api/admin/rounds/${id}/riders`, { signal }),
-    ]).then(([o, r, rr]) => {
-      if (signal?.aborted) return;  // another round was selected meanwhile
-      setOrders(o); setReadiness(r); setRiders(rr);
-    }).catch(handle);
+      api<StopGroupOverview>(`/api/admin/rounds/${id}/stop-groups`, { signal }),
+    ]).then(([o, r, rr, g]): Refreshed | Promise<Refreshed> => {
+      if (!onScreen()) return "obsolete";           // another round was selected meanwhile
+      if (mine !== newest.current) return latest.current;  // a newer request for this round decides
+      setOrders(o); setReadiness(r); setRiders(rr); setGroups(g); setError(null);
+      return "applied";
+    }).catch((e): Refreshed | Promise<Refreshed> => {
+      if (!onScreen()) return "obsolete";
+      if (mine !== newest.current) return latest.current;
+      handle(e);
+      return "failed";
+    });
+    latest.current = request;
+    return request;
   }, [handle]);
 
   useEffect(() => {
     if (!roundId) return;
-    setOrders([]); setReadiness(null); setRiders([]); setEditing(null);
+    setOrders([]); setReadiness(null); setRiders([]); setGroups(null); setEditing(null);
     const ac = new AbortController();
     refresh(roundId, ac.signal);
     return () => ac.abort();
   }, [roundId, refresh]);
 
   function saved(updated: AdminOrder) {
-    setOrders((list) => list.map((o) => (o.id === updated.id ? updated : o)));
-    if (roundId) api<Readiness>(`/api/admin/rounds/${roundId}/readiness`).then(setReadiness).catch(handle);
+    setOrders((list) => list.map((o) => (o.id === updated.id ? updated : o)));  // shown at once; the reload below confirms
+    // Any saved edit can change which orders are suggested together (a pin), free another order (a group
+    // notice), or move versions the group panel holds: reload orders, readiness and the group overview.
+    if (roundId) refresh(roundId);
   }
 
   if (rounds === null) return error ? <p role="alert" className="text-red-800">{error}</p> : <p role="status" className="text-slate-500">Loading…</p>;
@@ -110,6 +149,10 @@ export default function OrdersPage({ onUnauthorized }: { onUnauthorized: () => v
       {roundId && participating.length > 0 && (
         <BulkAssign key={roundId} roundId={roundId} orders={orders} riders={participating} names={names}
           onDone={() => refresh(roundId)} onUnauthorized={onUnauthorized} />
+      )}
+
+      {roundId && groups && (
+        <StopGroups key={`stop-groups-${roundId}`} roundId={roundId} overview={groups} onDone={() => refresh(roundId)} onUnauthorized={onUnauthorized} />
       )}
 
       {/* Phones: cards */}
@@ -242,6 +285,132 @@ function BulkAssign({ roundId, orders, riders, names, onDone, onUnauthorized }: 
         <button type="button" disabled={busy} className={primaryButton} onClick={apply}>Apply to {selected.size} order(s)</button>
       </div>
       <div className="mt-3"><Message note={note} onReload={conflict ? () => { setNote(null); onDone(); } : undefined} /></div>
+    </details>
+  );
+}
+
+/** Same-building stops (step 4C). Orders with EXACTLY the same pin are suggested; nothing is grouped until
+ * the admin confirms. Nearby pins are never suggested, and identical pins may stay separate stops (different
+ * entrances). Grouping changes no status, customer detail or owner. */
+const UNCERTAIN_CHANGE = "Could not confirm the change. Reload to check the current groups.";
+
+function StopGroups({ roundId, overview, onDone, onUnauthorized }: {
+  roundId: string; overview: StopGroupOverview; onDone: () => Promise<Refreshed>; onUnauthorized: () => void;
+}) {
+  const [note, setNote] = useState<Note>(null);
+  const [reload, setReload] = useState<"conflict" | "uncertain" | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [reloading, setReloading] = useState(false);
+  const alive = useRef(true);  // this panel belongs to one round; once another is selected it is gone
+  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
+
+  /** Send one change. "Nothing was changed" is said only when the API itself rejected the request. A network
+   * failure, an unreadable answer or a server error leaves the outcome unknown (the server may have committed
+   * the change), so it is reported as such, with a reload of the current server data. A mutation is never retried here. */
+  async function run(action: () => Promise<string>) {
+    setBusy(true); setNote(null); setReload(null);
+    try {
+      setNote({ kind: "ok", text: await action() });
+      onDone();
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 401) return onUnauthorized();
+      if (isDefiniteRefusal(e)) {
+        const refusal = e as ApiError;
+        setReload(refusal.status === 409 ? "conflict" : null);
+        setNote({ kind: "error", text: `${refusal.message} Nothing was changed.`, details: refusal.details });
+      } else {
+        setReload("uncertain");
+        setNote({ kind: "warn", text: UNCERTAIN_CHANGE });
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /** Fetch the current server data (a read, never a repeat of the change). While it loads, a loading state shows.
+   * Only a successful load of this round confirms the reload: after an uncertain outcome the loaded lists are
+   * the answer, and the message says so. If the load fails the earlier warning and the reload button stay, so
+   * it can be read again; the change itself is never sent again. */
+  async function reloadFromServer() {
+    setReloading(true);
+    const outcome = await onDone();
+    if (!alive.current) return;  // another round was selected meanwhile: nothing here applies any more
+    setReloading(false);
+    if (outcome !== "applied") return;
+    setNote(reload === "uncertain" ? { kind: "ok", text: "Reloaded: these are the groups the server has now." } : null);
+    setReload(null);
+  }
+
+  /** The whole stop: the suggested orders plus every member of any group they already belong to. */
+  function groupAsOneStop(suggested: (StopGroupOrderRef & { stop_group: string | null })[]) {
+    const all = new Map<string, StopGroupOrderRef>();
+    for (const o of suggested) {
+      all.set(o.id, o);
+      for (const m of overview.groups.find((g) => g.id === o.stop_group)?.orders ?? []) all.set(m.id, m);
+    }
+    return run(async () => {
+      const r = await api<{ group: { orders: string[] } }>(`/api/admin/rounds/${roundId}/stop-groups`, {
+        method: "POST", json: { orders: [...all.values()].map((o) => ({ id: o.id, version: o.version })) },
+      });
+      return `${r.group.orders.join(", ")} now share one stop. Statuses, customers and riders are unchanged; re-optimize to plan with it.`;
+    });
+  }
+
+  const ungroup = (o: StopGroupOrderRef) => run(async () => {
+    const r = await api<{ notice: string }>(`/api/admin/orders/${o.id}/stop-group`, { method: "DELETE", json: { version: o.version } });
+    return `${r.notice} Re-optimize to plan without it.`;
+  });
+
+  const count = overview.suggestions.length + overview.groups.length;
+  return (
+    <details className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200" data-testid="stop-groups">
+      <summary className="min-h-11 cursor-pointer content-center font-semibold">
+        Same-building stops{count > 0 ? ` (${overview.groups.length} grouped, ${overview.suggestions.length} suggested)` : ""}
+      </summary>
+      <p className="mt-2 text-sm text-slate-600">
+        Orders with exactly the same pin can be one stop for the rider. Nothing is grouped until you confirm it. Nearby pins are never
+        suggested or grouped, and identical pins can stay separate stops if they are different entrances. Grouping changes no status,
+        customer detail or owner; changing a grouped order's pin takes it out of its group.
+      </p>
+      {count === 0 && <p className="mt-2 text-sm text-slate-600" data-testid="no-stop-groups">No orders share an identical pin.</p>}
+
+      {overview.suggestions.length > 0 && (
+        <ul className="mt-3 space-y-2" aria-label="Suggested stops">
+          {overview.suggestions.map((s) => (
+            <li key={s.orders.map((o) => o.id).join()} className="rounded-lg bg-amber-50 p-3 text-sm ring-1 ring-amber-200" data-testid="group-suggestion">
+              <p className="font-medium">Same pin: {s.orders.map((o) => `${o.order_code} (${o.status})`).join(", ")}</p>
+              <button type="button" disabled={busy || reloading} className={`${primaryButton} mt-2`} onClick={() => groupAsOneStop(s.orders)}>
+                Group as one stop
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {overview.groups.length > 0 && (
+        <ul className="mt-3 space-y-2" aria-label="Stop groups">
+          {overview.groups.map((g) => (
+            <li key={g.id} className="rounded-lg bg-teal-50 p-3 text-sm ring-1 ring-teal-200" data-testid="stop-group">
+              <p className="font-medium">One stop: {g.orders.map((o) => o.order_code).join(", ")}</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {g.orders.map((o) => (
+                  <button key={o.id} type="button" disabled={busy || reloading} className={secondaryButton} onClick={() => ungroup(o)}
+                    aria-label={`Ungroup ${o.order_code}`}>
+                    Ungroup {o.order_code}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1 text-xs text-slate-600">A group left with one order is dissolved.</p>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="mt-3">
+        {reloading
+          ? <p role="status" data-testid="groups-reloading" className="rounded-md bg-slate-100 px-3 py-2 text-sm text-slate-800">Reloading the current groups…</p>
+          : <Message note={note} reloadLabel={reload === "uncertain" ? "Reload the current groups" : undefined}
+              onReload={reload ? () => reloadFromServer() : undefined} />}
+      </div>
     </details>
   );
 }

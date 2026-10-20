@@ -9,7 +9,7 @@ export const card = "rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200";
 
 export type Note = { kind: "error" | "ok" | "warn"; text: string; details?: string[] } | null;
 
-export function Message({ note, onReload }: { note: Note; onReload?: () => void }) {
+export function Message({ note, onReload, reloadLabel = "Reload the latest version" }: { note: Note; onReload?: () => void; reloadLabel?: string }) {
   if (!note) return null;
   const style = note.kind === "error" ? "bg-red-50 text-red-800" : note.kind === "warn" ? "bg-orange-50 text-orange-900" : "bg-emerald-50 text-emerald-900";
   return (
@@ -20,7 +20,7 @@ export function Message({ note, onReload }: { note: Note; onReload?: () => void 
       )}
       {onReload && (
         <button type="button" onClick={onReload} className="mt-2 min-h-11 rounded-md bg-white px-3 font-semibold ring-1 ring-current">
-          Reload the latest version
+          {reloadLabel}
         </button>
       )}
     </div>

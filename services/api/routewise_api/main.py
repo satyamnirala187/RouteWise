@@ -16,7 +16,7 @@ from .config import REPO_ROOT, Settings, load_settings
 from .db import make_engine, make_session_factory
 from .deps import utcnow
 from .planning import PlanningService, recover_interrupted_runs
-from .routers import admin, admin_planning, admin_riders, auth, rider
+from .routers import admin, admin_groups, admin_planning, admin_riders, auth, rider
 
 MAX_BODY_BYTES = 3 * 1024 * 1024  # covers the 2 MiB workbook limit plus multipart overhead
 WEB_DIST = REPO_ROOT / "apps" / "web" / "dist"
@@ -118,6 +118,7 @@ def create_app(settings: Settings | None = None, clock: Callable[[], datetime] |
     app.include_router(admin.router)
     app.include_router(admin_riders.router)
     app.include_router(admin_planning.router)
+    app.include_router(admin_groups.router)
     app.include_router(rider.router)
 
     if WEB_DIST.is_dir():  # production-style single origin: built SPA served by the API

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { api, ApiError, loadSession, logout, setCsrfToken } from "./api";
+import { api, ApiError, isDefiniteRefusal, loadSession, logout, setCsrfToken } from "./api";
 
 type Call = { url: string; init: RequestInit };
 let calls: Call[] = [];
@@ -60,5 +60,29 @@ describe("api client", () => {
     expect(await loadSession()).toBeNull();
     vi.stubGlobal("fetch", () => respond(400, { detail: { file_errors: ["Upload an .xlsx workbook."] } }));
     await expect(api("/x", { method: "POST" })).rejects.toBeInstanceOf(ApiError);
+  });
+});
+
+describe("isDefiniteRefusal", () => {
+  it("is true only for a 4xx the API itself wrote", () => {
+    expect(isDefiniteRefusal(new ApiError(409, "stale", { code: "STALE_ORDERS", message: "stale", details: [] }))).toBe(true);
+    expect(isDefiniteRefusal(new ApiError(422, "invalid", [{ loc: ["body"] }]))).toBe(true);
+    expect(isDefiniteRefusal(new ApiError(404, "gone", "Order not found"))).toBe(true);
+  });
+  it("is false whenever the change may already be committed", () => {
+    expect(isDefiniteRefusal(new ApiError(500, "boom", { detail: "x" }))).toBe(false);   // a server error
+    expect(isDefiniteRefusal(new ApiError(503, "busy", { code: "BUSY" }))).toBe(false);
+    expect(isDefiniteRefusal(new ApiError(408, "timeout", "timeout"))).toBe(false);
+    expect(isDefiniteRefusal(new ApiError(409, "no body", undefined))).toBe(false);       // no explanation from the server
+    expect(isDefiniteRefusal(new TypeError("Failed to fetch"))).toBe(false);              // no answer at all
+    expect(isDefiniteRefusal(new SyntaxError("Unexpected token <"))).toBe(false);         // an unreadable answer
+    expect(isDefiniteRefusal(null)).toBe(false);
+  });
+  it("treats an unreadable body as an unknown outcome, never as a refusal", async () => {
+    vi.stubGlobal("fetch", () => Promise.resolve(new Response("<html>Bad gateway</html>", { status: 502 })));
+    const e = await api("/api/admin/rounds/r/stop-groups", { method: "POST", json: {} }).catch((x) => x);
+    expect(isDefiniteRefusal(e)).toBe(false);
+    vi.stubGlobal("fetch", () => Promise.resolve(new Response("<html>ok?</html>", { status: 200 })));
+    expect(isDefiniteRefusal(await api("/api/x").catch((x) => x))).toBe(false);
   });
 });

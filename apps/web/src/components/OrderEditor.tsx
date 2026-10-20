@@ -37,7 +37,9 @@ export default function OrderEditor({ order, riders = [], onSaved, onClose, onUn
     try {
       const updated = await fn();
       onSaved(updated);
-      setMessage(updated.warning ? { kind: "warn", text: updated.warning } : { kind: "ok", text: ok });
+      // A pin edit may take the order out of its stop group (4C); say so, with the usual result.
+      const text = [updated.warning ?? ok, updated.stop_group_notice].filter(Boolean).join(" ");
+      setMessage(updated.warning || updated.stop_group_notice ? { kind: "warn", text } : { kind: "ok", text });
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) return onUnauthorized();
       const details = e instanceof ApiError && e.details.length ? ` (${e.details.join(", ")})` : "";

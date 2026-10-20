@@ -1,0 +1,10 @@
+# Step 4C review corrections: web typecheck, unit tests and build (20 Oct 2026 03:26 IST). A NEW run; the earlier step4c_web_checks.txt is the run before the corrections.
+$ npm run typecheck
+typecheck exit 0
+$ npx vitest run
+ Test Files  4 passed (4)
+      Tests  26 passed (26)
+$ npm run build
+
+✓ built in 153ms
+build exit 0

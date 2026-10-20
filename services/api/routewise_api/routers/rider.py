@@ -216,6 +216,26 @@ def _delivery_item(o: Order, area) -> dict:
     }
 
 
+def _stop_entry(seq: int, items: list[dict], orders_by_id: dict, group_size: dict) -> dict:
+    """One navigation stop of the rider's route (4C). The customers keep their own order records and
+    statuses (`orders`, first-delivery customers first, then by order code). Added per stop:
+    `customers` (this rider's Pending customers here now), `shared` (the stop belongs to a stop group
+    in which this rider holds two or more orders, of any status) and ONE validated `location` for
+    the whole stop (None, with `location_issue`, if the customers no longer share a valid pin). Only
+    this rider's own orders are counted or shown; a group split across riders reveals nothing."""
+    items = sorted(items, key=lambda i: (not orders_by_id[i["id"]].first_priority, i["order_code"]))
+    pins = {(i["location"]["lat"], i["location"]["lng"]) if i["location"] else None for i in items}
+    if len(pins) == 1 and None not in pins:
+        location, issue = items[0]["location"], None
+    elif len(items) == 1:
+        location, issue = None, items[0]["location_issue"]
+    else:
+        location, issue = None, "The customers at this stop no longer share one valid pin; ask your admin to check them."
+    shared = any(orders_by_id[i["id"]].building_id and group_size[orders_by_id[i["id"]].building_id] >= 2 for i in items)
+    return {"seq": seq, "orders": items, "customers": len(items), "shared": shared, "location": location,
+            "location_issue": issue}
+
+
 def _place(kind: str | None, depots: dict) -> dict | None:
     """A start or destination by kind and depot label; never coordinates."""
     if kind is None:
@@ -290,6 +310,11 @@ def _delivery_view(db: DBSession, me: uuid.UUID, round_id: uuid.UUID, settings: 
     seq: dict = eff.sequence if eff is not None else {}
     stops: dict[int, list] = {}
     unsequenced, postponed, completed = [], [], []
+    orders_by_id = {str(o.id): o for o in orders}
+    group_size: dict[str, int] = {}
+    for o in orders:  # this rider's own orders only
+        if o.building_id:
+            group_size[o.building_id] = group_size.get(o.building_id, 0) + 1
     for o in orders:
         item = _delivery_item(o, area)
         if o.status == "Postponed":
@@ -326,7 +351,7 @@ def _delivery_view(db: DBSession, me: uuid.UUID, round_id: uuid.UUID, settings: 
             "start": _place(rr.start_kind, depots), "destination": _place(endpoint.kind if endpoint else None, depots),
             "vehicle": rr.vehicle, "confirmation": confirmation_state(rr)},
         "plan": plan_out,
-        "sequence": [{"seq": n, "orders": stops[n]} for n in sorted(stops)],
+        "sequence": [_stop_entry(n, stops[n], orders_by_id, group_size) for n in sorted(stops)],
         "unsequenced": unsequenced, "postponed": postponed, "completed": completed,
         "reroute": _reroute_options(db, rnd.id, me, settings) if joined else None,
     }

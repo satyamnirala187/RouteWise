@@ -1,0 +1,17 @@
+# Step 4C: API test suite on PostgreSQL, recorded real-road matrices, mocked device positions (2026-10-20 02:30 IST)
+$ cd services/api && .venv/bin/python -m pytest -q -p no:cacheprovider
+........................................................................ [ 16%]
+........................................................................ [ 32%]
+........................................................................ [ 48%]
+.....................sss................................................ [ 64%]
+........................................................................ [ 81%]
+........................................................................ [ 97%]
+............                                                             [100%]
+=============================== warnings summary ===============================
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:80: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+441 passed, 3 skipped, 3 warnings in 292.37s (0:04:52)
+# The 395 earlier tests (4B baseline run: 395 passed, 2 skipped) plus 46 new ones in tests/test_stop_groups.py = 441 passed; the 3 skipped are the opt-in live tests, run separately in step4c_api_live_valhalla.txt.
+# Earlier runs during development, kept for the record: 438 passed (43 new tests) before the last 3 tests were added. The last full run is the one above.

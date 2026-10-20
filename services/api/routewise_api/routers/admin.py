@@ -27,6 +27,7 @@ from ..orders import (
     validate_status,
     validate_text,
 )
+from .. import stop_groups
 from ..riders import bump_round_input, configuration_blockers
 
 router = APIRouter(prefix="/api/admin", tags=["admin"], dependencies=[Depends(require_admin)])
@@ -199,7 +200,8 @@ def list_orders(round_id: uuid.UUID, db: DBSession = Depends(get_db, scope="func
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Round not found")
     rows = db.execute(select(Order, Assignment.rider_id).outerjoin(Assignment, Assignment.order_id == Order.id)
                       .where(Order.round_id == round_id).order_by(Order.source_row)).all()
-    return [order_view(o, settings.service_area, owner) for o, owner in rows]
+    groups = stop_groups.stop_group_fields([o for o, _ in rows], settings.service_area)
+    return [order_view(o, settings.service_area, owner) | groups[o.id] for o, owner in rows]
 
 
 @router.get("/rounds/{round_id}/readiness")
@@ -246,9 +248,13 @@ class LinkIn(BaseModel):
     link: str = Field(min_length=1, max_length=2048)
 
 
-def admin_order_view(db: DBSession, order: Order, settings: Settings) -> dict:
+def admin_order_view(db: DBSession, order: Order, settings: Settings, groups: dict | None = None) -> dict:
+    """One order as the admin sees it, with its stop group and same-pin orders (4C; order codes only).
+    `groups` is `stop_groups.stop_group_fields` of the round, for callers that render many orders."""
+    if groups is None:
+        groups = stop_groups.fields_for_round(db, order.round_id, settings.service_area)
     return order_view(order, settings.service_area, db.scalar(select(Assignment.rider_id)
-                                                              .where(Assignment.order_id == order.id)))
+                                                              .where(Assignment.order_id == order.id))) | groups[order.id]
 
 
 def _locked_order(db: DBSession, order_id: uuid.UUID, version: int) -> Order:
@@ -260,6 +266,25 @@ def _locked_order(db: DBSession, order_id: uuid.UUID, version: int) -> Order:
     if order.version != version:
         raise HTTPException(status.HTTP_409_CONFLICT, "This order changed since you opened it; reload and try again")
     return order
+
+
+def _locked_for_pin(db: DBSession, order_id: uuid.UUID, version: int) -> tuple[Order, dict]:
+    """The order about to get a new pin, locked together with its stop group (4C), version-checked."""
+    locked = stop_groups.lock_for_pin_edit(db, order_id)
+    if locked is None or order_id not in locked:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Order not found")
+    order = locked[order_id]
+    if order.version != version:
+        raise HTTPException(status.HTTP_409_CONFLICT, "This order changed since you opened it; reload and try again")
+    if order.building_id is not None and not stop_groups.member_ids(db, order.round_id, order.building_id) <= set(locked):
+        raise HTTPException(status.HTTP_409_CONFLICT, "This order's stop group changed; reload and try again")  # a member was not locked
+    return order, locked
+
+
+def _with_group_notice(view: dict, notice: dict | None) -> dict:
+    if notice:  # a pin edit took the order out of its stop group: say so, in words
+        view["stop_group_notice"], view["stop_group_freed"] = notice["message"], notice["freed"]
+    return view
 
 
 def _bump(order: Order, now: datetime) -> None:
@@ -307,15 +332,16 @@ def edit_order(order_id: uuid.UUID, body: OrderPatch, current: CurrentUser = Dep
 @router.post("/orders/{order_id}/pin")
 def set_manual_pin(order_id: uuid.UUID, body: PinIn, db: DBSession = Depends(get_db, scope="function"),
                    settings: Settings = Depends(get_settings), now: datetime = Depends(get_now)) -> dict:
-    order = _locked_order(db, order_id, body.version)
+    order, locked = _locked_for_pin(db, order_id, body.version)
     loc = manual_pin(body.lat, body.lng)
     if not loc.resolved:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, loc.note)
-    before = _planning_fields(order)
+    before, before_pin = _planning_fields(order), stop_groups.pin_of(order)
     apply_location(order, loc)
+    notice = stop_groups.leave_group_on_pin_change(order, locked, before_pin, now)  # 4C: an actual pin change leaves the group
     _bump(order, now)
     _bump_if_planning_input_changed(db, order, before)
-    view = admin_order_view(db, order, settings)
+    view = _with_group_notice(admin_order_view(db, order, settings), notice)
     if not view["location"]["in_service_area"]:
         view["warning"] = "This pin is outside the DU North Campus service area and will block planning."
     return view
@@ -324,12 +350,13 @@ def set_manual_pin(order_id: uuid.UUID, body: PinIn, db: DBSession = Depends(get
 @router.post("/orders/{order_id}/location-link")
 def set_location_link(order_id: uuid.UUID, body: LinkIn, db: DBSession = Depends(get_db, scope="function"),
                       settings: Settings = Depends(get_settings), now: datetime = Depends(get_now)) -> dict:
-    order = _locked_order(db, order_id, body.version)
-    before = _planning_fields(order)
+    order, locked = _locked_for_pin(db, order_id, body.version)
+    before, before_pin = _planning_fields(order), stop_groups.pin_of(order)
     order.location_link = body.link.strip()
     deadline = time.monotonic() + settings.link_budget_s
     apply_location(order, resolve_link(order.location_link, allow_network=settings.resolve_short_links,
                                        deadline=deadline))
+    notice = stop_groups.leave_group_on_pin_change(order, locked, before_pin, now)  # same pin: stays grouped
     _bump(order, now)
     _bump_if_planning_input_changed(db, order, before)
-    return admin_order_view(db, order, settings)
+    return _with_group_notice(admin_order_view(db, order, settings), notice)

@@ -1,0 +1,9 @@
+# Step 4C: routing regression, the accepted Phase 0 spike suite (2026-10-20 02:16 IST)
+$ cd spikes/routing && .venv/bin/python -m pytest -q -p no:cacheprovider
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_env_costs_live.py:65: set ROUTEWISE_LIVE_TESTS=1
+SKIPPED [1] tests/test_env_costs_live.py:77: BLOCKED: GOOGLE_MAPS_API_KEY not set (no credentials / no approved spend)
+SKIPPED [1] tests/test_env_costs_live.py:88: BLOCKED: STADIA_API_KEY not set (no account; matrix needs Standard+ or trial)
+SKIPPED [2] tests/test_valhalla_du.py:122: set ROUTEWISE_LIVE_TESTS=1 and build local tiles (spikes/valhalla/build_tiles.sh)
+264 passed, 5 skipped, 4 warnings in 78.47s (0:01:18)
+# The spike code is unchanged (git status of spikes/ is empty). The application's routing parity tests (tests/test_routing_parity.py) ran inside the API suite above, against the changed planner.

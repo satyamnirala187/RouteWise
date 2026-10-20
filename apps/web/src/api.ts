@@ -30,6 +30,14 @@ export class ApiError extends Error {
   }
 }
 
+/** True only when the API itself answered and rejected the request: a 4xx with the server's own JSON explanation
+ * (a 408 is a timeout, not a verdict). Then nothing was changed. Everything else leaves the outcome UNKNOWN, because
+ * the change may already be committed: no answer (a network failure), an unreadable answer, or a server error.
+ * A caller must not claim "nothing was changed" unless this is true, and must not retry on its own. */
+export function isDefiniteRefusal(e: unknown): boolean {
+  return e instanceof ApiError && e.status >= 400 && e.status < 500 && e.status !== 408 && e.detail !== undefined;
+}
+
 let csrfToken: string | null = null;
 export const setCsrfToken = (token: string | null) => { csrfToken = token; };
 export const getCsrfToken = () => csrfToken;
@@ -124,6 +132,20 @@ export interface AdminOrder {
   warning?: string;
   // Phase 2B planning inputs and current owner (no planning screens yet; 2C)
   planning: { locked_rider_id: string | null; first_priority: boolean; assigned_rider_id: string | null };
+  // 4C: the order's admin-confirmed stop group (order codes only), and other orders of the round with the
+  // identical pin (a suggestion, never an action).
+  stop_group: StopGroupInfo | null;
+  same_pin_as: string[];
+  // 4C: set on the response of a pin edit that took the order out of its group.
+  stop_group_notice?: string;
+  stop_group_freed?: string[];
+}
+export interface StopGroupInfo { id: string; size: number; members: string[]; }
+export interface StopGroupOrderRef { id: string; order_code: string; status: Status; version: number; }
+/** `GET /api/admin/rounds/{id}/stop-groups` (4C): existing groups and same-pin suggestions. */
+export interface StopGroupOverview {
+  groups: { id: string; orders: StopGroupOrderRef[] }[];
+  suggestions: { orders: (StopGroupOrderRef & { stop_group: string | null })[] }[];
 }
 
 export interface RoundSummary { id: string; name: string; created_at: string; orders: number; needs_pin: number; }
@@ -290,7 +312,11 @@ export interface DeliveryView {
       road_distance_m: number; road_duration_s: number; awaiting_recalculation: "destination_changed" | null;
     } | null;
   } | null;
-  sequence: { seq: number; orders: DeliveryItem[] }[];
+  // 4C: a stop may hold several customers (a confirmed same-building group). `customers` counts this rider's
+  // Pending customers at the stop now, `shared` says the stop belongs to a group, `location` is the one
+  // validated pin of the whole stop. The screens for shared stops arrive in 4D.
+  sequence: { seq: number; orders: DeliveryItem[]; customers: number; shared: boolean;
+              location: { lat: number; lng: number } | null; location_issue: string | null }[];
   unsequenced: DeliveryItem[]; postponed: DeliveryItem[]; completed: DeliveryItem[];
   // 4B: what the rider may choose for their own reroute (the screens arrive in 4D).
   reroute: {

@@ -1,0 +1,82 @@
+# Step 4C final correction (reload confirmation): defect checks on the browser tests (20 Oct 2026). NEW run.
+# Each defect was put back into apps/web/src/pages/OrdersPage.tsx one at a time (a scratch edit, restored after each run; the real file was compared byte for byte with the saved copy afterwards).
+# Command: scripts/e2e.sh e2e/phase4c.spec.ts -g 'reload|delayed refresh'   (desktop 1280 px and mobile 390 px)
+# D1 = the reported bug: 'Reloaded' shown at once, before the refresh finishes, and the retry button dropped
+# D2 = refresh answers applied without the selected-round / newest-request guard
+# D3 = a successful refresh no longer clears the page-level load error
+# D4 = a reload overtaken by a newer refresh of the same round reports nothing
+
+=== D1 ===
+✓   1 [desktop] › e2e/phase4c.spec.ts:206:1 › a grouping request the server committed but whose answer was lost is reported as uncertain; reloading shows the saved group (2.2s)
+✘   2 [desktop] › e2e/phase4c.spec.ts:255:1 › a delayed reload shows a loading state, and only a finished load confirms it (5.7s)
+✘   3 [desktop] › e2e/phase4c.spec.ts:287:1 › a failed reload keeps the uncertain warning and allows another read-only reload (5.8s)
+✘   4 [desktop] › e2e/phase4c.spec.ts:325:1 › a reload overtaken by a newer refresh of the same round is confirmed by what that newer refresh loaded (6.2s)
+✓   5 [desktop] › e2e/phase4c.spec.ts:355:1 › a reload still loading when another round is selected never confirms or replaces the new round (1.7s)
+✓   6 [desktop] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a saved order edit) (2.0s)
+✓   7 [desktop] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a group action) (1.8s)
+✓   8 [mobile] › e2e/phase4c.spec.ts:206:1 › a grouping request the server committed but whose answer was lost is reported as uncertain; reloading shows the saved group (1.7s)
+✘   9 [mobile] › e2e/phase4c.spec.ts:255:1 › a delayed reload shows a loading state, and only a finished load confirms it (5.9s)
+✘  10 [mobile] › e2e/phase4c.spec.ts:287:1 › a failed reload keeps the uncertain warning and allows another read-only reload (5.7s)
+✘  11 [mobile] › e2e/phase4c.spec.ts:325:1 › a reload overtaken by a newer refresh of the same round is confirmed by what that newer refresh loaded (5.9s)
+✓  12 [mobile] › e2e/phase4c.spec.ts:355:1 › a reload still loading when another round is selected never confirms or replaces the new round (1.6s)
+✓  13 [mobile] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a saved order edit) (1.6s)
+✓  14 [mobile] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a group action) (1.5s)
+6 failed
+8 passed (55.7s)
+
+=== D2 ===
+✓   1 [desktop] › e2e/phase4c.spec.ts:206:1 › a grouping request the server committed but whose answer was lost is reported as uncertain; reloading shows the saved group (1.7s)
+✓   2 [desktop] › e2e/phase4c.spec.ts:255:1 › a delayed reload shows a loading state, and only a finished load confirms it (1.3s)
+✓   3 [desktop] › e2e/phase4c.spec.ts:287:1 › a failed reload keeps the uncertain warning and allows another read-only reload (945ms)
+✓   4 [desktop] › e2e/phase4c.spec.ts:325:1 › a reload overtaken by a newer refresh of the same round is confirmed by what that newer refresh loaded (820ms)
+✘   5 [desktop] › e2e/phase4c.spec.ts:355:1 › a reload still loading when another round is selected never confirms or replaces the new round (6.5s)
+✘   6 [desktop] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a saved order edit) (6.6s)
+✘   7 [desktop] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a group action) (6.6s)
+✓   8 [mobile] › e2e/phase4c.spec.ts:206:1 › a grouping request the server committed but whose answer was lost is reported as uncertain; reloading shows the saved group (1.7s)
+✓   9 [mobile] › e2e/phase4c.spec.ts:255:1 › a delayed reload shows a loading state, and only a finished load confirms it (1.3s)
+✓  10 [mobile] › e2e/phase4c.spec.ts:287:1 › a failed reload keeps the uncertain warning and allows another read-only reload (955ms)
+✓  11 [mobile] › e2e/phase4c.spec.ts:325:1 › a reload overtaken by a newer refresh of the same round is confirmed by what that newer refresh loaded (808ms)
+✘  12 [mobile] › e2e/phase4c.spec.ts:355:1 › a reload still loading when another round is selected never confirms or replaces the new round (6.5s)
+✘  13 [mobile] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a saved order edit) (6.6s)
+✘  14 [mobile] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a group action) (6.5s)
+6 failed
+8 passed (53.0s)
+
+=== D3 ===
+✓   1 [desktop] › e2e/phase4c.spec.ts:206:1 › a grouping request the server committed but whose answer was lost is reported as uncertain; reloading shows the saved group (1.7s)
+✓   2 [desktop] › e2e/phase4c.spec.ts:255:1 › a delayed reload shows a loading state, and only a finished load confirms it (1.3s)
+✘   3 [desktop] › e2e/phase4c.spec.ts:287:1 › a failed reload keeps the uncertain warning and allows another read-only reload (5.9s)
+✓   4 [desktop] › e2e/phase4c.spec.ts:325:1 › a reload overtaken by a newer refresh of the same round is confirmed by what that newer refresh loaded (829ms)
+✓   5 [desktop] › e2e/phase4c.spec.ts:355:1 › a reload still loading when another round is selected never confirms or replaces the new round (1.6s)
+✓   6 [desktop] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a saved order edit) (1.6s)
+✓   7 [desktop] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a group action) (1.5s)
+✓   8 [mobile] › e2e/phase4c.spec.ts:206:1 › a grouping request the server committed but whose answer was lost is reported as uncertain; reloading shows the saved group (1.6s)
+✓   9 [mobile] › e2e/phase4c.spec.ts:255:1 › a delayed reload shows a loading state, and only a finished load confirms it (1.3s)
+✘  10 [mobile] › e2e/phase4c.spec.ts:287:1 › a failed reload keeps the uncertain warning and allows another read-only reload (5.9s)
+✓  11 [mobile] › e2e/phase4c.spec.ts:325:1 › a reload overtaken by a newer refresh of the same round is confirmed by what that newer refresh loaded (846ms)
+✓  12 [mobile] › e2e/phase4c.spec.ts:355:1 › a reload still loading when another round is selected never confirms or replaces the new round (1.5s)
+✓  13 [mobile] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a saved order edit) (1.5s)
+✓  14 [mobile] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a group action) (1.5s)
+2 failed
+12 passed (32.1s)
+
+=== D4 ===
+✓   1 [desktop] › e2e/phase4c.spec.ts:206:1 › a grouping request the server committed but whose answer was lost is reported as uncertain; reloading shows the saved group (1.7s)
+✓   2 [desktop] › e2e/phase4c.spec.ts:255:1 › a delayed reload shows a loading state, and only a finished load confirms it (1.3s)
+✓   3 [desktop] › e2e/phase4c.spec.ts:287:1 › a failed reload keeps the uncertain warning and allows another read-only reload (904ms)
+✘   4 [desktop] › e2e/phase4c.spec.ts:325:1 › a reload overtaken by a newer refresh of the same round is confirmed by what that newer refresh loaded (5.8s)
+✓   5 [desktop] › e2e/phase4c.spec.ts:355:1 › a reload still loading when another round is selected never confirms or replaces the new round (1.6s)
+✓   6 [desktop] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a saved order edit) (1.5s)
+✓   7 [desktop] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a group action) (1.5s)
+✓   8 [mobile] › e2e/phase4c.spec.ts:206:1 › a grouping request the server committed but whose answer was lost is reported as uncertain; reloading shows the saved group (1.7s)
+✓   9 [mobile] › e2e/phase4c.spec.ts:255:1 › a delayed reload shows a loading state, and only a finished load confirms it (1.3s)
+✓  10 [mobile] › e2e/phase4c.spec.ts:287:1 › a failed reload keeps the uncertain warning and allows another read-only reload (901ms)
+✘  11 [mobile] › e2e/phase4c.spec.ts:325:1 › a reload overtaken by a newer refresh of the same round is confirmed by what that newer refresh loaded (5.8s)
+✓  12 [mobile] › e2e/phase4c.spec.ts:355:1 › a reload still loading when another round is selected never confirms or replaces the new round (1.6s)
+✓  13 [mobile] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a saved order edit) (1.6s)
+✓  14 [mobile] › e2e/phase4c.spec.ts:487:3 › a delayed refresh of the previous round never replaces the selected round (a group action) (1.5s)
+2 failed
+12 passed (32.0s)
+
+=== restored ===
+OrdersPage.tsx identical to the corrected version

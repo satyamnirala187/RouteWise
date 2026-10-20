@@ -21,7 +21,7 @@ Why rider-scoped. The fingerprint covers what this rider's route depends on: the
 the rider's current revision; the round's and the rider's route versions; the rider's account
 state, participation, confirmation and configuration (vehicle, capacity, start, destination,
 including the depot coordinates their start and destination use); and every order the rider owns
-in the round (status, pin, lock, priority, completion record). It does NOT include the round's
+in the round (status, pin, lock, priority, completion record, stop group (4C)). It does NOT include the round's
 `input_version`, so another rider's delivery progress or own reroute never makes this one stale.
 
 Origins are explicit and labelled; none is chosen for the rider:
@@ -34,6 +34,10 @@ Origins are explicit and labelled; none is chosen for the rider:
 - `configured_start`: the rider's Office/Warehouse start, allowed only when no completed stop
   exists (working flow §7), and labelled as not the current position.
 The limits are provisional local defaults, configurable (config.RerouteLimits).
+
+Stop groups (4C). The rider's snapshot holds only the rider's OWN orders, so a reroute groups only
+their own Pending orders: another rider's order that shares the building is never seen, moved or
+shown. The remaining Pending customers of a partly delivered building stay one stop.
 
 Privacy. Positions, Home/Custom coordinates and pins live only in request memory and the
 worker's snapshot. Runs, revisions, errors and logs carry ids, kinds and order codes only.
@@ -99,6 +103,7 @@ class OwnOrder:
     first_priority: bool
     completed_at: datetime | None
     completed_by: uuid.UUID | None
+    building_id: str | None = None  # 4C: admin-confirmed stop group; only the rider's OWN orders are loaded
 
 
 @dataclass(frozen=True)
@@ -163,7 +168,8 @@ def capture_rider(db: DBSession, round_id: uuid.UUID, rider_id: uuid.UUID, *, lo
         .where(Assignment.rider_id == rider_id, Order.round_id == round_id)
         .order_by(Order.id).execution_options(populate_existing=True)).scalars().all()
     orders = tuple(OwnOrder(o.id, o.order_code, o.customer_name, o.status, o.location_state, o.lat, o.lng,
-                            o.locked_rider_id, o.first_priority, o.completed_at, o.completed_by) for o in rows)
+                            o.locked_rider_id, o.first_priority, o.completed_at, o.completed_by, o.building_id)
+                  for o in rows)
     return RiderSnapshot(
         round_id=round_id, rider_id=rider_id, user_id=user.id,
         base_plan_id=plan.id if plan else None, base_plan_version=plan.version if plan else None,
@@ -187,7 +193,7 @@ def rider_fingerprint(snap: RiderSnapshot, secret: str) -> str:
                         snap.capacity, snap.start_kind, snap.endpoint_kind, snap.endpoint_lat, snap.endpoint_lng],
         "depots": snap.depots,
         "orders": [[str(o.id), o.status, o.location_state, o.lat, o.lng, t(o.locked_rider_id), o.first_priority,
-                    t(o.completed_at), t(o.completed_by)] for o in snap.orders],
+                    t(o.completed_at), t(o.completed_by), o.building_id] for o in snap.orders],
     }
     payload = json.dumps(state, sort_keys=True, separators=(",", ":")).encode()
     return hmac.new(secret.encode(), b"routewise-reroute-input\0" + payload, hashlib.sha256).hexdigest()
@@ -351,7 +357,7 @@ def prepare_rider(snap: RiderSnapshot, origin: Origin, settings: Settings) -> Ri
         if snap.endpoint_lat is None:
             raise PlanningRefused(409, "CONFIGURATION_NOT_READY", "Your destination has no location.")
         end_id = loc(snap.endpoint_lat, snap.endpoint_lng)
-    orders = tuple(DomainOrder(id=o.order_code, location_id=loc(o.lat, o.lng),
+    orders = tuple(DomainOrder(id=o.order_code, location_id=loc(o.lat, o.lng), building_id=o.building_id,
                                locked_rider_id=str(o.locked_rider_id) if o.locked_rider_id else None,
                                first_priority=o.first_priority) for o in pending)
     if len(points) > settings.planning.max_locations:

@@ -1,0 +1,45 @@
+# Step 4C: targeted backend defect checks (20 Oct 2026). One known defect at a time is injected into a scratch copy
+# of services/api (never the working tree); the 4C test module (tests/test_stop_groups.py) must fail.
+$ MUTATION_TESTS="tests/test_stop_groups.py" python tools/mutation_check.py <scratch copy of services/api> services/api/.venv/bin/python "4C:"
+## Run 1: the first complete run (24 mutants existed at that point)
+KILLED: 4C: nearby pins count as the same pin
+KILLED: 4C: group accepted without identical pins
+KILLED: 4C: cross-round group accepted
+KILLED: 4C: stale versions ignored when grouping
+KILLED: 4C: invalid location accepted
+KILLED: 4C: group id not fresh
+KILLED: 4C: group request does not bump planning input
+KILLED: 4C: a changed pin keeps the order in its group
+KILLED: 4C: an unchanged pin leaves the group
+KILLED: 4C: a group of one survives ungrouping
+KILLED: 4C: a group of one survives a pin change
+KILLED: 4C: a pin edit does not lock its group
+KILLED: 4C: stale ungroup accepted
+KILLED: 4C: group order rows not locked
+KILLED: 4C: admin planning ignores groups
+KILLED: 4C: reroute ignores groups
+SURVIVED: 4C: group left out of the reroute fingerprint
+KILLED: 4C: identical pins grouped without confirmation
+KILLED: 4C: owner locks ignored when grouping
+KILLED: 4C: a group counts as one capacity unit
+KILLED: 4C: priority customers not listed first
+KILLED: 4C: second stop at one building kept
+KILLED: 4C: rider view ignores priority inside a stop
+KILLED: 4C: admin plan ignores priority inside a stop
+23/24 killed
+# The one survivor was a TEST GAP, not a code defect: every group change also bumps the round's route_version, which the
+# rider fingerprint already covers, so a group left out of the fingerprint changed nothing observable. Two tests were
+# added that change membership behind the API (no version bump), so only the fingerprints can notice it, and a
+# matching mutant for the admin plan fingerprint was added (25 mutants in the tool now).
+## Run 2: only the survivor and the new plan-fingerprint mutant, with the added tests
+KILLED: 4C: group left out of the reroute fingerprint
+KILLED: 4C: group left out of the plan fingerprint
+2/2 killed
+## Run 3: one mutant whose target text changed when a helper was renamed (`_member_ids` -> `member_ids`), on the final code
+KILLED: 4C: a pin edit does not lock its group
+1/1 killed
+# Result, stated exactly: the first complete run killed 23 of 24. After the test gap was closed, the survivor and the
+# new mutant were rerun on their own (2/2 killed), and one renamed mutant was rerun (1/1). The full 25-mutant set was
+# NOT rerun after those changes, so there is no second complete run.
+# Not covered by a mutant, on purpose: the ascending-id order in which rows are locked. Without ORDER BY the rows
+# come back in the same physical order for every request, so a missing sort cannot be told apart in a test.

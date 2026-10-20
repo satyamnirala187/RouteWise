@@ -1,0 +1,4 @@
+# Step 4C review corrections: opt-in API checks on the REAL local Valhalla tiles (20 Oct 2026 05:51 IST). A NEW run; step4c_api_live_valhalla.txt is the run before the corrections.
+$ cd services/api && ROUTEWISE_LIVE_TESTS=1 .venv/bin/python -m pytest -q -s -p no:cacheprovider tests/test_planning_live.py
+LIVE-GROUP {"plan_state": "succeeded", "plan_stops_at_the_building": 1, "customers_at_the_stop": 3, "plan_road_distance_m": 8958, "reroute_stops_at_the_building": 1, "reroute_road_distance_m": 8958, "provider": "valhalla-local (OpenStreetMap data)", "solver_status": "SUCCESS", "timings": {"points": 10, "riders": 3, "solve_s": 0.26, "total_s": 0.344, "matrix_s": 0.085, "matrix_calls": 2, "pending_orders": 9}}
+3 passed, 3 warnings in 4.52s

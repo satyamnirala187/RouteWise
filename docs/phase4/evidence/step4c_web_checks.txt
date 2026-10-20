@@ -1,0 +1,10 @@
+# Step 4C: web typecheck, unit tests and build (20 Oct 2026 02:35 IST)
+$ npm run typecheck
+typecheck exit 0
+$ npx vitest run
+ Test Files  4 passed (4)
+      Tests  23 passed (23)
+$ npm run build
+
+✓ built in 140ms
+build exit 0

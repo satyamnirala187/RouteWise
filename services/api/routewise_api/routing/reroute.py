@@ -29,6 +29,7 @@ from .planner import (
     assemble_route,
     build_stops,
     solve,
+    stop_issues,
 )
 
 
@@ -52,9 +53,10 @@ class RerouteResult:
 
 
 def stops_for(inp: RerouteInput):
-    """Navigation stops for the rider's orders (same grouping rule as round planning; no group is
-    formed before 4C because no order carries a building id yet). Raises PRIORITY_CONFLICT if the
-    rider holds more than one first-priority stop."""
+    """Navigation stops for the rider's orders (same grouping rule as round planning, 4C: an order's
+    admin-confirmed building id, and only the rider's own Pending orders are given here, so another
+    rider's order at the same building is never grouped in). Raises PRIORITY_CONFLICT if the rider
+    holds more than one first-priority stop; several priority customers in ONE group are one stop."""
     rnd = DeliveryRound(
         id="reroute", depots=Depots(inp.origin_id, inp.origin_id), orders=list(inp.orders), locations=inp.locations,
         riders=[Rider(id=inp.rider_id, vehicle=inp.vehicle, capacity=inp.capacity, start=StartKind.OFFICE,
@@ -115,4 +117,6 @@ def check(inp: RerouteInput, route: RiderRoute) -> list[str]:
     locks = {o.id: o.locked_rider_id for o in inp.orders if o.locked_rider_id}
     if any(r != inp.rider_id for r in locks.values()):
         v.append("an order is locked to another rider")
+    by_id = {o.id: o for o in inp.orders}
+    v.extend(stop_issues(inp.rider_id, route.stops, by_id.__getitem__))  # 4C: one stop per building group, priority first
     return v

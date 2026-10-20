@@ -1,8 +1,9 @@
 """Database schema. Phase 1 tables, Phase 2A rider/round configuration (depots, round riders,
 rider-chosen destinations and confirmations), Phase 2B planning (modes, locks, priorities,
-planning runs, versioned plans and assignment linkage) and Phase 4B rider route revisions
-(a rider's own reroute layered on the immutable round plan). No offline structures, and no
-column anywhere stores a rider's device position."""
+planning runs, versioned plans and assignment linkage), Phase 4B rider route revisions
+(a rider's own reroute layered on the immutable round plan) and Phase 4C same-building stop
+groups (`orders.building_id`, no table of its own). No offline structures, and no column
+anywhere stores a rider's device position."""
 
 from __future__ import annotations
 
@@ -253,6 +254,12 @@ class Order(Base):
         UniqueConstraint("order_code", name="uq_orders_order_code"),
         CheckConstraint("(completed_at IS NULL) = (completed_by IS NULL)", name="ck_orders_completed_pair"),
         CheckConstraint("status = 'Completed' OR completed_at IS NULL", name="ck_orders_completed_only_when_completed"),
+        # 4C: a stop group is admin-confirmed metadata on orders. Its id is server-generated (opaque, 8-64
+        # chars) and only an order with a resolved pin can carry one; "identical pins, one round, at
+        # least two members" is enforced under lock in routewise_api/stop_groups.py (not expressible here).
+        CheckConstraint("building_id IS NULL OR length(building_id) BETWEEN 8 AND 64", name="ck_orders_building_id_length"),
+        CheckConstraint("building_id IS NULL OR location_state = 'resolved'", name="ck_orders_building_resolved"),
+        Index("ix_orders_round_building", "round_id", "building_id", postgresql_where=text("building_id IS NOT NULL")),
     )
 
     id: Mapped[uuid.UUID] = _uuid_pk()
@@ -269,7 +276,9 @@ class Order(Base):
     location_note: Mapped[str | None] = mapped_column(String(300), nullable=True)
     lat: Mapped[float | None] = mapped_column(Double, nullable=True)
     lng: Mapped[float | None] = mapped_column(Double, nullable=True)
-    building_id: Mapped[str | None] = mapped_column(String(64), nullable=True)  # validated shared entrance (Phase 4)
+    # 4C: admin-confirmed same-building stop group (server-generated, opaque); NULL = not grouped. Never
+    # inferred from distance, address text or names (see routewise_api/stop_groups.py).
+    building_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     locked_rider_id: Mapped[uuid.UUID | None] = mapped_column(  # admin owner lock (manual assignment)
         ForeignKey("riders.id", ondelete="RESTRICT"), nullable=True, index=True)
     first_priority: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("false"))

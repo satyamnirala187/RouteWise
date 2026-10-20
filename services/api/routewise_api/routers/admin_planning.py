@@ -29,6 +29,7 @@ from ..models import (
     RoundRider,
     RoutePlan,
 )
+from .. import stop_groups
 from ..orders import readiness_blockers
 from ..planning import PlanningRefused, PlanningService, capture, expire_overdue, fingerprint, plan_validity, prepare
 from ..rider_routes import awaiting_recalculation, effective_routes, revision_view
@@ -165,7 +166,8 @@ def bulk_lock(round_id: uuid.UUID, body: BulkLockIn, db: DBSession = Depends(get
     if changed:
         bump_round_input(db, round_id)
     db.flush()
-    return {"changed": changed, "orders": [admin_order_view(db, orders[i], settings) for i in ids]}
+    groups = stop_groups.fields_for_round(db, round_id, settings.service_area)
+    return {"changed": changed, "orders": [admin_order_view(db, orders[i], settings, groups) for i in ids]}
 
 
 class PriorityIn(BaseModel):
@@ -294,6 +296,11 @@ def list_runs(round_id: uuid.UUID, db: DBSession = Depends(get_db, scope="functi
 def plan_view(db: DBSession, plan: RoutePlan, rnd: DeliveryRound) -> dict:
     names = dict(db.execute(select(Rider.id, Rider.display_name)).all())
     codes = dict(db.execute(select(Order.id, Order.order_code).where(Order.round_id == plan.round_id)).all())
+    # 4C: inside one stop, first-delivery customers are listed first. Only for the current plan: a
+    # history version is reported as saved, and a flag may have changed since.
+    first = (set(db.scalars(select(Order.id).where(Order.round_id == plan.round_id, Order.first_priority.is_(True))).all())
+             if plan.is_current else set())
+    in_stop = lambda oid, code: (oid not in first, code)  # noqa: E731
     routes = db.scalars(select(PlanRoute).where(PlanRoute.plan_id == plan.id)).all()
     items = db.execute(select(PlanOrder).where(PlanOrder.plan_id == plan.id)
                        .order_by(PlanOrder.rider_id, PlanOrder.stop_seq, PlanOrder.order_id)).scalars().all()
@@ -311,6 +318,8 @@ def plan_view(db: DBSession, plan: RoutePlan, rnd: DeliveryRound) -> dict:
         for it in mine:
             if it.role == "active":
                 stops.setdefault(it.stop_seq, []).append({"id": str(it.order_id), "order_code": codes[it.order_id]})
+        for members in stops.values():
+            members.sort(key=lambda m: in_stop(uuid.UUID(m["id"]), m["order_code"]))
         out_routes.append({
             "rider_id": str(r.rider_id), "rider": names.get(r.rider_id), "vehicle": r.vehicle, "profile": r.profile,
             "capacity": r.capacity, "start": r.start_kind, "destination": r.endpoint_kind, "open_route": r.open_route,
@@ -318,7 +327,7 @@ def plan_view(db: DBSession, plan: RoutePlan, rnd: DeliveryRound) -> dict:
             "stops": [{"seq": seq, "orders": stops[seq]} for seq in sorted(stops)],
             "postponed": [{"id": str(i.order_id), "order_code": codes[i.order_id]} for i in mine if i.role == "postponed"],
             "completed": [{"id": str(i.order_id), "order_code": codes[i.order_id]} for i in mine if i.role == "completed"],
-            "rider_route": _rider_route_view(effective.get(r.rider_id), setups.get(r.rider_id), codes),
+            "rider_route": _rider_route_view(effective.get(r.rider_id), setups.get(r.rider_id), codes, in_stop),
         })
     # Pending orders this plan does not route (e.g. returned from Postponed by a rider): they need
     # planning. Shown for the current plan only; history is reported as it was saved.
@@ -345,7 +354,7 @@ def plan_view(db: DBSession, plan: RoutePlan, rnd: DeliveryRound) -> dict:
     }
 
 
-def _rider_route_view(eff, rr, codes: dict) -> dict | None:
+def _rider_route_view(eff, rr, codes: dict, in_stop) -> dict | None:
     """A rider's effective route as the admin sees it: the revision (kinds and order codes; never a
     position or a Home/Custom location), its sequence and distances, and whether it awaits the
     rider's recalculation after their own destination change."""
@@ -357,7 +366,8 @@ def _rider_route_view(eff, rr, codes: dict) -> dict | None:
     return {
         "revision": revision_view(eff.revision, codes), "destination": eff.endpoint_kind, "open_route": eff.open_route,
         "road_distance_m": eff.road_distance_m, "road_duration_s": eff.road_duration_s,
-        "stops": [{"seq": n, "orders": sorted(stops[n], key=lambda o: o["order_code"])} for n in sorted(stops)],
+        "stops": [{"seq": n, "orders": sorted(stops[n], key=lambda o: in_stop(uuid.UUID(o["id"]), o["order_code"]))}
+                  for n in sorted(stops)],
         "awaiting_recalculation": awaiting_recalculation(eff, rr),
     }
 

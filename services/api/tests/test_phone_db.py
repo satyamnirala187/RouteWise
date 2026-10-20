@@ -68,16 +68,16 @@ def _seed_at_0004(url: str) -> None:
 
 def test_a_current_database_passes(phone_db, db_url):
     state = phone_db.schema_state(db_url)
-    assert state.kind == "current" and state.current == state.head == "0005"
+    assert state.kind == "current" and state.current == state.head and state.head >= "0006"  # head moves with each migration
 
 
 def test_an_outdated_database_is_reported_with_instructions_and_left_unchanged(phone_db, scratch):
     command.upgrade(alembic_config(scratch), "0004")
     _seed_at_0004(scratch)
     state = phone_db.schema_state(scratch)
-    assert (state.kind, state.current, state.head) == ("outdated", "0004", "0005")
+    assert (state.kind, state.current) == ("outdated", "0004") and state.head > "0004"
     text_ = phone_db.explain(state)
-    assert "0004" in text_ and "0005" in text_ and "Nothing was changed" in text_
+    assert "0004" in text_ and state.head in text_ and "Nothing was changed" in text_
     assert phone_db.UPGRADE_CMD in text_ and "ONLY routewise_phone" in text_ and "keep its data" in text_
     assert "DELETES" in text_  # the rebuild is offered only as a clearly labelled alternative
     assert _revision(scratch) == "0004"  # the check changed nothing
@@ -91,7 +91,7 @@ def test_upgrade_keeps_the_data_and_only_adds(phone_db, scratch):
     _seed_at_0004(scratch)
     name = make_url(scratch).database
     state = phone_db.upgrade(scratch, db_name=name)
-    assert state.kind == "current" and state.current == "0005"
+    assert state.kind == "current" and state.current == state.head
     eng = create_engine(scratch)
     with eng.connect() as conn:
         assert conn.execute(text("SELECT count(*) FROM users")).scalar_one() == 2
