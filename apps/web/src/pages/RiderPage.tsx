@@ -3,11 +3,16 @@ import { useSearchParams } from "react-router";
 import { api, ApiError, type DeliveryItem, type DeliveryRoundSummary, type DeliveryView as View, type Status, type StatusResult } from "../api";
 import DeliveryView, { type StatusActions } from "../components/DeliveryView";
 import DestinationCard from "../components/DestinationCard";
+import RerouteSection from "../components/RerouteSection";
 import { inputClass, Message, secondaryButton, type Note } from "../components/ui";
+import { useOnline } from "../useOnline";
+import { useReroute } from "../useReroute";
 
 // The rider's page, one round at a time (the round is in the URL, never in browser storage):
 // the destination card from 2C for rounds they take part in, then (since 3A) their own
 // deliveries for that round in the saved route order, and (since 3B) their own status changes.
+// Since 4D the rider can also recalculate their own route (RerouteSection); while that runs, status and
+// setup actions wait, and nothing is ever recalculated automatically.
 export default function RiderPage({ onUnauthorized }: { onUnauthorized: () => void }) {
   const [params, setParams] = useSearchParams();
   const [rounds, setRounds] = useState<DeliveryRoundSummary[] | null>(null);
@@ -22,6 +27,10 @@ export default function RiderPage({ onUnauthorized }: { onUnauthorized: () => vo
   const [failed, setFailed] = useState<{ item: DeliveryItem; target: Status; message: string } | null>(null);
   const [note, setNote] = useState<Note>(null);
   const savingRef = useRef(false);
+  const rerouteBusy = useRef(false);   // mirrors the reroute flow: a status change is refused while it runs
+  const dismissResult = useRef<() => void>(() => undefined);
+  const online = useOnline();
+  const [postponed, setPostponed] = useState<string | null>(null);  // an order just saved as Postponed: only OFFERS a recalculation
 
   const fail = useCallback((message: string) => (e: unknown) => {
     if (e instanceof DOMException && e.name === "AbortError") return;
@@ -45,20 +54,35 @@ export default function RiderPage({ onUnauthorized }: { onUnauthorized: () => vo
 
   /** Load the delivery view for one round; a newer load or a round switch aborts it, and a
    * response for a round that is no longer selected is dropped. */
-  const loadView = useCallback((id: string) => {
+  const fetchView = useCallback((id: string): Promise<View | null> => {
     viewAc.current?.abort();
     const ac = new AbortController();
     viewAc.current = ac;
     setLoading(true);
-    api<View>(`/api/rider/rounds/${id}/deliveries`, { signal: ac.signal })
-      .then((v) => { if (!ac.signal.aborted && current.current === id) { setView(v); setError(null); } })
-      .catch(fail("Could not load your deliveries."))
+    return api<View>(`/api/rider/rounds/${id}/deliveries`, { signal: ac.signal })
+      .then((v) => {
+        if (ac.signal.aborted || current.current !== id) return null;  // replaced by a newer load or another round
+        setView(v); setError(null);
+        return v;
+      })
+      .catch((e) => {
+        if (e instanceof DOMException && e.name === "AbortError") return null;
+        throw e;
+      })
       .finally(() => { if (viewAc.current === ac) { viewAc.current = null; setLoading(false); } });
-  }, [fail]);
+  }, []);
+
+  const loadView = useCallback((id: string) => { fetchView(id).catch(fail("Could not load your deliveries.")); }, [fetchView, fail]);
+
+  /** The reroute flow reads the view itself (to confirm a result); its own messages explain a failure. */
+  const reloadForReroute = useCallback((id: string) => fetchView(id).catch((e) => {
+    if (!(e instanceof ApiError && e.status === 401)) setError("Could not load your deliveries.");
+    throw e;
+  }), [fetchView]);
 
   useEffect(() => {
     if (!roundId) return;
-    setView(null); setError(null); setNote(null); setFailed(null); setConfirming(null);
+    setView(null); setError(null); setNote(null); setFailed(null); setConfirming(null); setPostponed(null);
     loadView(roundId);
     return () => { viewAc.current?.abort(); viewAc.current = null; };
   }, [roundId, loadView]);
@@ -72,7 +96,7 @@ export default function RiderPage({ onUnauthorized }: { onUnauthorized: () => vo
   /** Save one status change. Duplicate taps are ignored while a save is in flight; a retry
    * sends the same expected version, and the server treats a repeat as "already done". */
   const change = useCallback(async (item: DeliveryItem, target: Status) => {
-    if (savingRef.current || !roundId) return;
+    if (savingRef.current || rerouteBusy.current || !roundId) return;
     const id = roundId;
     savingRef.current = true;
     setSaving({ id: item.id, target }); setNote(null); setFailed(null);
@@ -84,6 +108,9 @@ export default function RiderPage({ onUnauthorized }: { onUnauthorized: () => vo
       viewAc.current?.abort();  // an older load must not replace this newer, server-confirmed view
       setView(res.view); setConfirming(null);
       setNote({ kind: "ok", text: res.changed ? `${item.order_code} saved as ${target}.` : `${item.order_code} was already ${target}; nothing changed.` });
+      // A confirmed Postpone only OFFERS a recalculation (the rider may keep the saved order); any other change retires the offer.
+      setPostponed(res.changed && target === "Postponed" ? item.order_code : null);
+      dismissResult.current();  // an earlier recalculation message is about the route as it was before this change
       loadRounds().catch(() => undefined);  // picker counts; the list itself is already current
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) return onUnauthorized();
@@ -103,8 +130,14 @@ export default function RiderPage({ onUnauthorized }: { onUnauthorized: () => vo
     }
   }, [roundId, loadView, loadRounds, onUnauthorized]);
 
+  // 4D: the rider's own recalculation. While it runs (or locates, or checks), status and setup actions wait.
+  const rr = useReroute({ roundId, view, reload: reloadForReroute, onUnauthorized, online, statusBusy: saving !== null });
+  rerouteBusy.current = rr.busy;
+  useEffect(() => { if (rr.phase !== "idle") setPostponed(null); }, [rr.phase]);
+  dismissResult.current = rr.retire;   // a confirmed status change retires an old message, never one still unresolved
+
   const actions: StatusActions = {
-    saving, confirming, failed: failed && { id: failed.item.id, target: failed.target, message: failed.message },
+    saving, blocked: rr.busy, confirming, failed: failed && { id: failed.item.id, target: failed.target, message: failed.message },
     change: (item, target) => { void change(item, target); },
     confirm: (oid) => { setConfirming(oid); setFailed(null); },
     retry: () => { if (failed) void change(failed.item, failed.target); },
@@ -162,14 +195,19 @@ export default function RiderPage({ onUnauthorized }: { onUnauthorized: () => vo
           <h2 id="my-setup" className="text-lg font-semibold">My setup for this round</h2>
           <ul>
             <DestinationCard key={selected.round_id} roundId={selected.round_id} roundName={selected.round_name}
-              onUnauthorized={onUnauthorized} onChanged={refresh} />
+              onUnauthorized={onUnauthorized} onChanged={refresh} disabled={rr.busy} />
           </ul>
         </section>
       )}
       <section className="space-y-2" aria-labelledby="my-round-deliveries">
         <h2 id="my-round-deliveries" className="sr-only">Deliveries for {selected?.round_name}</h2>
         <Message note={note} />
-        {view && view.round_id === roundId ? <DeliveryView view={view} actions={actions} /> : !error && <p role="status" className="text-slate-500">Loading deliveries…</p>}
+        {view && view.round_id === roundId ? (
+          <DeliveryView view={view} actions={actions}
+            rerouteSlot={view.participating && (
+              <RerouteSection view={view} rr={rr} online={online} statusBusy={saving !== null} postponed={postponed} onKeep={() => setPostponed(null)} />
+            )} />
+        ) : !error && <p role="status" className="text-slate-500">Loading deliveries…</p>}
       </section>
     </div>
   );

@@ -1,15 +1,15 @@
 # Phase 4 implementation plan: quick call, rerouting and shared stops
 
-**Status: step 4A committed (`e40e0b0`), awaiting review ([report](STEP-4A-REPORT.md)); step 4B committed ("Add RouteWise individual rider rerouting", after `e40e0b0`), awaiting review ([report](STEP-4B-REPORT.md)); step 4C committed ("Add RouteWise same-building stop grouping", after `1cab378`), awaiting review ([report](STEP-4C-REPORT.md)); 4D not started. Phase 4 is incomplete.**
+**Status: step 4A committed (`e40e0b0`), awaiting review ([report](STEP-4A-REPORT.md)); step 4B committed ("Add RouteWise individual rider rerouting", after `e40e0b0`), awaiting review ([report](STEP-4B-REPORT.md)); step 4C committed ("Add RouteWise same-building stop grouping", after `1cab378`), awaiting review ([report](STEP-4C-REPORT.md)); step 4D (the rider screens) committed ("Add RouteWise rider rerouting screens and shared stops", after `8336ed0`), awaiting review ([report](STEP-4D-REPORT.md)); real-phone testing and Phase 4 acceptance pending. Phase 4 is incomplete.**
 
-The owner authorized **step 4A**, then **step 4B** (19 October 2026), then **step 4C** (20 October 2026), each on its own. For 4B the owner set local implementation defaults for Q4-2, Q4-3, Q4-4, Q4-5 and Q4-7 (§4); for 4C the conservative grouping default for Q4-1 (identical resolved pins, explicit admin confirmation). They are **provisional**, not separately approved permanent product decisions. Q4-6 (phone secure context) remains pending, and 4D needs its own approval.
+The owner authorized **step 4A**, then **step 4B** (19 October 2026), then **step 4C** and **step 4D** (20 October 2026), each on its own. For 4B the owner set local implementation defaults for Q4-2, Q4-3, Q4-4, Q4-5 and Q4-7 (§4); for 4C the conservative grouping default for Q4-1 (identical resolved pins, explicit admin confirmation). They are **provisional**, not separately approved permanent product decisions. Q4-6 (phone secure context) remains pending: 4D prepared the localhost mode, but the owner's real-phone check is not done, so Q4-6 and Phase 4 acceptance stay pending.
 
 | | |
 |---|---|
 | Date | 19 October 2026 |
 | Prepared by | Claude Code |
 | Baseline | Phase 3, accepted for local development at `3fa1e40435981e98f040d896ca45b3ef8397fc5c` ([record](../phase3/OWNER-ACCEPTANCE-2026-10-19.md)) |
-| Approval | 4A and 4B authorized by the owner (19 Oct 2026), 4C (20 Oct 2026). 4D not approved. Q4-2/3/4/5/7 used as provisional 4B defaults and Q4-1 as the provisional 4C default; Q4-6 pending |
+| Approval | 4A and 4B authorized by the owner (19 Oct 2026), 4C and 4D (20 Oct 2026). 4D is implemented and committed (awaiting review); its real-phone checks and Phase 4 acceptance are pending. Q4-2/3/4/5/7 used as provisional 4B defaults and Q4-1 as the provisional 4C default; Q4-6 pending |
 
 **Constraints:**
 - ₹0, using local Valhalla only (`spikes/valhalla/data/valhalla_tiles`).
@@ -546,6 +546,16 @@ Same shape as `planning.py`. **No transaction is open while matrices or the solv
 - **Admin effort:** grouping is an extra admin step. It is optional; ungrouped identical pins still work, as separate stops at the same point.
 
 ### 4D: Integration and device verification
+
+*Implemented on 20 October 2026, with a correction pass on 22 October (committed, awaiting review; [4D report](STEP-4D-REPORT.md)). Where the build differs from or adds to this plan:*
+- *No backend contract changed: the screens use the 4B and 4C APIs as they are. A small `localhost` mode was added to `scripts/phone-server.sh` (§2.9 option (a)); it runs nothing on a device.*
+- *Rerouting is a section of its own between the next-customer panel and the Route card. The Route card keeps its design; its data now reads the rider's effective route.*
+- *The origin buttons are never preselected; "From my last completed stop" and "From the configured start" appear only when the server allows them (they exclude each other).*
+- *Device-position limits come from the server's `reroute.gps_limits` and are checked in the browser before sending, and again by the server. The refusal text for an out-of-area position is the server's.*
+- *An unanswered request is read back (`in_progress_run_id`, then the revision number) before anything is offered; a refresh follows the rider's own run.*
+- *A stop with several customers has one Navigate; a one-customer stop keeps the Navigate in its card, so there is exactly one per stop.*
+- *The browser tests use MOCKED geolocation only. An admin optimizing during a rider's run is covered at API level (4B) and, in the browser, by the screen's wording for the stale and interrupted answers; the commit order of two real runs cannot be controlled from the browser.*
+- *Real-phone checks (the plan's "Phone checklist") are the owner's and are NOT done.*
 
 **User-visible behaviour**
 - **Recalculate my route:**

@@ -128,7 +128,7 @@ Two revisions per round (migration 0004):
 
 Plans also report `progress_since_plan` (only progress since; the remaining saved sequence is valid) and, for the current plan, `unplanned_pending` (Pending orders it does not route). Admin status edits still bump both. Details and locking: [the step 3B report](phase3/STEP-3B-REPORT.md).
 
-## Rider reroute (step 4B API; screens in 4D)
+## Rider reroute (step 4B API; screens since 4D)
 
 | Endpoint (rider) | Purpose |
 |---|---|
@@ -145,7 +145,21 @@ Plans also report `progress_since_plan` (only progress since; the remaining save
 
 Details: [the step 4B report](phase4/STEP-4B-REPORT.md).
 
-## Stop groups (step 4C; admin controls and API, rider screens in 4D)
+## Rider screens for rerouting and shared stops (step 4D)
+
+The rider page (`apps/web/src/pages/RiderPage.tsx`) uses only the 4B and 4C APIs above; no backend contract changed.
+
+- **"Recalculate my route"** (`components/RerouteSection.tsx`, state in `useReroute.ts`, pure helpers in `reroute.ts`) is a section of its own between the next-customer panel and the Route card. It is always offered on demand, and cues appear after a confirmed Postpone ("Keep current order" or "Recalculate my route"), for Pending orders outside the saved route, and after a changed destination is confirmed. **Nothing is ever recalculated by itself.**
+- **Origins are buttons the rider taps; none is preselected or remembered.** "Use my current location" (device position), "From my last completed stop" (only when the server offers it, labelled "not your current position") and "From the Office/Warehouse (my configured start)" (only when the server permits it, same label).
+- **Location** is requested once, only after the rider taps the location button (`getCurrentPosition`, `enableHighAccuracy`, `maximumAge: 0`, 15 s; never `watchPosition`). The server's published limits (`reroute.gps_limits`) are checked in the browser before anything is sent, and again by the server. The position exists only between the read and the request: it is never kept in state, storage, the URL, a log or a message. It needs a **secure context** (HTTPS or `http://localhost`): on the Wi-Fi test address the app says "Location isn't available on this connection" and the other origins still work.
+- **Run safety.** One action at a time (a synchronous lock). The request carries `expected_plan_version` and `expected_revision`. An unanswered request is an *unknown* outcome: the server state is read first (`reroute.in_progress_run_id`, then the plan version **and** revision number together, because revision numbers restart with every admin plan), the request is never resent by itself, and while the state is unresolved no new request can be started (the hook's `start` refuses, not only the buttons; dismissing the message does not lift it) and only a read-only "check again" is offered. If an admin plan replaced the one the request was made on, the screen says so and never claims the requested route is shown or the saved route unchanged. A refresh discovers the rider's own run (`in_progress_run_id`) and follows it. Polling (`planning.pollRun`, shared with the admin runs) is bounded and stops on navigation, round change, sign-out and a 401. **Success is shown only after the server confirms the run and the effective delivery view shows that revision on the same plan version.** A run found by reading the server (refresh, "already in progress") is worded conservatively, because who started it is not established. Failed, stale (inputs changed, round replanned), busy and interrupted runs are worded differently, and the previous route stays shown. Status and setup actions wait while a run is in progress; offline, recalculating is disabled (no cache, no queue).
+- **Shared stops.** Each saved stop is one container (`data-testid="rider-stop"`). A stop with several customers shows its count and **one** Navigate (the server's validated stop location); each customer keeps their own Call, contact, notes and status actions. The next-customer panel follows the server's order, including a first-delivery customer leading a group. The screen never merges stops itself.
+- **Route card.** Same layout; its data reads the rider's effective route: revision, origin and planned totals ("planned total for that revision, not the distance left"), and, after a destination change (including new Home/Custom coordinates under the same kind, detected through the server's `awaiting_recalculation`), that the saved route still ends at the previous destination until a recalculation succeeds.
+- **Admin plan page** lists each rider's current (recalculated) route and planned totals beside the saved plan: kinds and order codes only, never a position or a private endpoint.
+
+Browser tests label emulated GPS as **mocked geolocation**; real-device location is not tested yet. Details and the owner phone checklist: [the step 4D report](phase4/STEP-4D-REPORT.md).
+
+## Stop groups (step 4C; admin controls and API, rider screens since 4D)
 
 Same-building customers can share one navigation stop. **Chosen local implementation default (provisional, not an approved permanent policy):** groups are suggested only for orders of one round whose stored pins are resolved, inside the service area and **exactly identical**; nothing is grouped until an admin confirms it; nearby pins, names and address text never group anything; identical pins can stay separate stops (different entrances).
 
@@ -160,12 +174,12 @@ Same-building customers can share one navigation stop. **Chosen local implementa
 - A pin edit (manual pin or link) that **actually changes** the pin takes the order out of its group; the response carries `stop_group_notice` and `stop_group_freed`. Re-applying the same pin keeps the group.
 - Group changes are planning input: the round's `input_version` and `route_version` move once per request, so in-flight solves (and rider reroutes) end stale and the saved plan is out of date. Saved plans and rider revisions are never edited.
 - **Planning and reroutes:** a group is one stop per applicable rider; capacity counts orders; a group larger than the rider it must fit, or with different owner locks, is split (no order is moved or dropped); first-priority customers lead their stop; a rider never gets two stops at one building. A reroute groups only the rider's own Pending orders.
-- **Rider API:** each stop in `GET /api/rider/rounds/{id}/deliveries` adds `customers`, `shared`, `location` and `location_issue`; customers keep their own order records and statuses. The shared-stop screens and one Navigate per stop are 4D.
+- **Rider API:** each stop in `GET /api/rider/rounds/{id}/deliveries` adds `customers`, `shared`, `location` and `location_issue`; customers keep their own order records and statuses. The shared-stop screens and one Navigate per stop arrived in 4D.
 - **Locking:** order rows (sorted by id, one statement) then the round row; versions reject stale views. Details: `routewise_api/stop_groups.py`, [the step 4C report](phase4/STEP-4C-REPORT.md).
 
-## Real-phone testing (Phase 3, local Wi-Fi only)
+## Real-phone testing (Phase 3 Wi-Fi; localhost mode since 4D)
 
-`services/api/scripts/phone_setup.py` builds the isolated `routewise_phone` database: synthetic riders and customers on public DU points, planned on the local tiles. `scripts/phone-server.sh` serves only the app on this Mac's Wi-Fi address, port 8020; PostgreSQL stays on 127.0.0.1. Steps, checklist and shutdown: [docs/phase3/PHONE-TEST-GUIDE.md](phase3/PHONE-TEST-GUIDE.md). Credentials and expected stops go to the git-ignored `.local/phone/`.
+`services/api/scripts/phone_setup.py` builds the isolated `routewise_phone` database: synthetic riders and customers on public DU points, planned on the local tiles. `scripts/phone-server.sh` serves only the app on this Mac's Wi-Fi address, port 8020; PostgreSQL stays on 127.0.0.1. **`scripts/phone-server.sh localhost`** (4D) binds only to `127.0.0.1` and allows exactly `http://localhost:8020`, for a USB phone test where you run `adb reverse tcp:8020 tcp:8020` yourself; `localhost` is a secure context, so the phone can share its GPS position there, which it cannot on the plain-HTTP Wi-Fi address. `--print-config` prints the mode, host and allowed origin and starts nothing. The script never runs `adb` or touches a device. Steps, checklist and shutdown: [docs/phase3/PHONE-TEST-GUIDE.md](phase3/PHONE-TEST-GUIDE.md). Credentials and expected stops go to the git-ignored `.local/phone/`.
 
 **Schema check (since 4B).** `scripts/phone-server.sh` first runs `services/api/scripts/phone_db.py check` (read-only) and does not start if `routewise_phone` is on an older migration than the code, printing what to do. It never resets, rebuilds or migrates. To bring an older phone database up to date **and keep its data**, run `services/api/.venv/bin/python services/api/scripts/phone_db.py upgrade` yourself; it touches only `routewise_phone`. `phone_setup.py` remains the explicit, data-deleting rebuild. See guide section A0.
 

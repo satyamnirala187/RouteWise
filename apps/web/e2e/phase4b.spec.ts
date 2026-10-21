@@ -50,7 +50,7 @@ test("a rider's own revision drives their cards; the admin sees it noted beside 
   const asha = ap.getByTestId("plan-route").filter({ hasText: "Asha" });
   await expect(asha.getByTestId("rider-revision")).toContainText("Recalculated by the rider");
   await expect(asha.getByTestId("rider-revision")).toContainText("from their configured start");
-  await expect(asha.getByTestId("rider-revision")).toContainText("The stops below are the saved plan");
+  await expect(asha.getByTestId("rider-revision")).toContainText("The admin's plan is unchanged");   // 4D: the note now also lists the current route
   await expect(ap.getByTestId("plan-route").filter({ hasText: "Bilal" }).getByTestId("rider-revision")).toHaveCount(0);
   await expect(ap.getByTestId("out-of-date")).toHaveCount(0);
   const html = await ap.content();

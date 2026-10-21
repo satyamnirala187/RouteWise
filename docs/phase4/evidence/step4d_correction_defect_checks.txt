@@ -1,0 +1,63 @@
+# Step 4D correction pass (plan identity and unresolved state): defect checks (21-22 Oct 2026). NEW file; step4d_defect_checks.txt (the 16 earlier defects) is unchanged.
+# Six defects were put back into the real frontend source one at a time (a scratch edit, restored after each run and compared byte for byte afterwards), then the unit tests and the browser tests aimed at each were run. Browser = desktop 1280 px and mobile 390 px, MOCKED geolocation, recorded matrices. This is a targeted check of the new behaviour, not a repeat of the earlier loops.
+
+
+=== E1 a finished run is judged by revision number alone (the plan version is ignored) ===
+unit tests failing: 8
+   - does not show a finished run as the requested route when an admin replan reused its revision number
+   - keeps the original request's context across read-only checks, not the screen as it is now
+   - says a found run's result is not shown when an admin plan replaced the one the rider was looking at
+   - says the same when the new plan has no revision of the rider's yet
+   - src/useReroute.test.tsx > identity: plan version and revision are judged together > does not show a finished run as the requested route when an admin 
+   - src/useReroute.test.tsx > identity: plan version and revision are judged together > keeps the original request's context across read-only checks, not 
+   - src/useReroute.test.tsx > identity: plan version and revision are judged together > says a found run's result is not shown when an admin plan replaced
+   - src/useReroute.test.tsx > identity: plan version and revision are judged together > says the same when the new plan has no revision of the rider's yet
+browser: 2 failed | failing: ['a recalculation that finished, then an admin replan before the new route is loaded, is not shown as the requested route (revision numbers reused)']
+
+=== E2 the state after a lost answer is judged by revision number alone (the plan version is ignored) ===
+unit tests failing: 4
+   - after a lost answer and a different admin plan, never says the route is unchanged (reused revision numbers included)
+   - does the same for an unanswered request that is checked again after the plan changed
+   - src/useReroute.test.tsx > identity: plan version and revision are judged together > after a lost answer and a different admin plan, never says the rou
+   - src/useReroute.test.tsx > identity: plan version and revision are judged together > does the same for an unanswered request that is checked again afte
+browser: 2 failed | failing: ['a lost answer followed by a different admin plan is never reported as an unchanged route']
+
+=== E3 start() does not refuse while the server state is unresolved (only the buttons do) ===
+unit tests failing: 6
+   - is established again only by a successful read, which restores the actions
+   - keeps a run that could not be followed unresolved until it is read
+   - keeps new requests impossible after the message is dismissed, in the hook as well as on the buttons
+   - src/useReroute.test.tsx > what is unresolved is kept apart from the message about it > is established again only by a successful read, which restores 
+   - src/useReroute.test.tsx > what is unresolved is kept apart from the message about it > keeps a run that could not be followed unresolved until it is r
+   - src/useReroute.test.tsx > what is unresolved is kept apart from the message about it > keeps new requests impossible after the message is dismissed, i
+
+=== E4 dismissing the message clears what is unresolved ===
+unit tests failing: 6
+   - is established again only by a successful read, which restores the actions
+   - keeps a run that could not be followed unresolved until it is read
+   - keeps new requests impossible after the message is dismissed, in the hook as well as on the buttons
+   - src/useReroute.test.tsx > what is unresolved is kept apart from the message about it > is established again only by a successful read, which restores 
+   - src/useReroute.test.tsx > what is unresolved is kept apart from the message about it > keeps a run that could not be followed unresolved until it is r
+   - src/useReroute.test.tsx > what is unresolved is kept apart from the message about it > keeps new requests impossible after the message is dismissed, i
+browser: 2 failed | failing: ['dismissing the message about an unknown outcome, or confirming a status change, never allows another recalculation until the server has been read']
+
+=== E5 a read-only check re-derives its context from the screen as it is now ===
+unit tests failing: 0
+browser: 2 failed | failing: ['dismissing the message about an unknown outcome, or confirming a status change, never allows another recalculation until the server has been read']
+
+=== E6 a confirmed status change retires a message that is still unresolved ===
+unit tests failing: 2
+   - is not cleared by a confirmed status change (retire), while an ordinary old message is
+   - src/useReroute.test.tsx > what is unresolved is kept apart from the message about it > is not cleared by a confirmed status change (retire), while an 
+
+restored; files differing from the corrected versions: none
+
+# E5 RE-RUN after a unit test was added for it (in the run above E5 was caught only by the browser test, 0 unit failures):
+
+=== E5 a read-only check re-derives its context from the screen as it is now ===
+unit tests failing: 2
+   - keeps the request's own starting revision even after the screen's view moved on (for example after a status change)
+   - src/useReroute.test.tsx > identity: plan version and revision are judged together > keeps the request's own starting revision even after the screen's 
+browser: 2 failed | failing: ['dismissing the message about an unknown outcome, or confirming a status change, never allows another recalculation until the server has been read']
+
+restored; files differing from the corrected versions: none

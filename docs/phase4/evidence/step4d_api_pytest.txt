@@ -1,0 +1,14 @@
+# Step 4D: API suite (2026-10-20 16:06 IST). New run on the final tree. No backend code changed in 4D; the only new backend file is tests/test_phone_server_script.py (the localhost mode of scripts/phone-server.sh). The 4C run before this one: 443 passed.
+$ cd services/api && .venv/bin/python -m pytest -q -p no:cacheprovider -rs
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:80: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+1 failed, 453 passed, 3 skipped, 3 warnings in 356.35s (0:05:56)

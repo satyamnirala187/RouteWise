@@ -1,0 +1,109 @@
+# Step 4D: defect checks on the rider screens (20 Oct 2026). Each defect was put back into the real frontend source one at a time (a scratch edit, restored after each run; the files were compared byte for byte afterwards), then the unit tests and the browser tests aimed at it were run. Browser = desktop 1280 px and mobile 390 px, MOCKED geolocation, recorded real-road matrices.
+# Command: python3 defects4d.py (a throwaway script kept outside the repository). 'unit tests failing' counts vitest failures across the whole unit suite; 'browser' lists the filtered Playwright tests.
+
+
+=== D1 no one-at-a-time lock (a double tap sends twice) ===
+unit tests failing: 2
+   - sends one request for a double tap, and shows success only after the effective view shows the revision
+   - src/useReroute.test.tsx > starting a recalculation > sends one request for a double tap, and shows success only after the effective view shows the rev
+browser: 2 passed | failing: none
+
+=== D2 success claimed before the effective view shows it ===
+unit tests failing: 4
+   - does not claim success when the server's route has not reached the screen
+   - sends one request for a double tap, and shows success only after the effective view shows the revision
+   - src/useReroute.test.tsx > starting a recalculation > does not claim success when the server's route has not reached the screen
+   - src/useReroute.test.tsx > starting a recalculation > sends one request for a double tap, and shows success only after the effective view shows the rev
+
+=== D3 the request is sent again by itself after an unanswered one ===
+unit tests failing: 6
+   - follows a run the lost request did start
+   - offers only a read-only check while the state cannot be read
+   - reads the server state before offering anything, and never sends the request again by itself
+   - src/useReroute.test.tsx > an unanswered request is an unknown outcome > follows a run the lost request did start
+   - src/useReroute.test.tsx > an unanswered request is an unknown outcome > offers only a read-only check while the state cannot be read
+   - src/useReroute.test.tsx > an unanswered request is an unknown outcome > reads the server state before offering anything, and never sends the request a
+browser: 2 failed | failing: ['a lost answer to the request is an unknown outcome: the server is read first, and nothing is sent again by itself']
+
+=== D4 a Postpone recalculates automatically ===
+browser: 2 failed | failing: ['after a Postpone the rider may keep the saved order or recalculate; nothing is ever recalculated by itself']
+
+=== D5 status and setup actions do not wait during a run ===
+browser: 2 failed | failing: ['while a recalculation runs every status and setup action waits; a status save in flight holds the recalculation back']
+
+=== D6 the position is read when the choices open, before any tap ===
+browser: 2 failed | failing: ['a granted location (mocked geolocation) recalculates only my route, from that position, and says so']
+
+=== D7 the screen merges stops that share a pin ===
+unit tests failing: 6
+   - keep the server's order of customers inside the stop (priority customers lead)
+   - never merge two stops that merely share a pin
+   - render one container per stop with its customer count and exactly one Navigate for a shared stop
+   - src/DeliveryView.test.tsx > shared stops > keep the server's order of customers inside the stop (priority customers lead)
+   - src/DeliveryView.test.tsx > shared stops > never merge two stops that merely share a pin
+   - src/DeliveryView.test.tsx > shared stops > render one container per stop with its customer count and exactly one Navigate for a shared stop
+browser: 2 failed | failing: ['identical pins that were never grouped stay separate stops, each with its own Navigate']
+
+=== D8 a Navigate link on every customer of a shared stop ===
+unit tests failing: 4
+   - render one container per stop with its customer count and exactly one Navigate for a shared stop
+   - show the stop's own location problem once, with no Navigate, when its customers no longer share a valid pin
+   - src/DeliveryView.test.tsx > shared stops > render one container per stop with its customer count and exactly one Navigate for a shared stop
+   - src/DeliveryView.test.tsx > shared stops > show the stop's own location problem once, with no Navigate, when its customers no longer share a valid pin
+browser: 2 failed | failing: ["a shared stop is one container with one Navigate and each customer's own card; partial completion leaves the others alone"]
+
+=== D9 a refresh does not discover the run already in progress ===
+unit tests failing: 2
+   - follows a run of the rider's own that already exists (a page refresh) instead of starting one
+   - src/useReroute.test.tsx > discovering and dropping runs > follows a run of the rider's own that already exists (a page refresh) instead of starting on
+browser: 2 failed | failing: ['refreshing the page follows the run already in progress instead of starting another']
+
+=== D10 a late answer for another round is applied (no round epoch) ===
+unit tests failing: 0
+browser: 2 failed | failing: ['a late answer for another round never changes the selected round']
+
+=== D11 the device position is kept and shown ===
+unit tests failing: 2
+   - is read once on the tap, sent once, and appears in no state or message
+   - src/useReroute.test.tsx > the device position > is read once on the tap, sent once, and appears in no state or message
+browser: 2 passed | failing: none
+
+=== D12 new Home coordinates under the same kind go unnoticed ===
+unit tests failing: 4
+   - names the previous destination when the kind changed
+   - says the saved route still ends at the previous destination, also for new coordinates under the same kind
+   - src/DeliveryView.test.tsx > the Route card > says the saved route still ends at the previous destination, also for new coordinates under the same kind
+   - src/reroute.test.ts > destination changed after the route was saved > names the previous destination when the kind changed
+browser: 2 failed | failing: ['a changed destination says the saved route still ends at the previous one until the rider confirms and recalculates; only they are affected']
+
+=== D13 rerouting is not disabled offline ===
+browser: 2 failed | failing: ['offline, recalculating is disabled with an explanation; nothing is queued']
+
+=== D14 an unanswered request is treated as a refusal (nothing started) ===
+unit tests failing: 6
+   - follows a run the lost request did start
+   - offers only a read-only check while the state cannot be read
+   - reads the server state before offering anything, and never sends the request again by itself
+   - src/useReroute.test.tsx > an unanswered request is an unknown outcome > follows a run the lost request did start
+   - src/useReroute.test.tsx > an unanswered request is an unknown outcome > offers only a read-only check while the state cannot be read
+   - src/useReroute.test.tsx > an unanswered request is an unknown outcome > reads the server state before offering anything, and never sends the request a
+browser: 2 failed | failing: ['a lost answer to the request is an unknown outcome: the server is read first, and nothing is sent again by itself']
+
+=== D15 an inaccurate position is sent to the server ===
+unit tests failing: 4
+   - never puts a coordinate into any message it shows
+   - refuses an inaccurate or an old position using the server's limits, without sending anything
+   - src/reroute.test.ts > one fresh device position > never puts a coordinate into any message it shows
+   - src/reroute.test.ts > one fresh device position > refuses an inaccurate or an old position using the server's limits, without sending anything
+browser: 2 failed | failing: ['every device-location problem is explained, sends nothing, and offers the other starting points']
+
+=== D16 an insecure page is not recognised ===
+unit tests failing: 4
+   - is refused on an insecure page even though the browser exposes the API
+   - never asks the browser on an insecure page
+   - src/reroute.test.ts > location availability > is refused on an insecure page even though the browser exposes the API
+   - src/reroute.test.ts > location availability > never asks the browser on an insecure page
+browser: 2 failed | failing: ['on an insecure page, or without a geolocation API, the screen says location is unavailable and never asks']
+
+restored; files differing from the corrected versions: none
+finished

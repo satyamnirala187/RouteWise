@@ -18,9 +18,10 @@ const STATE_TEXT = {
 
 /** One round's setup for the signed-in rider: choose a destination, save it, then confirm the
  * whole setup version shown. Coordinates stay in component state only. */
-export default function DestinationCard({ roundId, roundName, onUnauthorized, onChanged }: {
+export default function DestinationCard({ roundId, roundName, onUnauthorized, onChanged, disabled = false }: {
   roundId: string; roundName: string; onUnauthorized: () => void;
   onChanged?: () => void;  // after a save, confirm or reload, e.g. to refresh the delivery view
+  disabled?: boolean;      // 4D: the rider's route is being recalculated; setup changes wait so the run cannot go stale
 }) {
   const [setup, setSetup] = useState<RiderSetup | null>(null);
   const [kind, setKind] = useState<DestinationKind | "">("");
@@ -50,6 +51,7 @@ export default function DestinationCard({ roundId, roundName, onUnauthorized, on
   }, [load, onUnauthorized]);
 
   async function act(fn: () => Promise<void>) {
+    if (disabled) return;
     setBusy(true); setNote(null);
     try {
       await fn();
@@ -132,7 +134,7 @@ export default function DestinationCard({ roundId, roundName, onUnauthorized, on
       )}
 
       {setup.confirmation.state === "confirmed" && !changing ? (
-        <button type="button" className={`${secondaryButton} mt-3`} onClick={() => { setChanging(true); setNote(null); }}>Change destination</button>
+        <button type="button" className={`${secondaryButton} mt-3`} disabled={disabled} onClick={() => { setChanging(true); setNote(null); }}>Change destination</button>
       ) : (
       <form onSubmit={save} className="mt-4 space-y-3 border-t border-slate-100 pt-3">
         <fieldset>
@@ -154,8 +156,8 @@ export default function DestinationCard({ roundId, roundName, onUnauthorized, on
           </label>
         )}
         <div className="flex flex-wrap gap-2">
-          <button disabled={busy || !kind} className={secondaryButton}>Save destination</button>
-          <button type="button" disabled={busy || !canConfirm} onClick={confirm} className={primaryButton}
+          <button disabled={busy || disabled || !kind} className={secondaryButton}>Save destination</button>
+          <button type="button" disabled={busy || disabled || !canConfirm} onClick={confirm} className={primaryButton}
             aria-describedby={`${name}-confirm-help`}>Confirm this setup</button>
         </div>
         <p id={`${name}-confirm-help`} className="text-xs text-slate-600">
@@ -165,6 +167,7 @@ export default function DestinationCard({ roundId, roundName, onUnauthorized, on
         </p>
       </form>
       )}
+      {disabled && <p className="mt-2 text-sm text-slate-600" data-testid="setup-waits">Setup changes wait while your route is being recalculated.</p>}
       <div className="mt-2"><Message note={note} /></div>
     </li>
   );

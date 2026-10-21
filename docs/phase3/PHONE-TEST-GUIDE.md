@@ -41,7 +41,7 @@ d. Start the server (step 3).
 
 **Alternative, fresh data:** `phone_setup.py` (step 1) rebuilds `routewise_phone` and issues new passwords. That **deletes** what is in it, which is why the launcher never does it for you.
 
-**What 4B and 4C change on the phone:** nothing you can see. Rerouting is API-only until step 4D, and the rider's shared-stop screens (one Navigate per shared stop) are 4D too, so the checks in C are the Phase 3 checks, unchanged. **Phone GPS has not been tested.** Device-position reroutes are covered only by automated tests with mocked positions.
+**What 4B and 4C change on the phone:** nothing you can see by themselves. **Step 4D** (the rider screens for them) adds a "Recalculate my route" section and shared-stop containers to the rider page; the Phase 3 checks in C still apply, and the 4D checks are in E. **Phone GPS has not been tested.** Device-position reroutes are covered only by automated tests with MOCKED geolocation.
 
 1. Build the test data:
    ```bash
@@ -102,3 +102,36 @@ d. Start the server (step 3).
 18. In the server window press **Ctrl+C**. The app stops listening on the Wi-Fi address.
 19. Optional: stop the database with `scripts/dev-db.sh stop`, and delete `.local/phone/` to remove the test passwords. `routewise_phone` holds only synthetic data; the next setup resets it.
 20. Fill in [PHONE-TEST-RESULTS.md](PHONE-TEST-RESULTS.md) (or the template below in a message) and send it back. Use phone model, OS and browser only: no phone number, address, password or screenshot showing them.
+
+## E. Optional, step 4D: recalculating the route, and GPS over USB (localhost mode)
+
+**The one fact to know first.** A phone's browser shares its GPS position only with a **secure** page (HTTPS, or `http://localhost`). The Wi-Fi address of step A (`http://<address>:8020`) is **not** secure, so **location never works there**: the app says "Location isn't available on this connection" and offers the other starting points. Wi-Fi mode is fine for everything in C and for the non-GPS checks below. A real GPS check needs localhost mode.
+
+### E1. Localhost mode (only for the GPS check; you run every step yourself)
+
+Needs: a USB cable, USB debugging enabled on the phone, and Android's `adb` (free Android platform-tools) on this Mac. **RouteWise does not install anything, enable debugging, connect a device or run `adb` for you.**
+
+1. Stop the Wi-Fi-mode server if it is running (**Ctrl+C**).
+2. Start localhost mode: `scripts/phone-server.sh localhost`. It binds **only** to this Mac's loopback (`127.0.0.1:8020`), allows exactly the origin `http://localhost:8020`, and uses the same `routewise_phone` database and the same schema check as Wi-Fi mode (it still refuses an out-of-date database and never resets or migrates anything). `scripts/phone-server.sh localhost --print-config` shows what it would use and starts nothing.
+3. With the phone connected by USB and debugging allowed, run on this Mac: `adb reverse tcp:8020 tcp:8020`.
+4. On the phone (Chrome), open `http://localhost:8020` and sign in as in B.
+5. When finished: **Ctrl+C** the server, and `adb reverse --remove tcp:8020` (or unplug the phone).
+
+Nothing is public: no tunnel, no router change, nothing listens on the network.
+
+### E2. 4D checks (record each as PASS, FAIL or NOT RUN)
+
+Use **localhost mode** for 1 and 2, and either mode for the rest. **Real GPS can succeed only while the phone is inside the DU North Campus service area** (the area local routing covers); anywhere else, record the refusal message instead.
+
+1. **Location granted.** Tap **Recalculate my route…**, then **Use my current location**, allow location when Chrome asks. Expect "Route recalculated from your current position (device location)" with a time, and your stops in a new order. Nothing was read before you tapped. *Indoors the fix is often less accurate than 100 m: then expect the "not accurate enough" message and record it (the fallbacks below are the normal path).*
+2. **Location denied.** Block location for the site, tap **Use my current location**: expect the denied message and that nothing changes until you pick another starting point.
+3. **Wi-Fi mode, no GPS.** In Wi-Fi mode the location button is disabled with "Location isn't available on this connection". Recalculating from another starting point still works.
+4. **Last completed stop.** Mark a stop delivered, then open the chooser: **From my last completed stop** appears, labelled "Not your current position"; the configured start is not offered. Use it.
+5. **Configured start.** With no completed stop, **From the Office/Warehouse (my configured start)** is offered, labelled "Not your current position".
+6. **Postpone, then choose.** On the next customer tap **Customer unavailable**: the page offers **Keep current order** or **Recalculate my route**; nothing recalculates by itself.
+7. **Shared stop** (the admin must have grouped two orders on the Orders page and re-optimized): one stop with "2 customers at this location" and **one** Navigate; each customer has their own Call and status buttons; delivering one leaves the other in the stop.
+8. **Destination change.** Change your Home location (or destination), confirm, and see "still ends at the previous destination until you recalculate"; then recalculate. Another rider's screen is unaffected.
+9. **Offline.** Turn on airplane mode: **Recalculate my route…** is disabled with an explanation.
+10. **Touch and readability.** Buttons are easy to tap and nothing needs sideways scrolling.
+
+Record phone model, OS and browser only: no coordinates, phone number, address or password.

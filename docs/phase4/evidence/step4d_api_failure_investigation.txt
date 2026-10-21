@@ -1,0 +1,51 @@
+# Step 4D: investigation of the first backend run (1 failed, 453 passed, 3 skipped). 21 Oct 2026.
+# The failing test's NAME WAS NOT CAPTURED: that run's output was filtered through 'tail -12' and it used -rs (skips only), so no FAILED line survived. This file records what is known.
+
+## Evidence that the run was interrupted by the Mac sleeping
+- pytest reported 356.35 s for the run (its clock excludes sleep); the process was alive for about 2 h 52 min of wall time.
+- macOS power log: the Mac entered Sleep at 20 Oct 16:08:33 and then cycled through maintenance sleeps and dark wakes for hours:
+  2026-10-20 16:02:48 Sleep Entering Sleep
+  2026-10-20 16:02:52 Wake Wake from
+  2026-10-20 16:08:33 Sleep Entering Sleep
+  2026-10-20 16:09:42 Wake Wake from
+  2026-10-20 16:10:03 Sleep Entering Sleep
+  2026-10-20 16:11:40 DarkWake DarkWake from
+  2026-10-20 16:11:46 Sleep Entering Sleep
+  2026-10-20 16:12:43 DarkWake DarkWake from
+  2026-10-20 16:12:48 Sleep Entering Sleep
+  2026-10-20 16:28:21 DarkWake DarkWake from
+  2026-10-20 16:28:23 Sleep Entering Sleep
+  2026-10-20 16:31:33 DarkWake DarkWake from
+  2026-10-20 16:31:41 Sleep Entering Sleep
+  2026-10-20 16:49:34 DarkWake DarkWake from
+- PostgreSQL log (the test cluster): the suite's deliberate constraint-violation errors stop at 2026-10-20 16:08:34 (uq_planning_runs_one_active_round) and resume at 18:44:52 (ck_round_riders_*). The suite was frozen between them (about 2 h 36 min), inside the tests that sort between tests/test_planning_concurrency.py and tests/test_round_setup.py: test_reroute, test_rider_deliveries, test_rider_status, test_round_concurrency. (Inferred from where the intentional errors come from: uq_planning_runs_one_active_round is exercised only in test_planning_concurrency.py and the ck_round_riders_* constraint errors in test_round_setup.py; pytest runs files alphabetically. The inference narrows where the stall happened; it does not say which test failed.)
+
+## Reproduction attempts (all on the final tree; none failed)
+- Complete rerun 1: 454 passed, 3 skipped (step4d_api_pytest_rerun1.txt).
+- Complete rerun 2 under caffeinate: 454 passed, 3 skipped (step4d_api_pytest_rerun2_caffeinate.txt).
+- tests/test_link_robustness.py (the time-asserting tests) 15 times:
+    run 1: 35 passed, 3 warnings in 10.72s
+    run 2: 35 passed, 3 warnings in 10.71s
+    run 3: 35 passed, 3 warnings in 10.75s
+    run 4: 35 passed, 3 warnings in 10.73s
+    run 5: 35 passed, 3 warnings in 10.79s
+    run 6: 35 passed, 3 warnings in 10.72s
+    run 7: 35 passed, 3 warnings in 10.75s
+    run 8: 35 passed, 3 warnings in 10.75s
+    run 9: 35 passed, 3 warnings in 10.73s
+    run 10: 35 passed, 3 warnings in 10.72s
+    run 11: 35 passed, 3 warnings in 10.75s
+    run 12: 35 passed, 3 warnings in 10.73s
+    run 13: 35 passed, 3 warnings in 10.73s
+    run 14: 35 passed, 3 warnings in 10.74s
+    run 15: 35 passed, 3 warnings in 10.71s
+- test_concurrency, test_round_concurrency, test_planning_concurrency, test_reroute, test_stop_groups, test_rider_status, test_phone_server_script 6 times (156 tests each):
+    run 1: 156 passed, 3 warnings in 164.58s (0:02:44)
+    run 2: 156 passed, 3 warnings in 158.14s (0:02:38)
+    run 3: 156 passed, 3 warnings in 156.67s (0:02:36)
+    run 4: 156 passed, 3 warnings in 156.81s (0:02:36)
+    run 5: 156 passed, 3 warnings in 157.85s (0:02:37)
+    run 6: 156 passed, 3 warnings in 157.26s (0:02:37)
+
+## Conclusion (not proven)
+The failure is NOT identified and NOT reproduced. The run spanned a system sleep; the suite was frozen mid-run, inside the window above, where wall-clock-based timers can misbehave. A plausible mechanism, unverified: OR-Tools measures its solve time limit on the wall clock, so a multi-hour jump during a solve ends it at once without a plan. This is a hypothesis, not a finding.

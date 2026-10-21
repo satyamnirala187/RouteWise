@@ -1,0 +1,9 @@
+# Step 4D correction pass (plan identity and unresolved state): web typecheck, unit tests and build (22 Oct 2026 01:12 IST). NEW file; step4d_web_checks.txt is the earlier run (68 unit tests).
+$ npm run typecheck
+typecheck exit 0
+$ npx vitest run
+ Test Files  7 passed (7)
+      Tests  82 passed (82)
+$ npm run build
+✓ built in 151ms
+build exit 0

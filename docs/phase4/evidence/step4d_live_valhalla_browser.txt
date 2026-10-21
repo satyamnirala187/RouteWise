@@ -1,0 +1,11 @@
+# Step 4D: opt-in browser reroute on the REAL local Valhalla tiles (ROUTEWISE_E2E_LIVE=1), desktop 1280 px and mobile 390 px. Run on 20 Oct 2026, about 15:56 IST.
+# The device position is MOCKED geolocation (emulated by the browser at a public point inside the service area); no phone and no real GPS was involved. Road data is the real local Valhalla tiles, not a recording (recorded: false).
+# PROVENANCE OF THIS FILE: the run's output was printed to the terminal and its raw log was NOT saved. The lines below are copied from that terminal output, which is in the session transcript; nothing was added. The two live screenshots (desktop-live-recalculated-from-the-device-position.png and mobile-live-...) were written by this run and are in docs/phase4/screenshots/4d/.
+# Command: ROUTEWISE_E2E_LIVE=1 scripts/e2e.sh e2e/phase4d-live.spec.ts
+
+LIVE-BROWSER-REROUTE {"project":"desktop","device_position":"mocked geolocation (emulated by the browser)","real_road":true,"recorded":false,"origin_kind":"current_position","stops":3,"plan_stops":3,"road_distance_m":4722,"road_duration_s":520,"browser_wait_s":0.829}
+  ✓  1 [desktop] › e2e/phase4d-live.spec.ts:14:1 › live: a rider recalculates from a mocked device position on real local Valhalla roads (2.7s)
+LIVE-BROWSER-REROUTE {"project":"mobile","device_position":"mocked geolocation (emulated by the browser)","real_road":true,"recorded":false,"origin_kind":"current_position","stops":3,"plan_stops":3,"road_distance_m":4722,"road_duration_s":520,"browser_wait_s":0.828}
+  ✓  2 [mobile] › e2e/phase4d-live.spec.ts:14:1 › live: a rider recalculates from a mocked device position on real local Valhalla roads (2.5s)
+
+  2 passed (8.8s)

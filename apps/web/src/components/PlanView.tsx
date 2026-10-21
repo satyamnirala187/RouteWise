@@ -97,10 +97,27 @@ export default function PlanView({ plan, title, orders }: { plan: Plan; title: s
               </p>
             )}
             {r.rider_route?.revision && (
-              <p className="mt-1 text-sm text-slate-700" data-testid="rider-revision">
-                Recalculated by the rider at {new Date(r.rider_route.revision.created_at).toLocaleTimeString()} from {ORIGIN_TEXT[r.rider_route.revision.origin_kind]}:{" "}
-                {r.rider_route.stops.length} stops, {km(r.rider_route.road_distance_m)}. The stops below are the saved plan.
-              </p>
+              <div className="mt-2 rounded-lg bg-slate-50 p-3 text-sm text-slate-800 ring-1 ring-slate-200" data-testid="rider-revision">
+                <p>
+                  Recalculated by the rider at {new Date(r.rider_route.revision.created_at).toLocaleTimeString()} from {ORIGIN_TEXT[r.rider_route.revision.origin_kind]}
+                  {r.rider_route.revision.origin_order_code ? ` (${r.rider_route.revision.origin_order_code})` : ""}.{" "}
+                  Their current route has {r.rider_route.stops.length} {r.rider_route.stops.length === 1 ? "stop" : "stops"} and ends at{" "}
+                  {r.rider_route.open_route ? "their last stop" : destinationLabel(r.rider_route.destination)}. Planned total for that revision:{" "}
+                  {km(r.rider_route.road_distance_m)}, {trafficFree(r.rider_route.road_duration_s)}, not the distance left.
+                </p>
+                <ol className="mt-2 space-y-0.5" aria-label={`${r.rider ?? "Rider"}'s current route`}>
+                  {r.rider_route.stops.map((stop) => (
+                    <li key={stop.seq} className="flex gap-2" data-testid="rider-route-stop">
+                      <span className="w-6 shrink-0 text-right font-mono text-slate-500">{stop.seq}.</span>
+                      <span className="min-w-0">{stop.orders.map((o) => (
+                        <span key={o.id} className="block"><span className="font-mono text-xs text-slate-500">{o.order_code}</span>{" "}
+                          {orders[o.id] ? `${orders[o.id].customer_name} — ${orders[o.id].product}` : ""}</span>
+                      ))}</span>
+                    </li>
+                  ))}
+                </ol>
+                <p className="mt-2 text-xs text-slate-600">The list below is the plan as the optimizer saved it, before this rider's recalculation. The admin's plan is unchanged.</p>
+              </div>
             )}
             <ol className="mt-3 space-y-1 text-sm">
               <li className="text-slate-600" data-testid="route-start">Start: {KIND_LABEL[r.start]}</li>

@@ -4,16 +4,16 @@ import { api, ApiError, TERMINAL_RUN_STATES, type PlanningRun, type Provenance, 
 
 export const isTerminal = (s: RunState) => TERMINAL_RUN_STATES.includes(s);
 
-export interface PollOptions {
+export interface PollOptions<R extends { state: RunState } = PlanningRun> {
   signal: AbortSignal;
-  onUpdate: (run: PlanningRun) => void;
+  onUpdate: (run: R) => void;
   intervalMs?: number;     // first wait between polls
   maxIntervalMs?: number;  // waits grow to this
   maxMs?: number;          // give up (the run may still finish; the page offers a manual refresh)
   maxErrors?: number;      // consecutive network failures tolerated before giving up
-  fetchRun?: (id: string, signal: AbortSignal) => Promise<PlanningRun>;
+  fetchRun?: (id: string, signal: AbortSignal) => Promise<R>;
 }
-export type PollResult = { kind: "done"; run: PlanningRun } | { kind: "aborted" } | { kind: "timeout" };
+export type PollResult<R extends { state: RunState } = PlanningRun> = { kind: "done"; run: R } | { kind: "aborted" } | { kind: "timeout" };
 
 function wait(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise((resolve) => {
@@ -31,11 +31,12 @@ function wait(ms: number, signal: AbortSignal): Promise<void> {
 const isAbort = (e: unknown) => e instanceof DOMException && e.name === "AbortError";
 
 /** Poll a run until it reaches a terminal state, the caller aborts (navigation, round switch,
- * unmount) or the time budget runs out. A 401 is re-thrown so the caller can end the session;
+ * unmount) or the time budget runs out (the same bounded lifecycle for admin runs and, since 4D, a rider's own). A 401 is re-thrown so the caller can end the session;
  * polling never continues after it. */
-export async function pollRun(runId: string, opts: PollOptions): Promise<PollResult> {
+export async function pollRun<R extends { state: RunState } = PlanningRun>(runId: string, opts: PollOptions<R>): Promise<PollResult<R>> {
   const { signal, onUpdate } = opts;
-  const fetchRun = opts.fetchRun ?? ((id, s) => api<PlanningRun>(`/api/admin/planning-runs/${id}`, { signal: s }));
+  // The admin's planning-run endpoint unless the caller reads another kind of run (4D: a rider's own reroute).
+  const fetchRun = opts.fetchRun ?? ((id, s) => api<PlanningRun>(`/api/admin/planning-runs/${id}`, { signal: s }) as unknown as Promise<R>);
   const maxMs = opts.maxMs ?? 5 * 60_000;
   const maxInterval = opts.maxIntervalMs ?? 5000;
   let interval = opts.intervalMs ?? 1000;

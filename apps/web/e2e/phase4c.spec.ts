@@ -165,8 +165,8 @@ test("a planned shared stop reaches the rider API as one stop with separate cust
   expect(stop.customers).toBe(2);
   expect(stop.location).toEqual({ lat: PT.kirori_mal.lat, lng: PT.kirori_mal.lng });  // one validated location for the stop
   expect(stop.orders.every((x) => x.location?.lat === PT.kirori_mal.lat)).toBe(true);
-  // The existing rider screen is unchanged: both customers are separate cards in the saved sequence (shared-stop
-  // presentation, with one Navigate per stop, is 4D).
+  // 4C wrote this check against the then-unchanged rider screen (separate cards). Since 4D the two customers share one
+  // stop container (see phase4d.spec.ts); both are still listed in the saved sequence, which is all this check needs.
   await rp.getByRole("button", { name: "Refresh" }).click();
   const shown = await codesShown(rp.getByTestId("sequence"));
   expect(shown).toEqual(expect.arrayContaining(codes));

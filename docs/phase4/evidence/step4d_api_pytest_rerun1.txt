@@ -1,0 +1,26 @@
+# Step 4D: API suite, complete RERUN 1 (started 20 Oct 2026 after the first run failed once; the Mac was asleep for part of the wall time, pytest's own clock excludes sleep). Full output kept; the first run's file step4d_api_pytest.txt is preserved unchanged (1 failed, 453 passed).
+$ cd services/api && .venv/bin/python -m pytest -q -p no:cacheprovider -rfs
+........................................................................ [ 15%]
+........................................................................ [ 31%]
+........................................................................ [ 47%]
+................................sss..................................... [ 63%]
+........................................................................ [ 78%]
+........................................................................ [ 94%]
+.........................                                                [100%]
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:80: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+454 passed, 3 skipped, 3 warnings in 305.38s (0:05:05)
+finished
