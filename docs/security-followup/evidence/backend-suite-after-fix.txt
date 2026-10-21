@@ -1,0 +1,41 @@
+# Full backend suite after the dependency update (certifi 2026.10.19 in services/api/.venv), 22 Oct 2026. Complete output below, saved unchanged, with failures (-rf), skips (-rs) and the ten slowest tests. Run under 'caffeinate -i' (macOS built-in; prevents sleep).
+# Summary: 454 passed, 3 skipped (the opt-in live tests), 0 failed, exit 0.
+# Command: cd services/api && caffeinate -i .venv/bin/python -m pytest -q -p no:cacheprovider -rfs --tb=short --durations=10
+
+start 2026-10-22 02:00:23
+........................................................................ [ 15%]
+........................................................................ [ 31%]
+........................................................................ [ 47%]
+................................sss..................................... [ 63%]
+........................................................................ [ 78%]
+........................................................................ [ 94%]
+.........................                                                [100%]
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 10 durations =============================
+5.06s call     tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+3.36s call     tests/test_routing_parity.py::test_port_reproduces_the_accepted_spike_evidence[du-motorcycle]
+3.05s call     tests/test_routing_parity.py::test_port_reproduces_the_accepted_spike_evidence[du-fleet]
+2.86s call     tests/test_routing_parity.py::test_port_reproduces_the_accepted_spike_evidence[du-motor_scooter]
+2.19s call     tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position
+2.14s call     tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+1.53s call     tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation
+1.39s call     tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted
+1.38s call     tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+1.38s call     tests/test_account_deactivation.py::test_password_and_display_name_changes_do_not_invalidate_plans
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:80: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+454 passed, 3 skipped, 3 warnings in 298.44s (0:04:58)
+pytest-exit=0
+FINISHED-PYTEST

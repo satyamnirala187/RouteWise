@@ -1,0 +1,50 @@
+# Advisory and registry verification, 22 Oct 2026 (read from the official sources; nothing here is edited)
+
+== GHSA-9jrq-w75r-8gcw  (https://github.com/advisories/GHSA-9jrq-w75r-8gcw)
+Vite: Cross origin script execution through Vite custom middleware
+   severity low, published 2026-10-21T16:48:14Z
+   vite: >= 8.3.0, <= 8.3.2 -> first patched 8.3.3; >= 8.2.0, <= 8.2.3 -> first patched 8.2.4; >= 8.0.0, <= 8.1.5 -> first patched 8.1.6; >= 7.0.0, <= 7.3.6 -> first patched 7.3.7; <= 6.4.3 -> first patched 6.4.4
+== GHSA-698v-4r3x-3vcv  (https://github.com/advisories/GHSA-698v-4r3x-3vcv)
+launch-editor: escapeCmdArgs() omits % escaping on Windows
+   severity medium, published 2026-10-20T18:30:24Z
+   vite: >= 8.3.0, <= 8.3.2 -> first patched 8.3.3; >= 8.2.0, <= 8.2.3 -> first patched 8.2.4; >= 8.0.0, <= 8.1.5 -> first patched 8.1.6; >= 7.0.0, <= 7.3.6 -> first patched 7.3.7; <= 6.4.3 -> first patched 6.4.4
+== GHSA-r825-w8mm-5pxw  (https://github.com/advisories/GHSA-r825-w8mm-5pxw)
+launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors
+   severity medium, published 2026-10-20T19:51:52Z
+   vite: >= 8.3.0, <= 8.3.2 -> first patched 8.3.3; >= 8.2.0, <= 8.2.3 -> first patched 8.2.4; >= 8.0.0, <= 8.1.5 -> first patched 8.1.6; >= 7.0.0, <= 7.3.6 -> first patched 7.3.7; <= 6.4.3 -> first patched 6.4.4
+== GHSA-587h-7wmj-h5pm  (https://github.com/advisories/GHSA-587h-7wmj-h5pm)
+launch-editor: `fs.existsSync()` existence check can be bypassed on Windows
+   severity high, published 2026-10-20T19:48:25Z
+   vite: >= 8.3.0, <= 8.3.2 -> first patched 8.3.3; >= 8.2.0, <= 8.2.3 -> first patched 8.2.4; >= 8.0.0, <= 8.1.5 -> first patched 8.1.6; >= 7.0.0, <= 7.3.6 -> first patched 7.3.7; <= 6.4.3 -> first patched 6.4.4
+== GHSA-vfpm-58rq-9qcg  (https://github.com/advisories/GHSA-vfpm-58rq-9qcg)
+Vite: First 4 bytes of files outside of `server.fs` setting is exposed by `?vite-wasm-instance`
+   severity medium, published 2026-10-21T16:47:15Z
+   vite: >= 8.3.0, <= 8.3.2 -> first patched 8.3.3; >= 8.2.0, <= 8.2.3 -> first patched 8.2.4
+== GHSA-rq7h-c2jc-7f22  (https://github.com/advisories/GHSA-rq7h-c2jc-7f22)
+Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine
+   severity medium, published 2026-10-21T16:47:42Z
+   vite: >= 8.3.0, <= 8.3.2 -> first patched 8.3.3; >= 8.2.0, <= 8.2.3 -> first patched 8.2.4; >= 8.0.0, <= 8.1.5 -> first patched 8.1.6; >= 7.0.0, <= 7.3.6 -> first patched 7.3.7; <= 6.4.3 -> first patched 6.4.4
+
+== npm registry: vite@8.3.5 (npm view)
+version = '8.3.5'
+dist.integrity = 'sha512-z1YpjieJ9g0ebTmQpLBv/oq9E3F9EIlOe+7LahW8SrE3LTiG3udBRUXQOlYXP9b+IC2q2phHeVxj9xGlw34OEQ=='
+dist.tarball = 'https://registry.npmjs.org/vite/-/vite-8.3.5.tgz'
+time.modified = '2026-10-21T06:38:55.491Z'
+{
+  "alpha": "6.0.0-alpha.24",
+  "beta": "8.3.0-beta.1",
+  "latest": "8.3.5",
+  "previous": "6.4.5"
+}
+
+== PyPI: certifi 2026.10.19 (https://pypi.org/pypi/certifi/2026.10.19/json)
+version 2026.10.19 | requires_python >=3.7
+  certifi-2026.10.19-py3-none-any.whl uploaded 2026-10-20T02:24:15.072385Z yanked False sha256 42d35340cc5b9ba78e818ddbff0c5b1c2b779de448a340fd1b989f5fa8670e1b
+  certifi-2026.10.19.tar.gz uploaded 2026-10-20T02:24:16.604828Z yanked False sha256 035c1e85572b141bf1c3a3eff0e33a8eb74917522f2559075ff8d2fea780a1ae
+
+== OSV: PYSEC-2026-4320 (alias GHSA-6q48-6c7w-9gw2)
+published 2026-10-20T21:41:50.722083Z
+Certifi versions before 2026.10.18 include the `emSign ECC Root CA - G3` root certificate in their bundled CA store. Eight eMudhra intermediate CA certificates that chain to this root have compromised private keys and the CA has revoked them. 
+
+An attacker with one of the compromised keys can issue valid-looking certificates for any hostname. If the attacker is also on-path, they can intercept or modify TLS traffic f
+ranges [[{'introduced': '2019.03.09'}, {'fixed': '2026.10.19'}]]

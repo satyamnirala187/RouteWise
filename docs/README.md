@@ -13,6 +13,7 @@ Copied on 12 October 2026 from the RouteWise development package. The copies are
 ## Security
 
 - [Security review before publication](SECURITY-REVIEW.md) (19 Oct 2026) and the [security policy](../SECURITY.md). The repository is public; the app is not deployed or production-ready
+- [Security follow-up: dependency-audit failures, 22 Oct 2026](security-followup/2026-10-22-dependency-audit.md): the findings, the exact `vite` and `certifi` updates, validation and the original failed CI logs (kept as historical evidence).
 
 ## Phase 4 (in progress, incomplete)
 

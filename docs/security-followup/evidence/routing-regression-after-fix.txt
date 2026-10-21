@@ -1,0 +1,32 @@
+# Routing regression (Phase 0 spike) after the dependency update (certifi 2026.10.19 in spikes/routing/.venv), 22 Oct 2026. The spike environment changed, so it was rerun. Complete output below, saved unchanged except that one absolute local path in a warning was shortened to <repo>/ so that no local user name is committed. Run under 'caffeinate -i'.
+# Summary: 264 passed, 5 skipped (live/credential-gated), 0 failed, exit 0. The 4 warnings are deprecations (3 SWIG type-module notices from OR-Tools, 1 Starlette notice about httpx in TestClient); none concerns TLS or certificates.
+# Command: cd spikes/routing && caffeinate -i .venv/bin/python -m pytest -q -p no:cacheprovider -rfs --tb=short
+
+start 2026-10-22 02:05:24
+........................................................................ [ 26%]
+........................................................................ [ 53%]
+...........................sss.......................................... [ 80%]
+................................................ss...                    [100%]
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+.venv/lib/python3.14/site-packages/fastapi/testclient.py:1
+  <repo>/spikes/routing/.venv/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_env_costs_live.py:65: set ROUTEWISE_LIVE_TESTS=1
+SKIPPED [1] tests/test_env_costs_live.py:77: BLOCKED: GOOGLE_MAPS_API_KEY not set (no credentials / no approved spend)
+SKIPPED [1] tests/test_env_costs_live.py:88: BLOCKED: STADIA_API_KEY not set (no account; matrix needs Standard+ or trial)
+SKIPPED [2] tests/test_valhalla_du.py:122: set ROUTEWISE_LIVE_TESTS=1 and build local tiles (spikes/valhalla/build_tiles.sh)
+264 passed, 5 skipped, 4 warnings in 80.29s (0:01:20)
+pytest-exit=0
+FINISHED-SPIKE

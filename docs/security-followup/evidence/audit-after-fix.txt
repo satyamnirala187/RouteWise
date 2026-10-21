@@ -1,0 +1,37 @@
+# Audits after the dependency update, 22 Oct 2026 01:53 IST. New run on the working tree before the commit.
+# Thresholds are the existing CI ones: 'npm audit --audit-level=high' (apps/web) and 'pip_audit -r requirements.lock --disable-pip --no-deps' (pip-audit 2.10.1, as in .github/workflows/ci.yml). Nothing suppressed, no threshold lowered, no --force, no TLS bypass.
+
+$ cd apps/web && npm audit --audit-level=high
+found 0 vulnerabilities
+exit: 0
+
+$ npm audit   (no threshold: every severity)
+found 0 vulnerabilities
+exit: 0
+
+$ npm ls vite rolldown postcss @oxc-project/types
+  │ └── vite@8.3.5 deduped
+  └── vite@8.3.5 deduped
+│   └── @oxc-project/types@0.155.0
+│ └── vite@8.3.5 deduped
+│ └─┬ rolldown@1.2.15
+│ ├── postcss@8.5.31
+├─┬ @tailwindcss/vite@4.3.3
+├─┬ vite@8.3.5
+
+$ python -m pip_audit -r services/api/requirements.lock --disable-pip --no-deps --progress-spinner off
+No known vulnerabilities found
+exit: 0
+
+$ python -m pip_audit -r spikes/routing/requirements.lock --disable-pip --no-deps --progress-spinner off
+No known vulnerabilities found
+exit: 0
+
+$ python -m pip_audit -r spikes/routing/requirements-valhalla.lock --disable-pip --no-deps --progress-spinner off
+No known vulnerabilities found
+exit: 0
+
+# installed certifi in each local environment
+services/api/.venv: 2026.10.19
+spikes/routing/.venv: 2026.10.19
+spikes/routing/.venv-valhalla: 2026.10.19
