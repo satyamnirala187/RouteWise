@@ -81,7 +81,7 @@ test("a granted location (mocked geolocation) recalculates only my route, from t
 test("every device-location problem is explained, sends nothing, and offers the other starting points", async ({ browser }) => {
   const { admin, rid } = await plannedRound();
   const cases: { name: string; stub: Parameters<typeof openRider>[3]; says: RegExp }[] = [
-    { name: "denied", stub: { stub: { kind: "error", code: 1 } }, says: /Location access was denied/ },
+    { name: "denied", stub: { stub: { kind: "error", code: 1 } }, says: /did not allow location for this page/ },
     { name: "unavailable", stub: { stub: { kind: "error", code: 2 } }, says: /could not work out its position/ },
     { name: "timeout", stub: { stub: { kind: "error", code: 3 } }, says: /did not give a position in time/ },
     { name: "inaccurate", stub: { stub: { kind: "fix", lat: GPS.lat, lng: GPS.lng, accuracy: 250 } }, says: /accurate only to about 250 m; the limit is 100 m/ },

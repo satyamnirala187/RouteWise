@@ -13,7 +13,7 @@ export type GpsLimits = RerouteOptions["gps_limits"];
 
 export interface Fix { lat: number; lng: number; accuracy_m: number; age_s: number }
 
-export type PositionProblem = "insecure" | "unsupported" | "denied" | "unavailable" | "timeout" | "inaccurate" | "stale" | "invalid";
+export type PositionProblem = "insecure" | "blocked" | "unsupported" | "denied" | "unavailable" | "timeout" | "inaccurate" | "stale" | "invalid";
 
 export class PositionError extends Error {
   constructor(readonly problem: PositionProblem, message: string) { super(message); this.name = "PositionError"; }
@@ -27,9 +27,12 @@ const FALLBACK_HINT = "You can still recalculate from another starting point bel
 export const POSITION_TEXT: Record<PositionProblem, string> = {
   insecure: "Location isn't available on this connection. Your browser shares its location only on a secure connection "
     + "(HTTPS, or http://localhost), and this page is not on one. " + FALLBACK_HINT,
+  blocked: "This page's own security settings block location, so your browser never asked you. That is not a choice you made, and "
+    + "changing your phone's location permission will not fix it. Tell your admin. " + FALLBACK_HINT,
   unsupported: "This browser cannot share its location with this page. " + FALLBACK_HINT,
-  denied: "Location access was denied, so nothing was requested from your phone. To use your location, allow it for this "
-    + "site in your browser settings and try again. " + FALLBACK_HINT,
+  denied: "Your browser did not allow location for this page, so nothing was requested from your phone. That can be your answer to "
+    + "the browser's question, a site or phone location setting, or a block by the page that cannot be told apart here. To use your "
+    + "location, check this site's location permission and your phone's location setting, then try again. " + FALLBACK_HINT,
   unavailable: "Your phone could not work out its position (no usable GPS or network location right now). Try again outdoors. "
     + FALLBACK_HINT,
   timeout: "Your phone did not give a position in time. Try again outdoors. " + FALLBACK_HINT,
@@ -38,8 +41,19 @@ export const POSITION_TEXT: Record<PositionProblem, string> = {
   invalid: "Your phone gave a position that could not be used. " + FALLBACK_HINT,
 };
 
-export function locationSupport(win: Pick<Window, "isSecureContext"> = window, nav: Pick<Navigator, "geolocation"> | object = navigator): "ok" | "insecure" | "unsupported" {
+type PolicyApi = { allowsFeature(feature: string): boolean };
+type PolicyDoc = { permissionsPolicy?: PolicyApi; featurePolicy?: PolicyApi };
+
+/** True only when this document's own Permissions-Policy forbids location. Chrome reports it (`permissionsPolicy`, formerly
+ * `featurePolicy`); a browser that does not is treated as "not known to be blocked", and its refusal reads as `denied`. */
+export function policyBlocksLocation(doc: PolicyDoc = document as PolicyDoc): boolean {
+  return (doc.permissionsPolicy ?? doc.featurePolicy)?.allowsFeature("geolocation") === false;
+}
+
+export function locationSupport(win: Pick<Window, "isSecureContext"> = window, nav: Pick<Navigator, "geolocation"> | object = navigator,
+  doc: PolicyDoc = document as PolicyDoc): "ok" | "insecure" | "blocked" | "unsupported" {
   if (win.isSecureContext === false) return "insecure";   // checked first: browsers expose the API but refuse it here
+  if (policyBlocksLocation(doc)) return "blocked";        // the page forbids it for itself: the rider was never asked
   return "geolocation" in nav && (nav as Navigator).geolocation ? "ok" : "unsupported";
 }
 
@@ -47,6 +61,7 @@ export interface ReadOptions {
   signal: AbortSignal;
   win?: Pick<Window, "isSecureContext">;
   nav?: Pick<Navigator, "geolocation">;
+  doc?: PolicyDoc;
   now?: () => number;
   timeoutMs?: number;
 }
@@ -55,7 +70,7 @@ export interface ReadOptions {
  * checks the limits the server published, so an unusable position is never sent. */
 export function readCurrentPosition(limits: GpsLimits, opts: ReadOptions): Promise<Fix> {
   const nav = opts.nav ?? navigator;
-  const support = locationSupport(opts.win ?? window, nav);
+  const support = locationSupport(opts.win ?? window, nav, opts.doc);
   if (support !== "ok") return Promise.reject(new PositionError(support, POSITION_TEXT[support]));
   const now = opts.now ?? Date.now;
   return new Promise<Fix>((resolve, reject) => {

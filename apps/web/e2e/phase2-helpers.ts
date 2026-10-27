@@ -5,7 +5,7 @@ import { expect, request as playwrightRequest, test, type APIRequestContext, typ
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-export const WEB = "http://localhost:5174";
+export const WEB = process.env.E2E_WEB ?? "http://localhost:5174";   // E2E_WEB: playwright.fastapi.config.ts serves the app from FastAPI
 
 type Point = { lat: number; lng: number };
 export const state = JSON.parse(readFileSync(process.env.E2E_STATE ?? "", "utf8")) as {
