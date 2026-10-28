@@ -1,5 +1,7 @@
 # Step 4B report: individual rerouting and endpoint-change recalculation
 
+> **Update 28 October 2026:** the owner approved Phase 4 **for local development** ([acceptance record](OWNER-ACCEPTANCE-2026-10-28.md)). Step 4B is part of that approval. Not production readiness; the limitations, provisional decisions and open items below stay open, including the unidentified and unreproduced backend failure in the 4D report. The text below is kept as written before the approval.
+
 **Status:** 4B is **implemented, verified with automated tests and one real local-Valhalla check, committed (§8), and awaiting owner review**. Rerouting is **API-only until 4D**. Phase 4 is **incomplete**: 4C (shared stops) and 4D (rider screens, GPS capture, device checks) have not started.
 
 | | |

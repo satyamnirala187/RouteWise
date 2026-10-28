@@ -1,8 +1,8 @@
 # Phase 4 real-phone test results (OWNER-REPORTED)
 
 **Status: owner-reported results recorded on 28 Oct 2026 (the test date and time were not supplied). These are the owner's reports, not automated observations and
-not something I observed.** The automated browser tests still use mocked geolocation only. This record does **not** accept Phase 4: acceptance is the
-owner's decision, and steps 4A–4D stay awaiting owner review.
+not something I observed.** The automated browser tests still use mocked geolocation only. This record is evidence for the owner's acceptance of Phase 4 for local
+development on 28 Oct 2026 ([record](OWNER-ACCEPTANCE-2026-10-28.md)); it is not itself the acceptance.
 
 Nothing below includes passwords, precise coordinates, network addresses or USB device identifiers, and none should be added.
 
@@ -40,7 +40,7 @@ Nothing below includes passwords, precise coordinates, network addresses or USB 
 
 ## Still open
 
-- **Phase 4 acceptance is pending** (owner decision). Q4-6 (the real-phone secure-context route) and Q1–Q8 stay pending, and the provisional 4B and 4C defaults are not approved by these results.
+- **Phase 4 was accepted for local development on 28 Oct 2026** (owner decision; production readiness is pending). Q4-6 (the real-phone secure-context route) and Q1–Q8 stay pending, and the provisional 4B and 4C defaults are not approved by these results or by the acceptance.
 - **Initial backend failure:** the first full backend run at the 4D checkpoint had one failure that remains **unidentified and unreproduced** ([report §3.2](STEP-4D-REPORT.md)). These phone results do not bear on it.
 - **Limits of this evidence:** one phone, Chrome only, USB/localhost only (no HTTPS or Wi-Fi location), owner-reported with no screenshots or logs recorded here. Safari and iPhone are untested.
-- **Phase 5** (including offline page loading) has not started.
+- **Phase 5** (including offline page loading) has not started and is pending.

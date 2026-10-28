@@ -1,5 +1,7 @@
 # Step 4A report: quick next-customer call
 
+> **Update 28 October 2026:** the owner approved Phase 4 **for local development** ([acceptance record](OWNER-ACCEPTANCE-2026-10-28.md)). Step 4A is part of that approval. Not production readiness; the limitations, provisional decisions and open items below stay open, including the unidentified and unreproduced backend failure in the 4D report. The text below is kept as written before the approval.
+
 **Status:** 4A is **implemented, verified with automated tests, committed and pushed (§5), and awaiting owner review**. Phase 4 is **incomplete**: 4B, 4C and 4D have not started.
 
 | | |

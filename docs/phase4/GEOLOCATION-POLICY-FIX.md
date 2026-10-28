@@ -1,7 +1,7 @@
 # Geolocation blocker found in the real Android phone test — fix and evidence
 
-Status: fix implemented on branch `fix/geolocation-permissions-policy`, **not merged**. This is a defect fix for step 4D. It does not accept Phase 4:
-Phase 4 is incomplete. After the fix, the owner reported real Android GPS rerouting working and the shared-building checks passing ([owner-reported results](PHONE-TEST-RESULTS.md)).
+Status: fix implemented on branch `fix/geolocation-permissions-policy` and merged through PR #10 together with the owner's Phase 4 acceptance for local development
+on 28 Oct 2026 ([record](OWNER-ACCEPTANCE-2026-10-28.md)). This is a defect fix for step 4D. After the fix, the owner reported real Android GPS rerouting working and the shared-building checks passing ([owner-reported results](PHONE-TEST-RESULTS.md)).
 
 ## Root cause
 
@@ -45,5 +45,5 @@ phone launcher serves the built app from FastAPI, a path no browser test exercis
 
 ## Still open
 
-Phase 4 acceptance (the owner's decision). The phone results are owner-reported only; the automated regression above is mocked geolocation. Plan
+Production readiness and Phase 5 are pending. The phone results are owner-reported only; the automated regression above is mocked geolocation. Plan
 proposals Q1–Q8 and the provisional 4B/4C defaults stay open.
