@@ -72,7 +72,7 @@ SECURITY_HEADERS = {
     "X-Frame-Options": "DENY",
     "Referrer-Policy": "same-origin",
     "Cross-Origin-Opener-Policy": "same-origin",
-    "Permissions-Policy": "geolocation=(), camera=(), microphone=()",
+    "Permissions-Policy": "geolocation=(self), camera=(), microphone=()",  # location only for our own origin (rider reroute); never "*"
     "Content-Security-Policy": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
                                "connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
 }

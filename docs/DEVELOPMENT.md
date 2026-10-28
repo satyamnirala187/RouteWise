@@ -157,7 +157,7 @@ The rider page (`apps/web/src/pages/RiderPage.tsx`) uses only the 4B and 4C APIs
 - **Route card.** Same layout; its data reads the rider's effective route: revision, origin and planned totals ("planned total for that revision, not the distance left"), and, after a destination change (including new Home/Custom coordinates under the same kind, detected through the server's `awaiting_recalculation`), that the saved route still ends at the previous destination until a recalculation succeeds.
 - **Admin plan page** lists each rider's current (recalculated) route and planned totals beside the saved plan: kinds and order codes only, never a position or a private endpoint.
 
-Browser tests label emulated GPS as **mocked geolocation**; real-device location is not tested yet. Details and the owner phone checklist: [the step 4D report](phase4/STEP-4D-REPORT.md).
+Browser tests label emulated GPS as **mocked geolocation**; real-device location is owner-reported only ([results](phase4/PHONE-TEST-RESULTS.md)). The built app served by FastAPI alone (the phone launcher's path, with FastAPI's own `Permissions-Policy` header) has its own browser regression: `scripts/e2e.sh -c playwright.fastapi.config.ts` ([geolocation policy fix](phase4/GEOLOCATION-POLICY-FIX.md)). Details and the owner phone checklist: [the step 4D report](phase4/STEP-4D-REPORT.md).
 
 ## Stop groups (step 4C; admin controls and API, rider screens since 4D)
 

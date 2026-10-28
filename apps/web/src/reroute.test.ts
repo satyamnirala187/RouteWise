@@ -27,6 +27,21 @@ describe("location availability", () => {
     expect(locationSupport({ isSecureContext: true }, {})).toBe("unsupported");
     expect(locationSupport({ isSecureContext: true }, { geolocation: {} })).toBe("ok");
   });
+  it("is blocked, not denied, when the document's own Permissions-Policy forbids location", () => {
+    const allows = (v: boolean) => ({ allowsFeature: (f: string) => f !== "geolocation" || v });
+    expect(locationSupport({ isSecureContext: true }, { geolocation: {} }, { permissionsPolicy: allows(false) })).toBe("blocked");
+    expect(locationSupport({ isSecureContext: true }, { geolocation: {} }, { featurePolicy: allows(false) })).toBe("blocked");
+    expect(locationSupport({ isSecureContext: true }, { geolocation: {} }, { permissionsPolicy: allows(true) })).toBe("ok");
+    expect(locationSupport({ isSecureContext: true }, { geolocation: {} }, {})).toBe("ok");   // a browser that cannot tell
+  });
+  it("never asks the browser when the page blocks location, and does not claim the rider refused", async () => {
+    const g = geo((ok) => ok(fix(10)));
+    const err = await readCurrentPosition(LIMITS, { signal: new AbortController().signal, win: { isSecureContext: true }, nav: g.nav,
+      doc: { permissionsPolicy: { allowsFeature: () => false } } }).catch((e) => e);
+    expect(err).toMatchObject({ problem: "blocked" });
+    expect(g.getCurrentPosition).not.toHaveBeenCalled();
+    expect(err.message).not.toMatch(/denied|you (chose|refused)/i);
+  });
   it("never asks the browser on an insecure page", async () => {
     const g = geo((ok) => ok(fix(10)));
     await expect(readCurrentPosition(LIMITS, { signal: new AbortController().signal, win: { isSecureContext: false }, nav: g.nav }))

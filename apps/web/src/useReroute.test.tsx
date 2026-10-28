@@ -185,7 +185,7 @@ describe("the device position", () => {
     const { result } = setup();
     await act(async () => { await result.current.start("current_position"); });
     expect(result.current.phase).toBe("choosing");
-    expect(result.current.problem).toContain("Location access was denied");
+    expect(result.current.problem).toContain("did not allow location");
     expect(posts()).toHaveLength(0);
   });
 

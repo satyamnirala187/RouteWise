@@ -5,6 +5,7 @@ const WEB = "http://localhost:5174";
 
 export default defineConfig({
   testDir: "e2e",
+  testIgnore: "**/fastapi-*.spec.ts",   // those need the built app served by FastAPI: playwright.fastapi.config.ts
   fullyParallel: false,
   workers: 1,
   retries: 0,

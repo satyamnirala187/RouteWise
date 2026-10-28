@@ -1,5 +1,7 @@
 # Step 4C report: same-building stop grouping
 
+> **Update 28 October 2026:** the owner approved Phase 4 **for local development** ([acceptance record](OWNER-ACCEPTANCE-2026-10-28.md)). Step 4C is part of that approval. Not production readiness; the limitations, provisional decisions and open items below stay open, including the unidentified and unreproduced backend failure in the 4D report. The text below is kept as written before the approval.
+
 **Status:** 4C is **implemented, verified with automated tests, targeted defect checks, one real local-Valhalla check and browser checks at two widths, committed, and awaiting owner review**. It delivers the admin controls and the API. **The rider's shared-stop screens (one Navigate per shared stop, grouped customer cards) belong to 4D and are NOT done.** Phase 4 is **incomplete**.
 
 | | |
