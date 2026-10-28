@@ -1,7 +1,7 @@
 # Geolocation blocker found in the real Android phone test — fix and evidence
 
 Status: fix implemented on branch `fix/geolocation-permissions-policy`, **not merged**. This is a defect fix for step 4D. It does not accept Phase 4:
-real-phone GPS and the shared-building checks on the phone are still **pending**, and Phase 4 is incomplete.
+Phase 4 is incomplete. After the fix, the owner reported real Android GPS rerouting working and the shared-building checks passing ([owner-reported results](PHONE-TEST-RESULTS.md)).
 
 ## Root cause
 
@@ -43,7 +43,7 @@ The existing Playwright specs run the app through the Vite dev server (`localhos
 `Permissions-Policy` header never reached the page, and Playwright's granted permission was enough for emulated geolocation to answer. The
 phone launcher serves the built app from FastAPI, a path no browser test exercised. The new spec covers it.
 
-## Still pending (unchanged)
+## Still open
 
-Real-phone GPS (Android, USB `adb reverse`, `scripts/phone-server.sh localhost`), the shared-building checks on the phone, and Phase 4 acceptance. Plan
+Phase 4 acceptance (the owner's decision). The phone results are owner-reported only; the automated regression above is mocked geolocation. Plan
 proposals Q1–Q8 and the provisional 4B/4C defaults stay open.
