@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Navigate, Route, Routes, useNavigate } from "react-router";
 import { loadSession, logout, type SessionInfo } from "./api";
 import Shell from "./components/Shell";
+import ConnectPage from "./pages/ConnectPage";
 import ImportPage from "./pages/ImportPage";
 import LoginPage from "./pages/LoginPage";
 import OrdersPage from "./pages/OrdersPage";
@@ -13,11 +14,27 @@ import SettingsPage from "./pages/SettingsPage";
 // Route guards only choose which screen to show. Every permission is enforced by the API.
 export default function App() {
   const [session, setSession] = useState<SessionInfo | null | undefined>(undefined);
+  const [unreachable, setUnreachable] = useState(false);
   const navigate = useNavigate();
+  const checking = useRef<AbortController | null>(null);
 
-  useEffect(() => {
-    loadSession().then(setSession).catch(() => setSession(null));
+  // Only a server 401 means "signed out". If the server cannot be reached (or answers unreadably) we cannot tell, so
+  // we say so and keep the cookie; we never invent a session and never treat the failure as a logout.
+  const check = useCallback(() => {
+    checking.current?.abort();
+    const ac = (checking.current = new AbortController());
+    setUnreachable(false);
+    setSession(undefined);
+    loadSession(ac.signal).then((s) => { if (!ac.signal.aborted) setSession(s); })
+      .catch(() => { if (!ac.signal.aborted) setUnreachable(true); });
   }, []);
+
+  useEffect(() => { check(); return () => checking.current?.abort(); }, [check]);
+  useEffect(() => {
+    if (!unreachable) return;
+    window.addEventListener("online", check);   // the connection came back: look again without a tap
+    return () => window.removeEventListener("online", check);
+  }, [unreachable, check]);
 
   const onSignedOut = useCallback(() => {
     setSession(null);
@@ -29,6 +46,7 @@ export default function App() {
     onSignedOut();
   }, [onSignedOut]);
 
+  if (unreachable) return <ConnectPage onRetry={check} />;
   if (session === undefined) {
     return <p className="p-6 text-slate-500" role="status">Loading…</p>;
   }

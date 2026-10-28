@@ -78,6 +78,11 @@ SECURITY_HEADERS = {
 }
 
 
+REVALIDATE = {"Cache-Control": "no-cache"}
+# A service worker script needs a JavaScript type, and the manifest its own; do not rely on the platform's MIME table.
+SHELL_TYPES = {".js": "text/javascript", ".webmanifest": "application/manifest+json"}
+
+
 def create_app(settings: Settings | None = None, clock: Callable[[], datetime] | None = None) -> FastAPI:
     settings = settings or load_settings()
     app = FastAPI(title="RouteWise API", docs_url=None if settings.is_production else "/api/docs",
@@ -100,6 +105,8 @@ def create_app(settings: Settings | None = None, clock: Callable[[], datetime] |
             response.headers.setdefault(k, v)
         if request.url.path.startswith("/api/"):
             response.headers["Cache-Control"] = "no-store"  # customer data must not land in shared caches
+        elif request.url.path.startswith("/assets/") and response.status_code in (200, 304):
+            response.headers["Cache-Control"] = "public, max-age=31536000, immutable"  # Vite content-hashes these names
         if settings.cookie_secure:
             response.headers["Strict-Transport-Security"] = "max-age=31536000"
         return response
@@ -128,10 +135,12 @@ def create_app(settings: Settings | None = None, clock: Callable[[], datetime] |
         def spa(path: str):
             if path.startswith("api/"):
                 return JSONResponse({"detail": "Not Found"}, status_code=404)
+            # index.html, sw.js, the manifest and the icons keep fixed names: the browser must revalidate them on every use
+            # (ETag), or a new build and a new service worker would never be noticed. Only /assets/* is immutable.
             candidate = (WEB_DIST / path).resolve()
             if path and candidate.is_file() and WEB_DIST.resolve() in candidate.parents:
-                return FileResponse(candidate)
-            return FileResponse(WEB_DIST / "index.html")
+                return FileResponse(candidate, media_type=SHELL_TYPES.get(candidate.suffix), headers=REVALIDATE)
+            return FileResponse(WEB_DIST / "index.html", headers=REVALIDATE)
 
     app.add_middleware(BodySizeLimit, limit=MAX_BODY_BYTES)
     return app

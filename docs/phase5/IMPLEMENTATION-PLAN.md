@@ -1,13 +1,13 @@
 # Phase 5 implementation plan: offline PWA, privacy cleanup, deployment preparation and pilot
 
-**Status: PROPOSAL for owner review. Nothing in this plan is implemented, authorized or approved as a step.** No application code, schema, dependency or deployment changed in preparing it. The owner asked for planning only; step 5A starts only when the owner asks for it.
+**Status: PROPOSAL for owner review, with ONE authorized substep: 5A-1, the offline app shell (authorized by the owner on 28 October 2026; implemented, awaiting review: [report](STEP-5A1-REPORT.md)).** Everything else here, including 5A-2 (the rider snapshot), 5B, 5C and 5D, is still a proposal: not authorized, not implemented, not approved. The D09/D10 values in §1 are approved; the mechanisms, the defaults and the open questions are not. The plan was written first (28 Oct, planning only); 5A-1 was then authorized on its own and built without changing the rest.
 
 | | |
 |---|---|
 | Date | 28 October 2026 |
 | Prepared by | Claude Code |
 | Baseline | `main` at `4609df5` (PR #10 merged). Phase 4 accepted for local development on 28 Oct 2026 ([record](../phase4/OWNER-ACCEPTANCE-2026-10-28.md)); Phases 0 to 3 accepted earlier. Migration head is `0006` |
-| Approval | None yet for any Phase 5 step |
+| Approval | **5A-1 only** (owner, 28 Oct 2026). 5A-2, 5B, 5C and 5D: none yet |
 
 **Constraints that apply to every step:**
 - ₹0 budget. Existing local Valhalla only (`spikes/valhalla/data/valhalla_tiles`). No paid service. Public deployment is **not** established.
@@ -36,6 +36,10 @@
 | Pilot measures, stop conditions and "release needs human approval, deployment evidence, backups and rollback readiness" | [Pilot](../source/notion/RouteWise/10-Pilot.md) |
 
 D09 and D10 are still marked *Pending* in the verbatim Notion export (`docs/source/` is not edited). The Phase 0 acceptance record is what approved their values.
+
+**Not approved, even though D09/D10 point toward them. Both stay unresolved proposals, and their "defaults" below are suggestions only:**
+- **What happens to another account's unsynced outbox on a shared device** (Q5-8, §3.3). D09 approves that *logout* warns before deleting unsynced operations. It does not say what happens to a *previous user's* operations when someone else signs in.
+- **Extending the 30-day retention through backups** (Q5-6, §3.6). D10 approves 30-day customer-detail retention, then purge or anonymize. "Back up with the same retention" appears only as a proposal sentence in OFFLINE-PRIVACY. How long backups live, and whether a purge reaches them, is undecided.
 
 **Still pending from earlier phases (not decided here):** Q4-6 (real-phone secure-context route), the provisional 4B/4C defaults, Phase 2 proposals Q1 to Q8, and the unidentified, unreproduced backend failure at the 4D checkpoint. Q1 ("all orders Pending" replanning restriction) is not built.
 
@@ -89,13 +93,15 @@ D09 and D10 are still marked *Pending* in the verbatim Notion export (`docs/sour
 
 **Updates and invalidation (proposed).** A new build changes `sw.js` bytes (build id plus file hashes), so the browser installs it beside the old one. It does **not** take over automatically: the app shows "Update available" and the new worker activates on the next launch or when the rider taps it, never in the middle of a sync. The IndexedDB schema is versioned; a migration may never drop the outbox. The API stays compatible with the previous app build for one release (the status endpoint accepts a request without an operation id). Kill switch: a build whose `sw.js` unregisters itself and clears `rw-shell-*`; 5C rehearses it.
 
+**As built in 5A-1** ([report](STEP-5A1-REPORT.md)): the worker above, with these specifics. The current CSP (`default-src 'self'`, no `worker-src`) permits it (measured, no violations). Navigations and listed files are served **cache-first**, and a response is cached only if its status and content type match the file, so the SPA fallback (HTML, 200) can never be stored as a missing icon or script. A failed install deletes its half-filled cache and leaves the previous worker in charge. The worker does not skip waiting; the page offers "Reload to update" and the build otherwise takes over when every tab is closed. An older tab is offered a reload when another tab applied the update, and is never reloaded for it. A cached `index.html` keeps the headers it was installed with, so **a server header change without a changed shell reaches installed phones only when a shell file changes** (a release rule, [DEVELOPMENT.md](../DEVELOPMENT.md)). Not in 5A-1: the "Ready for offline" indicator (it would imply deliveries are ready), coded 401s and `user_id` on the session.
+
 **Each dinosaur case:**
 
 | Case | Today | After 5A |
 |---|---|---|
 | D1. Refresh the page while offline (observed) | Chrome's offline page | Cached shell loads, then the rider snapshot |
 | D2. Cold start offline from a tab or home-screen icon | Offline page | Same, if the worker was installed on an earlier online visit |
-| D3. First ever visit while offline | Offline page | **Cannot work.** Documented; a "Ready for offline" indicator shows only when the worker is active, the precache is complete and a snapshot exists |
+| D3. First ever visit while offline | Offline page | **Cannot work.** Documented. A "Ready for offline" indicator is proposed for 5A-2 only, when the worker is active, the precache is complete and a snapshot exists; 5A-1 shows none |
 | D4. Plain-HTTP Wi-Fi address | Offline page | Unchanged; no secure context, no worker |
 | D5. Browser cleared the site data, or evicted storage | Offline page | Offline page. Residual risk (§6). `navigator.storage.persist()` is requested to lower it |
 | D6. "Online" but unreachable (captive portal, weak signal) | Spinner, then error | Shell is served from cache at once; API calls time out after a bounded wait (bounded, e.g. 10 s) and count as offline |
@@ -112,7 +118,7 @@ D09 and D10 are still marked *Pending* in the verbatim Notion export (`docs/sour
 - Snapshot expiry runs on the device clock: `now - received_at > 18 h` deletes the snapshot at the next app open or timer tick. A device clock moved backwards (below a stored high-water mark) counts as expired. This is a heuristic and not a security boundary against someone who controls the device; the protections are the device lock, the 18-hour limit and logout/switch deletion. The worst case for a disabled rider whose phone never reconnects is 18 hours after the last sync.
 - **Reauthentication before sync.** The sync runner sends nothing without a live session. On 401 it stops in an `auth_required` state, keeps every operation, and the app asks for sign-in. After sign-in the returned `user_id` must equal the partition owner, otherwise it is an account switch.
 - **Logout** (5B, once an outbox exists): if unsynced operations exist, a dialog offers *Sync now*, *Log out and delete them* (states that the changes will be lost) or *Cancel*. In 5A, with no outbox, logout deletes the snapshot. Offline logout clears local data and records a pending-logout marker; the HttpOnly cookie can only be cleared by the server, so the app sends the logout when it is next online.
-- **Account switch** on a shared device: signing in as another user deletes the previous user's **snapshot** immediately (customer data gone, A26). The previous user's **outbox** holds no customer fields, so it is kept (counts and order codes only) until that user signs in or someone discards it explicitly after a warning. This reconciles "always clears the previous user's partition" with "warns before deleting unsynced operations"; it is a proposal (Q5-8).
+- **Account switch** on a shared device: signing in as another user deletes the previous user's **snapshot** immediately (customer data gone, A26). The previous user's **outbox** holds no customer fields, so it is kept (counts and order codes only) until that user signs in or someone discards it explicitly after a warning. This reconciles "always clears the previous user's partition" with "warns before deleting unsynced operations". **It is an unresolved proposal (Q5-8), not an approved default**; nothing in 5A-1 depends on it, and 5A-2 and 5B should not build it until the owner answers.
 - An admin sign-in on the device is an account switch and never creates a partition.
 
 ### 3.4 Saved server status versus queued local changes
@@ -167,14 +173,14 @@ After a drain with nothing left queued, the client refreshes the snapshot and sh
 | Logs | No customer fields by existing tests; rotation of server logs matches the retention period | Host decision |
 | **Backups** | See below | The hard part |
 
-**Backups.** "Back up with the same retention" cannot mean a customer detail disappears everywhere on day 30: a dump taken on day 29 still holds it. The honest worst case is **30 days plus the backup retention period**. The plan proposes daily dumps kept 14 days (worst case 44 days) and asks the owner to accept that or shorten it (Q5-6). **Restoring a backup must not resurrect purged data:** the purge keeps a ledger of purged round ids (no personal data) and the restore procedure re-runs the purge before the app starts. Backup files are never placed in Git, are encrypted if they leave the host, and a restore is rehearsed on a scratch database.
+**Backups (unresolved proposal, Q5-6; not an approved default).** "Back up with the same retention" cannot mean a customer detail disappears everywhere on day 30: a dump taken on day 29 still holds it. The honest worst case is **30 days plus the backup retention period**. The plan proposes daily dumps kept 14 days (worst case 44 days) and asks the owner to accept that or shorten it (Q5-6). **Restoring a backup must not resurrect purged data:** the purge keeps a ledger of purged round ids (no personal data) and the restore procedure re-runs the purge before the app starts. Backup files are never placed in Git, are encrypted if they leave the host, and a restore is rehearsed on a scratch database.
 
 **Mechanism (proposed):** a `purge` command in `routewise_api.cli` with `--dry-run` (counts only) and an injectable clock for tests; migration `0008` adds `delivery_rounds.purged_at` so the job is idempotent and visible. It is run by the host's scheduler (cron, launchd or systemd), not by an in-process thread, so a failure is visible and the single-API-process rule is untouched.
 
 ### 3.7 Verification layers
 
 1. **Mocked network, fast** (vitest, and Playwright `route` against the Vite-served app): fetch failures, timeouts, 401 variants, 409/422 bodies, clock changes (fake timers). The storage layer is an interface with an in-memory adapter for vitest; the real IndexedDB adapter is exercised in the browser. No `fake-indexeddb` dependency is planned.
-2. **Built app served by FastAPI in Chromium** (`playwright.fastapi.config.ts`, the pattern from the geolocation regression). Offline means a **real** connection refusal: the spec starts and kills its own API process, so the service worker's own requests fail too. Playwright's `setOffline` may not reach worker-initiated requests in Playwright 1.63; 5A verifies this first and records the result. Mocked-network tests never stand in for this layer.
+2. **Built app served by FastAPI in Chromium** (`playwright.fastapi.config.ts`, the pattern from the geolocation regression). Offline means a **real** connection refusal: the spec starts and kills its own API process, so the service worker's own requests fail too. Measured in the 5A-1 spike ([evidence](evidence/step5a1_spike_csp_offline.txt)): in Playwright 1.63.0 on Chromium, `setOffline` **does** stop the worker's own requests, one probe; the 5A-1 specs still use a really stopped server for the core claims. Mocked-network tests never stand in for this layer.
 3. **Owner phone checks** (OnePlus Nord 5, Chrome, USB/localhost; later HTTPS). Recorded as owner-reported results, kept apart from automated evidence, with no addresses, credentials or coordinates, exactly as in Phase 4.
 
 The Playwright FastAPI suite is local-only today; 5C proposes a CI job for it (installing Chromium on a public-repo runner costs ₹0 but adds minutes).
@@ -200,39 +206,39 @@ Each step is committed and reviewed on its own, ends in `docs/phase5/STEP-5X-REP
 
 ### 5A: Offline app shell and expiring own-rider snapshot (read-only)
 
-**Scope.** The app opens offline; the rider sees their own saved list; nothing can be changed offline yet.
-- *Commit 1, shell only (holds no customer data, reviewable and revertible alone):* service worker + build plugin, manifest and placeholder icons, cache headers and `/sw.js` serving, update banner, the `loadSession` offline/401 split, the "Ready for offline" indicator, and the manifest link in `index.html`.
-- *Commit 2, snapshot:* `GET /api/rider/snapshot`, `user_id` and 401 codes, IndexedDB store, 18-hour expiry with the clock-back heuristic, per-user partition, logout and account-switch deletion, read-only offline `DeliveryView` (actions disabled with "Changes need a connection until offline updates arrive"), staleness and expiry banner, `storage.persist()` request.
+Two substeps, each committed and reviewed on its own. **5A-1 is authorized (28 Oct 2026) and implemented. 5A-2 is a proposal and is not authorized.**
 
-**Out of scope:** any queue or offline write; background sync; reroute changes; retention; hosting; Safari work beyond noting behaviour.
+#### 5A-1: the offline app shell (AUTHORIZED, implemented, awaiting review)
 
-**Depends on:** Phase 4 accepted (done). No open decision blocks it; Q5-11 to Q5-13 have defaults.
+**Scope as authorized:** service worker, manifest, simple local placeholder icons and a build-generated precache; only public shell files are cached (HTML, hashed JS/CSS, manifest, icons); no rider snapshot, no IndexedDB, no queue, no migration, no new runtime dependency; no change to the rider Route card's design. Registered only for a built app in a secure context; the Vite dev server is unchanged. The API, mutations, authentication responses and customer data are never intercepted or cached. `sw.js` is JavaScript at the root with revalidation headers; only content-hashed assets are immutable; API `no-store` and every security header, including `geolocation=(self)`, are preserved. The session check tells a network failure or timeout from a server 401, and an offline start shows "Connect to load your deliveries" without inventing a session or signing anyone out. An update waits ("Reload to update" or next launch) and never takes over an active session. It does not claim deliveries are available offline.
 
-**Files and schema (proposed).**
-- Web: `apps/web/vite.config.ts` and a small plugin; `src/sw/` (rules module + worker template); `public/manifest.webmanifest`, `public/icons/*` (placeholders); `index.html`; `src/offline/{db,store,identity,expiry,register}.ts`; `useSnapshot.ts`; `components/OfflineBanner.tsx`; edits to `App.tsx`, `api.ts`, `pages/RiderPage.tsx`, `components/Shell.tsx`, `components/DeliveryView.tsx` (read-only mode); `e2e/phase2-helpers.ts` (`expectNoBrowserStorage`).
-- API: new `routers/rider_snapshot.py` or a section of `routers/rider.py`; `routers/auth.py` (`user_id`); `deps.py` (coded 401s); `main.py` (headers for shell, worker and manifest).
-- Schema: **none**. Migration head stays `0006`.
-- Docs: `docs/phase5/STEP-5A-REPORT.md`; offline dev and phone-check notes in `docs/DEVELOPMENT.md`.
+**How it differs from the earlier 5A proposal:** the "Ready for offline" indicator, coded 401s, `user_id` on the session and the `expectNoBrowserStorage` narrowing all move to 5A-2, because they belong to the snapshot. Test builds go to `apps/web/.e2e-dist` so the build the owner's phone server serves is never rebuilt by a test run.
+
+**Files and schema (as built).** `apps/web/vite-plugin-shell.ts`, `src/sw/{worker.template.js,generate.ts}`, `public/{manifest.webmanifest,icons/}`, `index.html`, `src/offline/shell.ts`, `components/UpdateBanner.tsx`, `pages/ConnectPage.tsx`, edits to `App.tsx`, `api.ts`, `main.tsx`; `services/api/routewise_api/main.py` (headers, MIME types); tests and test servers (`services/api/scripts/e2e_shell_app.py`, `apps/web/e2e/{shell-server.ts,fastapi-offline-shell.spec.ts,phase5a1-dev.spec.ts}`, `services/api/tests/test_shell_headers.py`). **No schema change; migration head stays `0006`.**
+
+**Acceptance criteria and where they are shown:** see the [5A-1 report](STEP-5A1-REPORT.md). Stopping point: the owner reviews; 5A-2 waits.
+
+#### 5A-2: expiring own-rider snapshot, read-only (PROPOSAL, not authorized)
+
+**Scope.** The rider sees their own saved list offline; nothing can be changed offline yet: `GET /api/rider/snapshot`, `user_id` and coded 401s, the IndexedDB store, 18-hour expiry with the clock-back heuristic, per-user partition, logout and account-switch deletion, read-only offline `DeliveryView` (actions disabled with "Changes need a connection until offline updates arrive"), the "Ready for offline" indicator, staleness and expiry banner, the `storage.persist()` request. The offline-mode bootstrap (open with an unexpired snapshot when the server cannot be reached) builds on the 5A-1 connect screen.
+
+**Out of scope:** any queue or offline write; background sync; reroute changes; retention; hosting; Safari work beyond noting behaviour. **Not built until answered:** what happens to another account's outbox (Q5-8).
+
+**Depends on:** 5A-1 reviewed. No open decision blocks it; Q5-9, Q5-12 have defaults.
+
+**Files and schema (proposed).** Web: `src/offline/{db,store,identity,expiry}.ts`, `useSnapshot.ts`, `components/OfflineBanner.tsx`; edits to `App.tsx`, `api.ts`, `pages/RiderPage.tsx`, `components/Shell.tsx`, `components/DeliveryView.tsx` (read-only mode, no change to the Route card); `e2e/phase2-helpers.ts` (`expectNoBrowserStorage`, narrowed for riders). API: `routers/rider_snapshot.py` or a section of `routers/rider.py`; `routers/auth.py` (`user_id`); `deps.py` (coded 401s). Schema: **none**. Docs: `docs/phase5/STEP-5A2-REPORT.md`.
 
 **Acceptance criteria.**
-1. The worker installs on `http://localhost` and on no insecure origin; it is absent on the Vite dev server.
-2. D1, D2, D7 and D8 above pass in Chromium against the FastAPI-served build with a **killed** server; D3 and D4 behave as documented.
-3. After a normal session, Cache Storage holds only shell URLs. No `/api/` response is cached anywhere. `/api/*` still returns `no-store`.
-4. The snapshot contains only the signed-in rider's own orders and none of the excluded fields; another rider's order, an admin field and Home/Custom coordinates never appear (field-allowlist test).
-5. A snapshot older than 18 hours (fake clock) is deleted and never shown; a clock moved back counts as expired.
-6. Logout deletes the snapshot; signing in as another user removes the first user's snapshot and customer data (A26); an admin session never creates a partition.
-7. An online definite 401 locks the snapshot; a network failure does not; `account_disabled` deletes it.
-8. A new build produces a new worker; the old build keeps working until the rider accepts the update; old shell caches are deleted on activation.
-9. Offline recalculation stays disabled with its existing message; no write is possible offline.
-10. All earlier backend, web and browser suites still pass.
+1. The snapshot contains only the signed-in rider's own orders and none of the excluded fields; another rider's order, an admin field and Home/Custom coordinates never appear (field-allowlist test).
+2. A snapshot older than 18 hours (fake clock) is deleted and never shown; a clock moved back counts as expired.
+3. Logout deletes the snapshot; signing in as another user removes the first user's snapshot and customer data (A26); an admin session never creates a partition.
+4. An online definite 401 locks the snapshot; a network failure does not; `account_disabled` deletes it.
+5. Reopening offline after a successful load shows the rider's own list with a stale/sync indicator (A22); recalculation stays disabled with its existing message; no write is possible offline.
+6. All earlier backend, web and browser suites still pass.
 
-**Tests.**
-- API: snapshot ownership and field allowlist (planted other-rider and admin data); no customer fields in logs; header matrix for `/`, `/index.html`, `/sw.js`, manifest, `/assets/*`, deep links and `/api/*` (the `test_permissions_policy.py` pattern, including all existing security headers); `/sw.js` is JavaScript, not the SPA fallback; coded 401s; `user_id` on the session.
-- Vitest: expiry boundaries and clock-back; partition isolation and deletion; bootstrap decision table (401 / network error / timeout / expired / disabled / no partition); worker routing rules (API never intercepted, shell paths only).
-- Playwright (FastAPI-served, own killable server): install, offline reload, offline deep link, Cache Storage and IndexedDB inspection, account switch, logout, expiry via `page.clock`, update from build 1 to build 2 (second copy of `dist` with a different build id). Plus mocked-network checks for slow and failing API answers.
-- Existing `expectNoBrowserStorage` call sites keep passing with the narrowed helper.
+**Tests.** API: snapshot ownership and field allowlist (planted other-rider and admin data); no customer fields in logs; coded 401s; `user_id` on the session. Vitest: expiry boundaries and clock-back; partition isolation and deletion; the bootstrap decision table (401 / network error / timeout / expired / disabled / no partition). Playwright (FastAPI-served, own killable server): offline reopen with the list, Cache Storage and IndexedDB inspection, account switch, logout, expiry via `page.clock`; existing `expectNoBrowserStorage` call sites keep passing with the narrowed helper.
 
-**Stopping point.** Read-only offline works and is reported with evidence. The owner may check on the phone (install, load once, stop the server, reopen; record as owner-reported). 5B waits for the owner.
+**Stopping point.** Read-only offline works and is reported with evidence. The owner may check on the phone (install, load once, stop the server, reopen; recorded as owner-reported). 5B waits for the owner.
 
 ### 5B: Queued status changes, reconnect synchronization and conflict handling
 
@@ -310,7 +316,7 @@ Each step is committed and reviewed on its own, ends in `docs/phase5/STEP-5X-REP
 
 ## 5. Decisions the owner may want to make
 
-None blocks 5A. "Needed by" is the latest useful point.
+None blocks 5A-1 (authorized) or 5A-2. "Needed by" is the latest useful point. **Q5-6 and Q5-8 are unresolved proposals: their "proposed defaults" are suggestions, not approved defaults, and nothing is built on them before the owner answers.**
 
 | # | Question | Proposed default | Needed by |
 |---|---|---|---|
@@ -319,14 +325,14 @@ None blocks 5A. "Needed by" is the latest useful point.
 | Q5-3 | Version conflicts: strict, or auto-apply when the status the rider saw is unchanged and not Completed | **Strict**, with *Apply to the latest* as one tap; measure how often it happens in the pilot | 5B |
 | Q5-4 | What starts the 30-day clock for a round | 30 days after the round's last activity | 5C |
 | Q5-5 | Purge by anonymizing in place, or delete rows | Anonymize (keeps pilot metrics) | 5C |
-| Q5-6 | Backup retention, where backups live at ₹0, encryption | Daily, 14 days, encrypted off-host; worst-case customer-detail lifetime 44 days. Shorter is possible | 5C |
+| Q5-6 | Extending the 30-day retention through backups: backup retention, where backups live at ₹0, encryption, whether a purge reaches them | *Unresolved; suggestion only:* daily, 14 days, encrypted off-host; worst-case customer-detail lifetime 44 days. Shorter is possible | 5C |
 | Q5-7 | Rider Home/Custom coordinates: same 30 days, and not stored on the device | Yes to both | 5C |
-| Q5-8 | A previous user's unsynced operations when another user signs in on the device | Keep them (no customer fields) until that user signs in or someone discards them after a warning | 5B |
-| Q5-9 | Extra app lock (PIN) over the offline snapshot | No. Device lock only; the snapshot is plaintext on the device for up to 18 hours (§6) | 5A |
+| Q5-8 | Another account's unsynced outbox on a shared device after a different user signs in | *Unresolved; suggestion only:* keep it (no customer fields) until that user signs in or someone discards it after a warning | 5A-2 / 5B |
+| Q5-9 | Extra app lock (PIN) over the offline snapshot | No. Device lock only; the snapshot is plaintext on the device for up to 18 hours (§6) | 5A-2 |
 | Q5-10 | Pilot size, riders, baseline and success thresholds | Owner supplies, from real operational data ([Pilot](../source/notion/RouteWise/10-Pilot.md)) | Before 5D |
-| Q5-11 | Updates: prompt or automatic | Prompt; applies on the next launch | 5A |
-| Q5-12 | Which rounds go into the snapshot | Rounds with a Pending or Postponed order for the rider, newest 3 | 5A |
-| Q5-13 | Install name, colour and icons | Plain placeholder icons; owner supplies artwork later | 5A |
+| Q5-11 | Updates: prompt or automatic | Prompt; applies on the next launch. **Used in 5A-1** as authorized, with an older tab offered a reload and never reloaded for it | 5A-1 |
+| Q5-12 | Which rounds go into the snapshot | Rounds with a Pending or Postponed order for the rider, newest 3 | 5A-2 |
+| Q5-13 | Install name, colour and icons | Plain placeholder icons; owner supplies artwork later. **Used in 5A-1** (a white ring on the brand colour, name "RouteWise") | 5A-1 |
 
 ## 6. Risks and limits (stated, not hidden)
 
@@ -334,6 +340,7 @@ None blocks 5A. "Needed by" is the latest useful point.
 - **Browser storage can be evicted or cleared**, silently losing queued operations. `persist()` lowers the chance and does not remove it; 5D measures it.
 - **The offline snapshot is plaintext in the browser's storage** for up to 18 hours. Encrypting it with a key kept in the same origin would add little. The protections are the device lock, the 18-hour limit, logout/switch deletion and the minimized contents.
 - **Device clocks can be wrong.** Expiry uses the device clock with a clock-back heuristic; it is not a defence against someone who controls the device.
+- **A cached shell keeps the headers it was installed with.** A header change (the geolocation incident was one) reaches an installed phone only when a shell file changes and the worker updates. Release rule in DEVELOPMENT.md; a build id tied to the headers is a possible later fix.
 - **No offline login and no offline reroute.** A first visit offline cannot work.
 - **Cached shell and API skew.** Handled by the one-release compatibility rule and update prompt, but a rider with a very old shell can be told to update.
 - **Single-device evidence.** One phone, Chrome, USB/localhost so far. No iPhone, no HTTPS, no other Android.
@@ -346,22 +353,18 @@ None blocks 5A. "Needed by" is the latest useful point.
 
 | Item | Where |
 |---|---|
-| R21, P5-01, A22 | 5A (read), 5B (queue) |
+| R21, P5-01, A22 | 5A-1 (the shell opens offline; no deliveries), 5A-2 (read the saved list), 5B (queue) |
 | R16, R21, P5-02, A23 | 5B |
 | R21, R24, A24 | 5B (expiry, reauthentication, conflict) |
-| R22, P5-03, A25 | Kept from 4D; re-tested in 5A and 5B |
-| R24, A26 | 5A (snapshot, switch), 5B (warning with an outbox) |
+| R22, P5-03, A25 | Kept from 4D; re-tested in 5A-2 and 5B |
+| R24, A26 | 5A-2 (snapshot, switch), 5B (warning with an outbox) |
 | R02, R24, P5-04, A27 | 5C (rehearsal), 5D-1 (on the real host) |
 | A28, R01 to R24 | 5D |
-| D09 values | 5A, 5B |
+| D09 values | 5A-2, 5B |
 | D10 values | 5C |
 
-## 8. The first implementation prompt (5A) should say exactly this
+## 8. Implementation prompts
 
-> Implement step 5A of `docs/phase5/IMPLEMENTATION-PLAN.md` on a new branch from `main`, in two commits: (1) the offline app shell, (2) the expiring own-rider read-only snapshot. Offline is read-only: no queue, no offline writes, no schema change, no migration. No new runtime dependency. Do not start 5B, retention, deployment or hosting work; do not touch Notion, `docs/source/` or `routewise_phone`; do not start servers other than what the browser tests need, and stop any you start.
->
-> Defaults to use unless I change them: Q5-9 no PIN; Q5-11 update prompt, applied on next launch; Q5-12 rounds with a Pending or Postponed order for the rider, newest 3; Q5-13 placeholder icons.
->
-> First, verify in a short spike and record: whether Playwright 1.63 `setOffline` reaches service-worker requests (if not, the spec uses its own killable FastAPI process); and that a same-origin worker is allowed by the current CSP.
->
-> Deliver the acceptance criteria and tests listed under 5A, a `docs/phase5/STEP-5A-REPORT.md` with evidence (automated and mocked-network kept apart from anything owner-reported), updated `docs/DEVELOPMENT.md` (including that airplane mode does not cut an `adb reverse` tunnel), and the narrowed `expectNoBrowserStorage`. Run the affected suites once; do not repeat full-suite loops. Commit each part, push the branch, open a draft PR, report its checks, and stop for review. Do not merge.
+**5A-1 (sent and implemented):** the owner's instruction was the offline app shell only, with the scope, requirements and verification summarized under 5A-1 above. It is not repeated here.
+
+**5A-2 (proposed; not authorized; the owner decides whether and when):** implement 5A-2 of this plan on a new branch from the reviewed 5A-1 work: the expiring, read-only own-rider snapshot only. No queue, no offline writes, no migration, no new runtime dependency; no 5B, retention, deployment or hosting work; no Notion, `docs/source/` or `routewise_phone`. Do **not** build anything for another account's outbox (Q5-8) or for backup retention (Q5-6). Defaults unless changed: Q5-9 no PIN; Q5-12 rounds with a Pending or Postponed order for the rider, newest 3. Deliver the 5A-2 acceptance criteria and tests, a `STEP-5A2-REPORT.md` with automated and owner-reported evidence kept apart, run the affected suites once, commit, push, open a draft PR, report its checks, and stop for review. Do not merge.

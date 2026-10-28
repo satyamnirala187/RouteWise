@@ -1,0 +1,17 @@
+# 5A-1: FastAPI-served browser suite (scripts/e2e.sh -c playwright.fastapi.config.ts), 28 Oct 2026, branch feature/phase5a1-offline-shell
+# The built app served by FastAPI alone (apps/web/.e2e-dist; never dist/): the Phase 4 geolocation regression (MOCKED geolocation) + the 5A-1 offline app shell specs.
+# Offline = a really stopped server. See STEP-5A1-REPORT.md for the one earlier unexplained timeout and the repeat runs.
+
+Running 9 tests using 1 worker
+
+  ✓  1 [mobile] › e2e/fastapi-geolocation.spec.ts:12:1 › served by FastAPI, the page may use location and the rider's current-position reroute succeeds (mocked geolocation) (2.6s)
+  ✓  2 [mobile] › e2e/fastapi-offline-shell.spec.ts:62:1 › the worker installs on localhost under the current CSP, and its cache is exactly the build's public files (1.2s)
+  ✓  3 [mobile] › e2e/fastapi-offline-shell.spec.ts:105:1 › after installation, reloading and deep links with the server STOPPED show the app, not Chrome's offline page (1.3s)
+  ✓  4 [mobile] › e2e/fastapi-offline-shell.spec.ts:136:1 › first-ever offline access cannot work: nothing was installed yet (documented limit) (53ms)
+  ✓  5 [mobile] › e2e/fastapi-offline-shell.spec.ts:146:1 › an unreachable server at startup is not a sign-out; a real 401 is (2.4s)
+  ✓  6 [mobile] › e2e/fastapi-offline-shell.spec.ts:172:1 › the worker never intercepts or caches the API; with customer data on screen the cache holds public shell files only (1.5s)
+  ✓  7 [mobile] › e2e/fastapi-offline-shell.spec.ts:215:1 › a failed precache (a listed file the server does not have) installs nothing, caches nothing and leaves the app working (1.1s)
+  ✓  8 [mobile] › e2e/fastapi-offline-shell.spec.ts:258:1 › two builds: an older open tab keeps working while the update waits; obsolete shell caches go safely; nothing reloads by itself (5.6s)
+  ✓  9 [mobile] › e2e/fastapi-offline-shell.spec.ts:310:1 › two builds: with no tab left open, the waiting build takes over (next launch) (5.1s)
+
+  9 passed (23.3s)

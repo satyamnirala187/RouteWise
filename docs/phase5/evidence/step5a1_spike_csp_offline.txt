@@ -1,0 +1,10 @@
+# 5A-1 spike, 28 Oct 2026: CSP and offline emulation versus a service worker's own requests
+# Chromium (Playwright 1.63.0), a trivial same-origin worker served by FastAPI (scripts.e2e_shell_app) on a free localhost port.
+# Temporary spec e2e/fastapi-spike-tmp.spec.ts, deleted after this run. Run: scripts/e2e.sh -c playwright.fastapi.config.ts fastapi-spike-tmp
+SPIKE csp header: default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'
+SPIKE worker registered, scope: http://localhost:<port>/ | csp violations: [] | console: []
+SPIKE online          worker: HTTP 200 | page: HTTP 200
+SPIKE setOffline(true) worker: FAILED: Failed to fetch | page: FAILED: Failed to fetch
+SPIKE back online      worker: HTTP 200 | page: HTTP 200
+SPIKE server stopped   worker: FAILED: Failed to fetch | page: FAILED: Failed to fetch
+  1 passed (3.7s)

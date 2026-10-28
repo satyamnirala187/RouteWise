@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { api, ApiError, isDefiniteRefusal, loadSession, logout, setCsrfToken } from "./api";
+import { api, ApiError, isDefiniteRefusal, loadSession, logout, SESSION_CHECK_TIMEOUT_MS, setCsrfToken } from "./api";
 
 type Call = { url: string; init: RequestInit };
 let calls: Call[] = [];
@@ -84,5 +84,47 @@ describe("isDefiniteRefusal", () => {
     expect(isDefiniteRefusal(e)).toBe(false);
     vi.stubGlobal("fetch", () => Promise.resolve(new Response("<html>ok?</html>", { status: 200 })));
     expect(isDefiniteRefusal(await api("/api/x").catch((x) => x))).toBe(false);
+  });
+});
+
+describe("the session check", () => {
+  it("returns null only for a server 401", async () => {
+    vi.stubGlobal("fetch", () => respond(401, { detail: "Session expired; sign in again" }));
+    expect(await loadSession()).toBeNull();
+  });
+
+  it.each([
+    ["no answer", () => Promise.reject(new TypeError("Failed to fetch"))],
+    ["a server error", () => respond(500, { detail: "boom" })],
+    ["an unreadable answer", () => Promise.resolve(new Response("<html>", { status: 200 }))],
+  ])("throws, and does not report a sign-out, for %s", async (_name, answer) => {
+    vi.stubGlobal("fetch", answer);
+    await expect(loadSession()).rejects.toBeDefined();
+  });
+
+  it("keeps the CSRF token when the server cannot be reached", async () => {
+    await loadSession();   // the default stub signs in with token tok-123
+    vi.stubGlobal("fetch", () => Promise.reject(new TypeError("Failed to fetch")));
+    await expect(loadSession()).rejects.toBeDefined();
+    vi.stubGlobal("fetch", (url: string, init: RequestInit) => { calls.push({ url, init }); return respond(200, {}); });
+    await api("/api/admin/orders/1", { method: "PATCH", json: {} });
+    expect(header(calls[calls.length - 1], "X-CSRF-Token")).toBe("tok-123");
+  });
+
+  it("aborts a hung check after the timeout, and a caller can drop a superseded one", async () => {
+    vi.useFakeTimers();
+    try {
+      vi.stubGlobal("fetch", (_url: string, init: RequestInit) => new Promise((_r, reject) => init.signal!.addEventListener("abort", () => reject(new DOMException("x", "AbortError")))));
+      const hung = loadSession();
+      const outcome = expect(hung).rejects.toMatchObject({ name: "AbortError" });
+      await vi.advanceTimersByTimeAsync(SESSION_CHECK_TIMEOUT_MS);
+      await outcome;
+      const ac = new AbortController();
+      const dropped = expect(loadSession(ac.signal)).rejects.toMatchObject({ name: "AbortError" });
+      ac.abort();
+      await dropped;
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
