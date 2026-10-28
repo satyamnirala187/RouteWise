@@ -15,6 +15,10 @@ Copied on 12 October 2026 from the RouteWise development package. The copies are
 - [Security review before publication](SECURITY-REVIEW.md) (19 Oct 2026) and the [security policy](../SECURITY.md). The repository is public; the app is not deployed or production-ready
 - [Security follow-up: dependency-audit failures, 22 Oct 2026](security-followup/2026-10-22-dependency-audit.md): the findings, the exact `vite` and `certifi` updates, validation and the original failed CI logs (kept as historical evidence).
 
+## Phase 5 (planned 28 Oct 2026; not started)
+
+- [Implementation plan](phase5/IMPLEMENTATION-PLAN.md): a **proposal for owner review**, not an approval of any step. 5A offline app shell and expiring own-rider snapshot (read-only), 5B queued status changes, reconnect sync and conflicts, 5C privacy cleanup, security verification and deployment/backup/restore preparation, 5D real-device acceptance, human-approved pilot and release review. Separates the approved D09/D10 values from proposals, lists the open decisions (none blocks 5A), and records the ₹0 hosting facts checked on 28 Oct 2026 (no option proven). No code, schema or dependency changed; nothing deployed
+
 ## Phase 4 (accepted 28 Oct 2026 for local development)
 
 - [Owner acceptance record](phase4/OWNER-ACCEPTANCE-2026-10-28.md): accepted for local development, **not** production readiness; owner-reported phone results are kept separate from the automated (mocked-geolocation) tests; limitations, provisional decisions and the unreproduced backend failure stay open
