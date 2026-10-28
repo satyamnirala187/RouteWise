@@ -15,6 +15,11 @@ Copied on 12 October 2026 from the RouteWise development package. The copies are
 - [Security review before publication](SECURITY-REVIEW.md) (19 Oct 2026) and the [security policy](../SECURITY.md). The repository is public; the app is not deployed or production-ready
 - [Security follow-up: dependency-audit failures, 22 Oct 2026](security-followup/2026-10-22-dependency-audit.md): the findings, the exact `vite` and `certifi` updates, validation and the original failed CI logs (kept as historical evidence).
 
+## Phase 5 (planned 28 Oct 2026; only substep 5A-1 authorized and built)
+
+- [Implementation plan](phase5/IMPLEMENTATION-PLAN.md): a **proposal for owner review**. Only **5A-1** (the offline app shell) is authorized (owner, 28 Oct 2026); 5A-2 (expiring own-rider snapshot, read-only), 5B queued status changes, reconnect sync and conflicts, 5C privacy cleanup, security verification and deployment/backup/restore preparation, and 5D real-device acceptance, human-approved pilot and release review are proposals, not authorized. Separates the approved D09/D10 values from proposals (another account's outbox, Q5-8, and extending retention through backups, Q5-6, are unresolved proposals, not approved defaults), lists the open decisions, and records the ₹0 hosting facts checked on 28 Oct 2026 (no option proven)
+- [Step 5A-1 report](phase5/STEP-5A1-REPORT.md): the offline app shell: a service worker that caches only the public shell (HTML, hashed JS/CSS, manifest, icons), opens the app and deep links without a connection, and shows "Connect to load your deliveries" when the server cannot be reached (not a sign-out). **Deliveries are not available offline** (5A-2). Verified in Chromium against the built app served by FastAPI with a really stopped server; **not** checked on a phone. Implemented and awaiting review; nothing deployed
+
 ## Phase 4 (accepted 28 Oct 2026 for local development)
 
 - [Owner acceptance record](phase4/OWNER-ACCEPTANCE-2026-10-28.md): accepted for local development, **not** production readiness; owner-reported phone results are kept separate from the automated (mocked-geolocation) tests; limitations, provisional decisions and the unreproduced backend failure stay open

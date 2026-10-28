@@ -44,6 +44,7 @@ valhalla_tiles.tar
 services/api/.venv/
 apps/web/node_modules/
 apps/web/dist/
+apps/web/.e2e-dist/
 apps/web/test-results/
 apps/web/playwright-report/
 *.tsbuildinfo
