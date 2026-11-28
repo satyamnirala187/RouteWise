@@ -1,0 +1,43 @@
+"""Scratch experiment (not repo code): does OR-Tools' time limit count time during which the process was frozen?
+SIGSTOP/SIGCONT freezes the whole process for D seconds in the middle of routing.solve(), as a system sleep would
+(a sleep also freezes it; the difference is that during sleep Python's own uptime clock stands still, while here it does not).
+Child: builds a synthetic Euclidean problem and calls the production planner.solve() with the production limit.
+Parent: control run, then runs frozen at several points. Prints one JSON line per run."""
+import json, math, os, random, signal, subprocess, sys, time
+
+def child(n_stops, seed, limit):
+    from routewise_api.routing import planner
+    from routewise_api.routing.matrix.base import RoadMatrix, MatrixElement, ElementStatus, Provenance
+    rnd = random.Random(seed)
+    pts = {f"L{i}": (rnd.random() * 9000, rnd.random() * 9000) for i in range(n_stops)}
+    pts["D"] = (4500.0, 4500.0)
+    prov = Provenance("synthetic-experiment", False, "x", "2026-01-01T00:00:00Z")
+    els = {(a, b): MatrixElement(ElementStatus.OK, int(math.dist(pts[a], pts[b])), int(math.dist(pts[a], pts[b]) / 8))
+           for a in pts for b in pts if a != b}
+    m = RoadMatrix(els, prov)
+    stops = [planner.StopSpec(f"L{i}", [f"o{i}"]) for i in range(n_stops)]
+    vehicles = [planner.VehicleSpec(f"r{k}", n_stops, "D", "D") for k in range(4)]
+    print("SOLVE_START", flush=True)
+    c0, w0 = time.process_time(), time.monotonic()
+    res = planner.solve(vehicles, stops, m, time_limit_s=limit)
+    print("RESULT " + json.dumps({"status": res.status, "strategy": res.strategy, "objective": res.objective,
+                                  "warnings": res.warnings, "cpu_s": round(time.process_time() - c0, 2),
+                                  "elapsed_s": round(time.monotonic() - w0, 2)}), flush=True)
+
+def run(n, seed, limit, freeze_at=None, freeze_for=0):
+    p = subprocess.Popen([sys.executable, __file__, "child", str(n), str(seed), str(limit)], stdout=subprocess.PIPE, text=True)
+    assert p.stdout.readline().strip() == "SOLVE_START"
+    if freeze_at is not None:
+        time.sleep(freeze_at); os.kill(p.pid, signal.SIGSTOP); time.sleep(freeze_for); os.kill(p.pid, signal.SIGCONT)
+    out = p.stdout.read(); p.wait()
+    return json.loads(out.split("RESULT ", 1)[1])
+
+if __name__ == "__main__":
+    if sys.argv[1] == "child":
+        child(int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]))
+    else:
+        n, limit, D = int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])
+        for seed in (1, 2):
+            print(f"seed {seed} CONTROL            ", run(n, seed, limit), flush=True)
+            for at in (0.05, 0.5, 1.5):
+                print(f"seed {seed} FROZEN {D}s at {at:>4}s", run(n, seed, limit, at, D), flush=True)
