@@ -1,0 +1,50 @@
+# 4a: AFTER the fix (branch fix/reroute-test-race): the same forced-delay plugin as 2c (step4d_investigation_2c_delay_plugin.py.txt) against both fixed tests
+=================== DELAY_AFTER_REROUTE_POST=1.0 started 2026-11-27 20:34:14 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 7.05s =========================
+pytest-exit=0
+=================== DELAY_AFTER_REROUTE_POST=0.02 started 2026-11-27 20:34:22 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.59s =========================
+pytest-exit=0
+# finished 2026-11-27 20:34:27 +0530

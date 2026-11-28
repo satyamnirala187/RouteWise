@@ -1,0 +1,13 @@
+# 3: does OR-Tools' wall-clock limit count time while the process is frozen? (scratch experiment, repo code unchanged)
+# production planner.solve() (limit 30 s per strategy, as PlanningLimits.solve_seconds), 40 synthetic stops, 4 vehicles, Euclidean matrix; process frozen with SIGSTOP for 35 s at the given offset into the solve, then SIGCONT.
+# CAVEAT: SIGSTOP stops the process but Python's uptime clock keeps running; a real sleep also stops Python's clock. This isolates the OR-Tools side only.
+# started 2026-11-27 19:14:43 +0530
+seed 1 CONTROL             {'status': 'SUCCESS', 'strategy': 'LOCAL_CHEAPEST_INSERTION', 'objective': 53281, 'warnings': [], 'cpu_s': 4.4, 'elapsed_s': 4.4}
+seed 1 FROZEN 35s at 0.05s {'status': 'SUCCESS', 'strategy': 'LOCAL_CHEAPEST_INSERTION', 'objective': 53531, 'warnings': [], 'cpu_s': 0.05, 'elapsed_s': 35.06}
+seed 1 FROZEN 35s at  0.5s {'status': 'SUCCESS', 'strategy': 'LOCAL_CHEAPEST_INSERTION', 'objective': 53281, 'warnings': [], 'cpu_s': 0.51, 'elapsed_s': 35.51}
+seed 1 FROZEN 35s at  1.5s {'status': 'SUCCESS', 'strategy': 'LOCAL_CHEAPEST_INSERTION', 'objective': 53281, 'warnings': [], 'cpu_s': 1.5, 'elapsed_s': 36.51}
+seed 2 CONTROL             {'status': 'SUCCESS', 'strategy': 'LOCAL_CHEAPEST_INSERTION', 'objective': 45189, 'warnings': [], 'cpu_s': 3.87, 'elapsed_s': 3.88}
+seed 2 FROZEN 35s at 0.05s {'status': 'SUCCESS', 'strategy': 'LOCAL_CHEAPEST_INSERTION', 'objective': 45750, 'warnings': [], 'cpu_s': 0.06, 'elapsed_s': 35.07}
+seed 2 FROZEN 35s at  0.5s {'status': 'SUCCESS', 'strategy': 'LOCAL_CHEAPEST_INSERTION', 'objective': 45367, 'warnings': [], 'cpu_s': 0.51, 'elapsed_s': 35.52}
+seed 2 FROZEN 35s at  1.5s {'status': 'SUCCESS', 'strategy': 'LOCAL_CHEAPEST_INSERTION', 'objective': 45189, 'warnings': [], 'cpu_s': 1.51, 'elapsed_s': 36.52}
+# finished 2026-11-27 19:18:27 +0530

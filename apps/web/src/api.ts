@@ -74,9 +74,18 @@ export async function api<T>(path: string, opts: { method?: string; json?: unkno
   return data as T;
 }
 
-export async function loadSession(): Promise<SessionInfo | null> {
+export const SESSION_CHECK_TIMEOUT_MS = 10_000;
+
+/** The signed-in session, or null ONLY when the server answered 401 (a confirmed sign-out). No answer (network failure,
+ * timeout), an unreadable answer or a server error is thrown: the caller cannot tell, and must not treat it as signed out.
+ * `signal` lets the caller drop a superseded check; the timeout ends a hung one. */
+export async function loadSession(signal?: AbortSignal): Promise<SessionInfo | null> {
+  const timeout = new AbortController();
+  const timer = setTimeout(() => timeout.abort(), SESSION_CHECK_TIMEOUT_MS);
+  const cancel = () => timeout.abort();
+  signal?.addEventListener("abort", cancel);
   try {
-    const s = await api<SessionInfo>("/api/auth/session");
+    const s = await api<SessionInfo>("/api/auth/session", { signal: timeout.signal });
     setCsrfToken(s.csrf_token);
     return s;
   } catch (e) {
@@ -85,6 +94,9 @@ export async function loadSession(): Promise<SessionInfo | null> {
       return null;
     }
     throw e;
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener("abort", cancel);
   }
 }
 

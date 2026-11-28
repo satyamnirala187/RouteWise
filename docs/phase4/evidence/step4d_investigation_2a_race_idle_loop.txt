@@ -1,0 +1,723 @@
+# 2a idle machine -- 30 runs of the two tests that use the PauseRun(match=a_run.get('id')) pattern
+# command: .venv/bin/python -m pytest tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale -v -p no:cacheprovider -rfEs --tb=short
+=================== RUN 1 started 2026-11-27 19:03:53 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.55s =========================
+pytest-exit=0
+=================== RUN 2 started 2026-11-27 19:03:58 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.43s =========================
+pytest-exit=0
+=================== RUN 3 started 2026-11-27 19:04:02 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.41s =========================
+pytest-exit=0
+=================== RUN 4 started 2026-11-27 19:04:07 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.37s =========================
+pytest-exit=0
+=================== RUN 5 started 2026-11-27 19:04:11 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.45s =========================
+pytest-exit=0
+=================== RUN 6 started 2026-11-27 19:04:16 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.42s =========================
+pytest-exit=0
+=================== RUN 7 started 2026-11-27 19:04:20 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.56s =========================
+pytest-exit=0
+=================== RUN 8 started 2026-11-27 19:04:25 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.42s =========================
+pytest-exit=0
+=================== RUN 9 started 2026-11-27 19:04:29 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.45s =========================
+pytest-exit=0
+=================== RUN 10 started 2026-11-27 19:04:34 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.46s =========================
+pytest-exit=0
+=================== RUN 11 started 2026-11-27 19:04:38 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.43s =========================
+pytest-exit=0
+=================== RUN 12 started 2026-11-27 19:04:43 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.43s =========================
+pytest-exit=0
+=================== RUN 13 started 2026-11-27 19:04:47 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.39s =========================
+pytest-exit=0
+=================== RUN 14 started 2026-11-27 19:04:52 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.45s =========================
+pytest-exit=0
+=================== RUN 15 started 2026-11-27 19:04:56 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.39s =========================
+pytest-exit=0
+=================== RUN 16 started 2026-11-27 19:05:01 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.50s =========================
+pytest-exit=0
+=================== RUN 17 started 2026-11-27 19:05:05 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.41s =========================
+pytest-exit=0
+=================== RUN 18 started 2026-11-27 19:05:09 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.43s =========================
+pytest-exit=0
+=================== RUN 19 started 2026-11-27 19:05:14 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.43s =========================
+pytest-exit=0
+=================== RUN 20 started 2026-11-27 19:05:18 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.41s =========================
+pytest-exit=0
+=================== RUN 21 started 2026-11-27 19:05:23 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.41s =========================
+pytest-exit=0
+=================== RUN 22 started 2026-11-27 19:05:27 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.41s =========================
+pytest-exit=0
+=================== RUN 23 started 2026-11-27 19:05:32 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.43s =========================
+pytest-exit=0
+=================== RUN 24 started 2026-11-27 19:05:36 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.48s =========================
+pytest-exit=0
+=================== RUN 25 started 2026-11-27 19:05:41 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.39s =========================
+pytest-exit=0
+=================== RUN 26 started 2026-11-27 19:05:45 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.47s =========================
+pytest-exit=0
+=================== RUN 27 started 2026-11-27 19:05:50 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.57s =========================
+pytest-exit=0
+=================== RUN 28 started 2026-11-27 19:05:54 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.41s =========================
+pytest-exit=0
+=================== RUN 29 started 2026-11-27 19:05:59 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.40s =========================
+pytest-exit=0
+=================== RUN 30 started 2026-11-27 19:06:03 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 3 warnings in 3.47s =========================
+pytest-exit=0
+# finished 2026-11-27 19:06:08 +0530

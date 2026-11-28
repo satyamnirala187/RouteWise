@@ -1,0 +1,7 @@
+# 5A-1 affected backend tests, 28 Oct 2026 (isolated routewise_test database; the phone-database tests were not run)
+..........................................................               [100%]
+=============================== warnings summary ===============================
+
+
+
+58 passed, 3 warnings in 6.80s

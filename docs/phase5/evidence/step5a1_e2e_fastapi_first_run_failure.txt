@@ -1,0 +1,41 @@
+# 5A-1: the FIRST full run of the FastAPI-served config: 8 passed, 1 failed (kept as evidence, not hidden). Unexplained, never reproduced afterwards; see STEP-5A1-REPORT.md.
+
+Running 9 tests using 1 worker
+
+  ✓  1 [mobile] › e2e/fastapi-geolocation.spec.ts:12:1 › served by FastAPI, the page may use location and the rider's current-position reroute succeeds (mocked geolocation) (2.6s)
+  ✓  2 [mobile] › e2e/fastapi-offline-shell.spec.ts:62:1 › the worker installs on localhost under the current CSP, and its cache is exactly the build's public files (1.2s)
+  ✓  3 [mobile] › e2e/fastapi-offline-shell.spec.ts:105:1 › after installation, reloading and deep links with the server STOPPED show the app, not Chrome's offline page (1.3s)
+  ✓  4 [mobile] › e2e/fastapi-offline-shell.spec.ts:136:1 › first-ever offline access cannot work: nothing was installed yet (documented limit) (42ms)
+  ✓  5 [mobile] › e2e/fastapi-offline-shell.spec.ts:146:1 › an unreachable server at startup is not a sign-out; a real 401 is (2.3s)
+  ✓  6 [mobile] › e2e/fastapi-offline-shell.spec.ts:172:1 › the worker never intercepts or caches the API; with customer data on screen the cache holds public shell files only (1.4s)
+  ✓  7 [mobile] › e2e/fastapi-offline-shell.spec.ts:215:1 › a failed precache (a listed file the server does not have) installs nothing, caches nothing and leaves the app working (1.1s)
+  ✘  8 [mobile] › e2e/fastapi-offline-shell.spec.ts:258:1 › two builds: an older open tab keeps working while the update waits; obsolete shell caches go safely; nothing reloads by itself (9.1s)
+  ✓  9 [mobile] › e2e/fastapi-offline-shell.spec.ts:298:1 › two builds: with no tab left open, the waiting build takes over (next launch) (5.2s)
+
+
+  1) [mobile] › e2e/fastapi-offline-shell.spec.ts:258:1 › two builds: an older open tab keeps working while the update waits; obsolete shell caches go safely; nothing reloads by itself 
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected value: "/assets/index-Hd7JqDaN.js"
+    Received array: ["/assets/index-iKLXJwKj.js"]
+
+    Call Log:
+    - Timeout 5000ms exceeded while waiting on the predicate
+
+      274 |     // The rider updates in tab B: it reloads on build 2, and build 1's shell cache is removed. Unrelated caches are not touched.
+      275 |     await tabB.getByRole("button", { name: "Reload to update" }).click();
+    > 276 |     await expect.poll(() => loadedScripts(tabB)).toContain(`/assets/${js2}`);
+          |                                                  ^
+      277 |     expect(await loadedScripts(tabB)).not.toContain(`/assets/${js1}`);
+      278 |     await expect.poll(() => cacheKeys(tabB)).toEqual([`${SHELL_PREFIX}${id2}`, "someone-elses-cache"].sort());
+      279 |
+        at <repo>/apps/web/e2e/fastapi-offline-shell.spec.ts:276:50
+        at run (<repo>/apps/web/e2e/fastapi-offline-shell.spec.ts:59:9)
+        at <repo>/apps/web/e2e/fastapi-offline-shell.spec.ts:261:3
+
+    Error Context: test-results/fastapi-offline-shell-two--c61fb-y-nothing-reloads-by-itself-mobile/error-context.md
+
+  1 failed
+    [mobile] › e2e/fastapi-offline-shell.spec.ts:258:1 › two builds: an older open tab keeps working while the update waits; obsolete shell caches go safely; nothing reloads by itself 
+  8 passed (27.9s)

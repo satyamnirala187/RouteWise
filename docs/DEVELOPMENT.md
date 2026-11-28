@@ -62,6 +62,7 @@ A plan needs the local Valhalla tiles (step 2b above). Without them, Optimize re
 cd services/api && .venv/bin/python -m pytest -q             # API: real PostgreSQL (routewise_test), migrations, mocked network
 cd apps/web && npm run typecheck && npx vitest run            # frontend type checks + unit tests
 E2E_SHOTS_DIR=/tmp/rw-shots scripts/e2e.sh                     # Playwright, desktop + mobile, isolated routewise_e2e DB (Phase 1 + Phase 2 specs)
+scripts/e2e.sh -c playwright.fastapi.config.ts                 # the BUILT app served by FastAPI: geolocation regression + offline app shell (5A-1); builds to apps/web/.e2e-dist, never dist/
 ROUTEWISE_E2E_LIVE=1 E2E_SHOTS_DIR=/tmp/rw-shots scripts/e2e.sh e2e/phase2-live.spec.ts   # opt-in: browser planning on the real local tiles
 python3 scripts/web_defect_check.py /tmp/rw-webmut            # optional: targeted 2C/3A/3B defect checks on a scratch copy of apps/web
 cd spikes/routing && .venv/bin/python -m pytest -q            # Phase 0 routing regression
@@ -176,6 +177,18 @@ Same-building customers can share one navigation stop. **Chosen local implementa
 - **Planning and reroutes:** a group is one stop per applicable rider; capacity counts orders; a group larger than the rider it must fit, or with different owner locks, is split (no order is moved or dropped); first-priority customers lead their stop; a rider never gets two stops at one building. A reroute groups only the rider's own Pending orders.
 - **Rider API:** each stop in `GET /api/rider/rounds/{id}/deliveries` adds `customers`, `shared`, `location` and `location_issue`; customers keep their own order records and statuses. The shared-stop screens and one Navigate per stop arrived in 4D.
 - **Locking:** order rows (sorted by id, one statement) then the round row; versions reject stale views. Details: `routewise_api/stop_groups.py`, [the step 4C report](phase4/STEP-4C-REPORT.md).
+
+## Offline app shell (step 5A-1)
+
+A **production build** registers a service worker (`/sw.js`) that caches only the public app shell (`index.html`, the content-hashed JS/CSS, the manifest and the icons), so the app opens, and deep links and refreshes load, without a connection instead of showing Chrome's offline page. It never intercepts or caches `/api/` (sessions, customer data, mutations), and **deliveries are not available offline yet**: a start without a connection shows "Connect to load your deliveries". Saving the rider's own list is step 5A-2. Details: [the 5A-1 report](phase5/STEP-5A1-REPORT.md), [the Phase 5 plan](phase5/IMPLEMENTATION-PLAN.md).
+
+- **When it registers:** only for a built app (`npm run build`), in a secure context (HTTPS or `http://localhost`). The Vite dev server (`npx vite`) never registers it. The plain-HTTP Wi-Fi address of `scripts/phone-server.sh` is not a secure context, so the browser refuses a worker there; that is not a defect.
+- **How it is made:** `vite-plugin-shell.ts` writes `sw.js` after the build from the files the build actually wrote (`src/sw/worker.template.js` + `src/sw/generate.ts`); nothing is listed by hand.
+- **Phone check, offline:** load the app once online (over USB, `http://localhost:8020`), then stop the server or unplug USB, and reopen or refresh. **Airplane mode does not cut an `adb reverse` tunnel**, so it is not an offline test.
+- **`npm run build` replaces `apps/web/dist`**, which the phone server serves; the next phone load of a rebuilt app installs the worker. The browser tests build to `apps/web/.e2e-dist` instead and never touch `dist/`.
+- **A port that once served the built app keeps its worker.** If you later run something else on the same `localhost:<port>`, clear it (Chrome: site settings → clear data, or DevTools → Application → Service workers → Unregister).
+- **Server header changes and the cached shell:** the cached `index.html` keeps the headers it was installed with (CSP, Permissions-Policy). A header change that comes without a changed web build reaches installed phones only when the worker updates, and the worker updates only when a shell file's bytes change. Release such a change together with a rebuild that changes the shell, and check it on a phone that has the previous build installed. (The geolocation incident was this kind of header.)
+- **Updates:** a new build installs in the background and waits; it is used the next time the app is opened, or when the rider taps "Reload to update". Nothing reloads by itself. Older shell caches (`rw-shell-*` only) are removed when the new build takes over.
 
 ## Real-phone testing (Phase 3 Wi-Fi; localhost mode since 4D)
 

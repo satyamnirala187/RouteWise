@@ -1,0 +1,24 @@
+# 5A-1 frontend checks, 28 Oct 2026
+## npm run typecheck
+> routewise-web@0.1.0 typecheck
+> tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json
+
+## npx vitest run
+ Test Files  11 passed (11)
+      Tests  153 passed (153)
+## npx vite build (to a scratch directory, so apps/web/dist is not touched)
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 118 modules transformed.
+rendering chunks...
+computing gzip size...
+
+✓ built in 169ms
+shell worker 9baade9a04c9: 6 public files precached
+## precache list in the built sw.js
+const BUILD_ID = "9baade9a04c9";
+const PRECACHE = ["/assets/index-DPDK-elP.css","/assets/index-iKLXJwKj.js","/icons/icon-192.png","/icons/icon-512.png","/index.html","/manifest.webmanifest"];
+## npm audit --audit-level=high
+found 0 vulnerabilities
+## package files unchanged:
+(no output above = unchanged)
