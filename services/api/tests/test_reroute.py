@@ -543,17 +543,15 @@ def test_other_riders_progress_and_reroutes_never_make_this_reroute_stale(world,
     w = world
     planned(w)
     two_workers(app)
-    a_run = {}
-    pause = PauseRun(app.state.planning, match=lambda run_id: str(run_id) == a_run.get("id"))
+    pause = PauseRun(app.state.planning, match=lambda run_id: not pause.reached.is_set())  # first run at the hook = A's, whatever the order
     r = ask(w, "Rider A", gps())
-    a_run["id"] = r.json()["id"]
     pause.wait()
     b = codes_of(w, "Rider B")
     update(w, "Rider B", b[0], "Completed")         # another rider's progress (bumps input_version)
     update(w, "Rider B", b[1], "Postponed")
     reroute_now(w, "Rider C", gps())                 # another rider's own reroute commits meanwhile
     pause.go.set()
-    assert wait_reroute(w, "Rider A", a_run["id"])["state"] == "succeeded"
+    assert wait_reroute(w, "Rider A", r.json()["id"])["state"] == "succeeded"
     db.expire_all()
     current = {str(rv.rider_id) for rv in db.scalars(select(RouteRevision).where(RouteRevision.is_current.is_(True))).all()}
     assert current == {w.ids["Rider A"], w.ids["Rider C"]}
@@ -563,14 +561,12 @@ def test_admin_replanning_wins_over_a_reroute_in_flight(world, db, app):
     w = world
     planned(w)
     two_workers(app)
-    a_run = {}
-    pause = PauseRun(app.state.planning, match=lambda run_id: str(run_id) == a_run.get("id"))
+    pause = PauseRun(app.state.planning, match=lambda run_id: not pause.reached.is_set())  # first run at the hook = A's, whatever the order
     r = ask(w, "Rider A", gps())
-    a_run["id"] = r.json()["id"]
     pause.wait()
     v2 = plan_now(w)  # the admin's round plan commits while the reroute is held
     pause.go.set()
-    run = wait_reroute(w, "Rider A", a_run["id"])
+    run = wait_reroute(w, "Rider A", r.json()["id"])
     assert run["state"] == "stale" and run["error"]["code"] == "ROUND_REPLANNED"
     view = deliveries(w.browsers["Rider A"], w.rid).json()
     assert view["plan"]["version"] == v2["version"] == 2 and view["plan"]["rider_route"]["revision"] is None

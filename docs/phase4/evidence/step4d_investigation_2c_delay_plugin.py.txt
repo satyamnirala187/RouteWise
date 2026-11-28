@@ -1,0 +1,13 @@
+# Scratch pytest plugin (NOT repo code): after a POST to a reroute endpoint returns, hold the caller for DELAY seconds.
+# This forces the interleaving "worker reaches the hook before the test has stored the run id".
+import os, sys, time
+DELAY = float(os.environ.get("DELAY_AFTER_REROUTE_POST", "1.0"))
+def pytest_collection_modifyitems(config, items):
+    B = sys.modules["tests.conftest"].Browser
+    if getattr(B, "_patched", False): return
+    orig = B.send
+    def send(self, method, url, **kw):
+        r = orig(self, method, url, **kw)
+        if method == "POST" and url.endswith("/reroute"): time.sleep(DELAY)
+        return r
+    B.send, B._patched = send, True

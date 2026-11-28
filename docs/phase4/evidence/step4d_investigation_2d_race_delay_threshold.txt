@@ -1,0 +1,26 @@
+# 2d: how long must the test's main thread be held after the reroute POST returns before the race bites? (scratch plugin, one test per delay; repo code unchanged)
+=================== DELAY_AFTER_REROUTE_POST=0.02 started 19:18:47
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight FAILED [100%]
+E   AssertionError: worker never reached the hook
+/Users/satyamnirala/Projects/RouteWise/services/api/tests/test_reroute.py:124: AssertionError: worker never reached the hook
+FAILED tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+=================== 1 failed, 3 warnings in 61.49s (0:01:01) ===================
+=================== DELAY_AFTER_REROUTE_POST=0.05 started 19:19:50
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight FAILED [100%]
+E   AssertionError: worker never reached the hook
+/Users/satyamnirala/Projects/RouteWise/services/api/tests/test_reroute.py:124: AssertionError: worker never reached the hook
+FAILED tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+=================== 1 failed, 3 warnings in 61.47s (0:01:01) ===================
+=================== DELAY_AFTER_REROUTE_POST=0.1 started 19:20:53
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight FAILED [100%]
+E   AssertionError: worker never reached the hook
+/Users/satyamnirala/Projects/RouteWise/services/api/tests/test_reroute.py:124: AssertionError: worker never reached the hook
+FAILED tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+=================== 1 failed, 3 warnings in 61.44s (0:01:01) ===================
+=================== DELAY_AFTER_REROUTE_POST=0.2 started 19:21:55
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight FAILED [100%]
+E   AssertionError: worker never reached the hook
+/Users/satyamnirala/Projects/RouteWise/services/api/tests/test_reroute.py:124: AssertionError: worker never reached the hook
+FAILED tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+=================== 1 failed, 3 warnings in 61.60s (0:01:01) ===================
+# finished 19:22:58
