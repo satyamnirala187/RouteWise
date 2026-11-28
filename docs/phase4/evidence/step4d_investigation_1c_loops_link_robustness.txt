@@ -1,0 +1,786 @@
+# 1c: tests/test_link_robustness.py x10
+# started 2026-11-27 18:38:22 +0530
+# host: macOS 27.2.1, arm64, python Python 3.14.3
+# command: .venv/bin/python -m pytest tests/test_link_robustness.py -v -p no:cacheprovider -rfEs --tb=long --durations=20
+
+=================== LOOP 1 started 2026-11-27 18:38:22 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 35 items
+
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://[broken/maps] PASSED [  2%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[http://[::1/x] PASSED [  5%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [  8%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 11%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/%E0%A4] PASSED [ 14%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 17%]
+tests/test_link_robustness.py::test_unicode_place_names_in_full_links_still_resolve PASSED [ 20%]
+tests/test_link_robustness.py::test_unicode_short_link_is_utf8_percent_encoded_and_still_pinned_to_validated_ip PASSED [ 22%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://[broken/maps] PASSED [ 25%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl:99999/x] PASSED [ 28%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\tb] PASSED [ 31%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\x00b] PASSED [ 34%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.g\u043e\u043egle.com/x] PASSED [ 37%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] PASSED [ 40%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://[x/maps] PASSED [ 42%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://maps.app.goo.gl:abc/x] PASSED [ 45%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[http://[::1] PASSED [ 48%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 \xb2\xb2\xb2 Odd] PASSED [ 51%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 3O2 Found] PASSED [ 54%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/2 302] PASSED [ 57%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 30] PASSED [ 60%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import PASSED [ 62%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps] PASSED [ 65%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x] PASSED [ 68%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [ 71%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 74%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4] PASSED [ 77%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 80%]
+tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline PASSED [ 82%]
+tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline PASSED [ 85%]
+tests/test_link_robustness.py::test_expired_budget_fails_before_connecting PASSED [ 88%]
+tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline PASSED [ 91%]
+tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns PASSED [ 94%]
+tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import PASSED [ 97%]
+tests/test_link_robustness.py::test_concurrent_imports_are_bounded PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+5.06s call     tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+2.12s call     tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+1.03s call     tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.31s call     tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline
+0.31s call     tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline
+0.28s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import
+0.21s call     tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline
+0.13s setup    tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.12s setup    tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2]
+0.10s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.10s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.04s setup    tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+======================= 35 passed, 3 warnings in 10.47s ========================
+pytest-exit=0
+=================== LOOP 2 started 2026-11-27 18:38:34 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 35 items
+
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://[broken/maps] PASSED [  2%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[http://[::1/x] PASSED [  5%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [  8%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 11%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/%E0%A4] PASSED [ 14%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 17%]
+tests/test_link_robustness.py::test_unicode_place_names_in_full_links_still_resolve PASSED [ 20%]
+tests/test_link_robustness.py::test_unicode_short_link_is_utf8_percent_encoded_and_still_pinned_to_validated_ip PASSED [ 22%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://[broken/maps] PASSED [ 25%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl:99999/x] PASSED [ 28%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\tb] PASSED [ 31%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\x00b] PASSED [ 34%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.g\u043e\u043egle.com/x] PASSED [ 37%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] PASSED [ 40%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://[x/maps] PASSED [ 42%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://maps.app.goo.gl:abc/x] PASSED [ 45%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[http://[::1] PASSED [ 48%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 \xb2\xb2\xb2 Odd] PASSED [ 51%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 3O2 Found] PASSED [ 54%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/2 302] PASSED [ 57%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 30] PASSED [ 60%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import PASSED [ 62%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps] PASSED [ 65%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x] PASSED [ 68%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [ 71%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 74%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4] PASSED [ 77%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 80%]
+tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline PASSED [ 82%]
+tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline PASSED [ 85%]
+tests/test_link_robustness.py::test_expired_budget_fails_before_connecting PASSED [ 88%]
+tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline PASSED [ 91%]
+tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns PASSED [ 94%]
+tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import PASSED [ 97%]
+tests/test_link_robustness.py::test_concurrent_imports_are_bounded PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+5.07s call     tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+2.12s call     tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+1.03s call     tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.31s call     tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline
+0.31s call     tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline
+0.24s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import
+0.21s call     tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline
+0.12s setup    tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.12s setup    tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+0.04s setup    tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+======================= 35 passed, 3 warnings in 10.43s ========================
+pytest-exit=0
+=================== LOOP 3 started 2026-11-27 18:38:45 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 35 items
+
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://[broken/maps] PASSED [  2%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[http://[::1/x] PASSED [  5%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [  8%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 11%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/%E0%A4] PASSED [ 14%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 17%]
+tests/test_link_robustness.py::test_unicode_place_names_in_full_links_still_resolve PASSED [ 20%]
+tests/test_link_robustness.py::test_unicode_short_link_is_utf8_percent_encoded_and_still_pinned_to_validated_ip PASSED [ 22%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://[broken/maps] PASSED [ 25%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl:99999/x] PASSED [ 28%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\tb] PASSED [ 31%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\x00b] PASSED [ 34%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.g\u043e\u043egle.com/x] PASSED [ 37%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] PASSED [ 40%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://[x/maps] PASSED [ 42%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://maps.app.goo.gl:abc/x] PASSED [ 45%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[http://[::1] PASSED [ 48%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 \xb2\xb2\xb2 Odd] PASSED [ 51%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 3O2 Found] PASSED [ 54%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/2 302] PASSED [ 57%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 30] PASSED [ 60%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import PASSED [ 62%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps] PASSED [ 65%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x] PASSED [ 68%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [ 71%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 74%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4] PASSED [ 77%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 80%]
+tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline PASSED [ 82%]
+tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline PASSED [ 85%]
+tests/test_link_robustness.py::test_expired_budget_fails_before_connecting PASSED [ 88%]
+tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline PASSED [ 91%]
+tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns PASSED [ 94%]
+tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import PASSED [ 97%]
+tests/test_link_robustness.py::test_concurrent_imports_are_bounded PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+5.06s call     tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+2.12s call     tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+1.02s call     tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.31s call     tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline
+0.31s call     tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline
+0.25s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import
+0.21s call     tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline
+0.14s setup    tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.12s setup    tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2]
+0.10s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.10s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.10s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+0.10s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+0.04s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.04s setup    tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2]
+======================= 35 passed, 3 warnings in 10.44s ========================
+pytest-exit=0
+=================== LOOP 4 started 2026-11-27 18:38:57 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 35 items
+
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://[broken/maps] PASSED [  2%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[http://[::1/x] PASSED [  5%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [  8%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 11%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/%E0%A4] PASSED [ 14%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 17%]
+tests/test_link_robustness.py::test_unicode_place_names_in_full_links_still_resolve PASSED [ 20%]
+tests/test_link_robustness.py::test_unicode_short_link_is_utf8_percent_encoded_and_still_pinned_to_validated_ip PASSED [ 22%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://[broken/maps] PASSED [ 25%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl:99999/x] PASSED [ 28%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\tb] PASSED [ 31%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\x00b] PASSED [ 34%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.g\u043e\u043egle.com/x] PASSED [ 37%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] PASSED [ 40%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://[x/maps] PASSED [ 42%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://maps.app.goo.gl:abc/x] PASSED [ 45%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[http://[::1] PASSED [ 48%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 \xb2\xb2\xb2 Odd] PASSED [ 51%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 3O2 Found] PASSED [ 54%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/2 302] PASSED [ 57%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 30] PASSED [ 60%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import PASSED [ 62%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps] PASSED [ 65%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x] PASSED [ 68%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [ 71%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 74%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4] PASSED [ 77%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 80%]
+tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline PASSED [ 82%]
+tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline PASSED [ 85%]
+tests/test_link_robustness.py::test_expired_budget_fails_before_connecting PASSED [ 88%]
+tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline PASSED [ 91%]
+tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns PASSED [ 94%]
+tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import PASSED [ 97%]
+tests/test_link_robustness.py::test_concurrent_imports_are_bounded PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+5.05s call     tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+2.12s call     tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+1.02s call     tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.31s call     tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline
+0.31s call     tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline
+0.24s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import
+0.21s call     tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline
+0.15s setup    tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.14s setup    tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+0.13s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773]
+0.05s setup    tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+======================= 35 passed, 3 warnings in 10.52s ========================
+pytest-exit=0
+=================== LOOP 5 started 2026-11-27 18:39:09 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 35 items
+
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://[broken/maps] PASSED [  2%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[http://[::1/x] PASSED [  5%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [  8%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 11%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/%E0%A4] PASSED [ 14%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 17%]
+tests/test_link_robustness.py::test_unicode_place_names_in_full_links_still_resolve PASSED [ 20%]
+tests/test_link_robustness.py::test_unicode_short_link_is_utf8_percent_encoded_and_still_pinned_to_validated_ip PASSED [ 22%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://[broken/maps] PASSED [ 25%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl:99999/x] PASSED [ 28%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\tb] PASSED [ 31%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\x00b] PASSED [ 34%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.g\u043e\u043egle.com/x] PASSED [ 37%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] PASSED [ 40%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://[x/maps] PASSED [ 42%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://maps.app.goo.gl:abc/x] PASSED [ 45%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[http://[::1] PASSED [ 48%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 \xb2\xb2\xb2 Odd] PASSED [ 51%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 3O2 Found] PASSED [ 54%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/2 302] PASSED [ 57%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 30] PASSED [ 60%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import PASSED [ 62%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps] PASSED [ 65%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x] PASSED [ 68%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [ 71%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 74%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4] PASSED [ 77%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 80%]
+tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline PASSED [ 82%]
+tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline PASSED [ 85%]
+tests/test_link_robustness.py::test_expired_budget_fails_before_connecting PASSED [ 88%]
+tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline PASSED [ 91%]
+tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns PASSED [ 94%]
+tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import PASSED [ 97%]
+tests/test_link_robustness.py::test_concurrent_imports_are_bounded PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+5.06s call     tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+2.12s call     tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+1.03s call     tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.31s call     tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline
+0.31s call     tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline
+0.26s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import
+0.20s call     tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline
+0.15s setup    tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.15s setup    tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+0.13s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773]
+0.12s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.12s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+0.12s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2]
+0.04s setup    tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+0.04s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+======================= 35 passed, 3 warnings in 10.58s ========================
+pytest-exit=0
+=================== LOOP 6 started 2026-11-27 18:39:20 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 35 items
+
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://[broken/maps] PASSED [  2%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[http://[::1/x] PASSED [  5%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [  8%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 11%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/%E0%A4] PASSED [ 14%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 17%]
+tests/test_link_robustness.py::test_unicode_place_names_in_full_links_still_resolve PASSED [ 20%]
+tests/test_link_robustness.py::test_unicode_short_link_is_utf8_percent_encoded_and_still_pinned_to_validated_ip PASSED [ 22%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://[broken/maps] PASSED [ 25%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl:99999/x] PASSED [ 28%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\tb] PASSED [ 31%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\x00b] PASSED [ 34%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.g\u043e\u043egle.com/x] PASSED [ 37%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] PASSED [ 40%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://[x/maps] PASSED [ 42%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://maps.app.goo.gl:abc/x] PASSED [ 45%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[http://[::1] PASSED [ 48%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 \xb2\xb2\xb2 Odd] PASSED [ 51%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 3O2 Found] PASSED [ 54%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/2 302] PASSED [ 57%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 30] PASSED [ 60%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import PASSED [ 62%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps] PASSED [ 65%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x] PASSED [ 68%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [ 71%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 74%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4] PASSED [ 77%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 80%]
+tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline PASSED [ 82%]
+tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline PASSED [ 85%]
+tests/test_link_robustness.py::test_expired_budget_fails_before_connecting PASSED [ 88%]
+tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline PASSED [ 91%]
+tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns PASSED [ 94%]
+tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import PASSED [ 97%]
+tests/test_link_robustness.py::test_concurrent_imports_are_bounded PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+5.08s call     tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+2.13s call     tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+1.03s call     tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.31s call     tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline
+0.30s call     tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline
+0.25s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import
+0.21s call     tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline
+0.16s setup    tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.15s setup    tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+0.13s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+0.13s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.12s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2]
+0.12s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.05s setup    tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+======================= 35 passed, 3 warnings in 10.62s ========================
+pytest-exit=0
+=================== LOOP 7 started 2026-11-27 18:39:32 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 35 items
+
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://[broken/maps] PASSED [  2%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[http://[::1/x] PASSED [  5%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [  8%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 11%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/%E0%A4] PASSED [ 14%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 17%]
+tests/test_link_robustness.py::test_unicode_place_names_in_full_links_still_resolve PASSED [ 20%]
+tests/test_link_robustness.py::test_unicode_short_link_is_utf8_percent_encoded_and_still_pinned_to_validated_ip PASSED [ 22%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://[broken/maps] PASSED [ 25%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl:99999/x] PASSED [ 28%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\tb] PASSED [ 31%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\x00b] PASSED [ 34%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.g\u043e\u043egle.com/x] PASSED [ 37%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] PASSED [ 40%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://[x/maps] PASSED [ 42%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://maps.app.goo.gl:abc/x] PASSED [ 45%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[http://[::1] PASSED [ 48%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 \xb2\xb2\xb2 Odd] PASSED [ 51%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 3O2 Found] PASSED [ 54%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/2 302] PASSED [ 57%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 30] PASSED [ 60%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import PASSED [ 62%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps] PASSED [ 65%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x] PASSED [ 68%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [ 71%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 74%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4] PASSED [ 77%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 80%]
+tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline PASSED [ 82%]
+tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline PASSED [ 85%]
+tests/test_link_robustness.py::test_expired_budget_fails_before_connecting PASSED [ 88%]
+tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline PASSED [ 91%]
+tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns PASSED [ 94%]
+tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import PASSED [ 97%]
+tests/test_link_robustness.py::test_concurrent_imports_are_bounded PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+5.07s call     tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+2.12s call     tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+1.03s call     tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.31s call     tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline
+0.30s call     tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline
+0.27s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import
+0.21s call     tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline
+0.14s setup    tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.14s setup    tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773]
+0.10s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+0.04s setup    tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2]
+======================= 35 passed, 3 warnings in 10.50s ========================
+pytest-exit=0
+=================== LOOP 8 started 2026-11-27 18:39:44 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 35 items
+
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://[broken/maps] PASSED [  2%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[http://[::1/x] PASSED [  5%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [  8%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 11%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/%E0%A4] PASSED [ 14%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 17%]
+tests/test_link_robustness.py::test_unicode_place_names_in_full_links_still_resolve PASSED [ 20%]
+tests/test_link_robustness.py::test_unicode_short_link_is_utf8_percent_encoded_and_still_pinned_to_validated_ip PASSED [ 22%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://[broken/maps] PASSED [ 25%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl:99999/x] PASSED [ 28%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\tb] PASSED [ 31%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\x00b] PASSED [ 34%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.g\u043e\u043egle.com/x] PASSED [ 37%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] PASSED [ 40%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://[x/maps] PASSED [ 42%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://maps.app.goo.gl:abc/x] PASSED [ 45%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[http://[::1] PASSED [ 48%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 \xb2\xb2\xb2 Odd] PASSED [ 51%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 3O2 Found] PASSED [ 54%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/2 302] PASSED [ 57%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 30] PASSED [ 60%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import PASSED [ 62%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps] PASSED [ 65%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x] PASSED [ 68%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [ 71%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 74%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4] PASSED [ 77%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 80%]
+tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline PASSED [ 82%]
+tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline PASSED [ 85%]
+tests/test_link_robustness.py::test_expired_budget_fails_before_connecting PASSED [ 88%]
+tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline PASSED [ 91%]
+tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns PASSED [ 94%]
+tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import PASSED [ 97%]
+tests/test_link_robustness.py::test_concurrent_imports_are_bounded PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+5.07s call     tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+2.12s call     tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+1.03s call     tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.31s call     tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline
+0.31s call     tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline
+0.24s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import
+0.20s call     tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline
+0.16s setup    tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+0.14s setup    tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.12s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+0.10s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2]
+0.04s setup    tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+======================= 35 passed, 3 warnings in 10.50s ========================
+pytest-exit=0
+=================== LOOP 9 started 2026-11-27 18:39:55 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 35 items
+
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://[broken/maps] PASSED [  2%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[http://[::1/x] PASSED [  5%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [  8%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 11%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/%E0%A4] PASSED [ 14%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 17%]
+tests/test_link_robustness.py::test_unicode_place_names_in_full_links_still_resolve PASSED [ 20%]
+tests/test_link_robustness.py::test_unicode_short_link_is_utf8_percent_encoded_and_still_pinned_to_validated_ip PASSED [ 22%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://[broken/maps] PASSED [ 25%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl:99999/x] PASSED [ 28%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\tb] PASSED [ 31%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\x00b] PASSED [ 34%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.g\u043e\u043egle.com/x] PASSED [ 37%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] PASSED [ 40%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://[x/maps] PASSED [ 42%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://maps.app.goo.gl:abc/x] PASSED [ 45%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[http://[::1] PASSED [ 48%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 \xb2\xb2\xb2 Odd] PASSED [ 51%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 3O2 Found] PASSED [ 54%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/2 302] PASSED [ 57%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 30] PASSED [ 60%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import PASSED [ 62%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps] PASSED [ 65%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x] PASSED [ 68%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [ 71%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 74%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4] PASSED [ 77%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 80%]
+tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline PASSED [ 82%]
+tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline PASSED [ 85%]
+tests/test_link_robustness.py::test_expired_budget_fails_before_connecting PASSED [ 88%]
+tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline PASSED [ 91%]
+tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns PASSED [ 94%]
+tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import PASSED [ 97%]
+tests/test_link_robustness.py::test_concurrent_imports_are_bounded PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+5.06s call     tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+2.12s call     tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+1.03s call     tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.31s call     tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline
+0.30s call     tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline
+0.24s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import
+0.20s call     tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline
+0.14s setup    tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.13s setup    tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+0.10s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773]
+0.10s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+0.04s setup    tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+======================= 35 passed, 3 warnings in 10.42s ========================
+pytest-exit=0
+=================== LOOP 10 started 2026-11-27 18:40:07 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 35 items
+
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://[broken/maps] PASSED [  2%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[http://[::1/x] PASSED [  5%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [  8%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 11%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://maps.app.goo.gl/%E0%A4] PASSED [ 14%]
+tests/test_link_robustness.py::test_malformed_and_unicode_links_parse_without_raising[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 17%]
+tests/test_link_robustness.py::test_unicode_place_names_in_full_links_still_resolve PASSED [ 20%]
+tests/test_link_robustness.py::test_unicode_short_link_is_utf8_percent_encoded_and_still_pinned_to_validated_ip PASSED [ 22%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://[broken/maps] PASSED [ 25%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl:99999/x] PASSED [ 28%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\tb] PASSED [ 31%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/a\x00b] PASSED [ 34%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.g\u043e\u043egle.com/x] PASSED [ 37%]
+tests/test_link_robustness.py::test_malformed_targets_are_refused_before_any_network[https://maps.app.goo.gl/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] PASSED [ 40%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://[x/maps] PASSED [ 42%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[https://maps.app.goo.gl:abc/x] PASSED [ 45%]
+tests/test_link_robustness.py::test_malformed_redirect_locations_fall_back_to_manual_pin[http://[::1] PASSED [ 48%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 \xb2\xb2\xb2 Odd] PASSED [ 51%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 3O2 Found] PASSED [ 54%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/2 302] PASSED [ 57%]
+tests/test_link_robustness.py::test_non_ascii_or_malformed_status_lines_fail_safely[HTTP/1.1 30] PASSED [ 60%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import PASSED [ 62%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps] PASSED [ 65%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x] PASSED [ 68%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2] PASSED [ 71%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940] PASSED [ 74%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4] PASSED [ 77%]
+tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773] PASSED [ 80%]
+tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline PASSED [ 82%]
+tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline PASSED [ 85%]
+tests/test_link_robustness.py::test_expired_budget_fails_before_connecting PASSED [ 88%]
+tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline PASSED [ 91%]
+tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns PASSED [ 94%]
+tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import PASSED [ 97%]
+tests/test_link_robustness.py::test_concurrent_imports_are_bounded PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+5.06s call     tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+2.11s call     tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+1.03s call     tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.31s call     tests/test_link_robustness.py::test_redirect_chain_shares_one_deadline
+0.30s call     tests/test_link_robustness.py::test_slow_dns_is_cut_off_by_the_overall_deadline
+0.23s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_an_excel_import
+0.20s call     tests/test_link_robustness.py::test_dns_has_its_own_timeout_even_without_a_caller_deadline
+0.17s setup    tests/test_link_robustness.py::test_import_link_budget_is_total_and_includes_dns
+0.13s setup    tests/test_link_robustness.py::test_concurrent_imports_are_bounded
+0.12s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.11s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/%E0%A4]
+0.10s setup    tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com:99999/maps?q=28.6,77.2]
+0.04s setup    tests/test_link_robustness.py::test_event_loop_stays_responsive_during_a_slow_import
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://maps.app.goo.gl/\u0939\u093f\u0928\u094d\u0926\u0940]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://[broken/maps]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[http://[::1/x]
+0.03s call     tests/test_link_robustness.py::test_bad_links_cannot_crash_a_location_edit[https://www.google.com/maps/place/\u0939\u093f\u0928\u094d\u0926\u0940/@28.6,77.1,15z/data=!3d28.6862643!4d77.20773]
+======================= 35 passed, 3 warnings in 10.47s ========================
+pytest-exit=0
+# finished 2026-11-27 18:40:18 +0530

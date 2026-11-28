@@ -1,0 +1,60 @@
+# 2c: forced interleaving: scratch plugin (kept outside the repo) sleeps 1.0 s after the reroute POST returns; the two tests, one run, NO repo code changed
+# plugin source: see report; command: PYTHONPATH=<scratch> .venv/bin/python -m pytest -p delay_plugin tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale -v -p no:cacheprovider -rfEs --tb=short
+# started 2026-11-27 19:11:15 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight FAILED [ 50%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale FAILED [100%]
+
+=================================== FAILURES ===================================
+_____________ test_admin_replanning_wins_over_a_reroute_in_flight ______________
+tests/test_reroute.py:570: in test_admin_replanning_wins_over_a_reroute_in_flight
+    pause.wait()
+tests/test_reroute.py:124: in wait
+    assert self.reached.wait(60), "worker never reached the hook"
+E   AssertionError: worker never reached the hook
+E   assert False
+E    +  where False = wait(60)
+E    +    where wait = <threading.Event at 0x114307f50: unset>.wait
+E    +      where <threading.Event at 0x114307f50: unset> = <tests.test_reroute.PauseRun object at 0x1142f01a0>.reached
+---------------------------- Captured stderr setup -----------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, initial schema: users, riders, sessions, login throttling, imports, rounds, orders, assignments
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, phase 2A: depots, per-round rider configuration, rider destinations and confirmations
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, phase 2B: distribution mode, owner locks, priority, planning runs, versioned plans
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, phase 3B: route_version separates saved-route usability from planning-input revisions
+INFO  [alembic.runtime.migration] Running upgrade 0004 -> 0005, phase 4B: rider route revisions layered on immutable round plans
+INFO  [alembic.runtime.migration] Running upgrade 0005 -> 0006, phase 4C: same-building stop groups
+____ test_other_riders_progress_and_reroutes_never_make_this_reroute_stale _____
+tests/test_reroute.py:550: in test_other_riders_progress_and_reroutes_never_make_this_reroute_stale
+    pause.wait()
+tests/test_reroute.py:124: in wait
+    assert self.reached.wait(60), "worker never reached the hook"
+E   AssertionError: worker never reached the hook
+E   assert False
+E    +  where False = wait(60)
+E    +    where wait = <threading.Event at 0x1143fc410: unset>.wait
+E    +      where <threading.Event at 0x1143fc410: unset> = <tests.test_reroute.PauseRun object at 0x11474f750>.reached
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+FAILED tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale
+================== 2 failed, 3 warnings in 125.01s (0:02:05) ===================
+pytest-exit=1
+# finished 2026-11-27 19:13:22 +0530

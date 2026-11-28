@@ -1,0 +1,1546 @@
+# 1c: slice between test_planning_concurrency.py and test_round_setup.py x10
+# started 2026-11-27 18:40:18 +0530
+# host: macOS 27.2.1, arm64, python Python 3.14.3
+# command: .venv/bin/python -m pytest tests/test_planning_concurrency.py tests/test_planning_live.py tests/test_reroute.py tests/test_rider_deliveries.py tests/test_rider_status.py tests/test_round_concurrency.py -v -p no:cacheprovider -rfEs --tb=long --durations=20
+
+=================== LOOP 1 started 2026-11-27 18:40:18 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 107 items
+
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination] PASSED [  0%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[status] PASSED [  1%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[lock] PASSED [  2%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[priority] PASSED [  3%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[pin] PASSED [  4%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot] PASSED [  5%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[capacity] PASSED [  6%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[mode] PASSED [  7%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[deactivate] PASSED [  8%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[account_flag] PASSED [  9%]
+tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version PASSED [ 10%]
+tests/test_planning_concurrency.py::test_two_optimize_requests_for_one_round_start_one_run PASSED [ 11%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin] PASSED [ 12%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status] PASSED [ 13%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[destination] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[pin] PASSED [ 15%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[status] PASSED [ 16%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[lock] PASSED [ 17%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[priority] PASSED [ 18%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[destination] PASSED [ 19%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity] PASSED [ 20%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[mode] PASSED [ 21%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot] PASSED [ 22%]
+tests/test_planning_concurrency.py::test_a_round_the_deactivation_missed_still_cannot_get_a_valid_plan PASSED [ 23%]
+tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely PASSED [ 24%]
+tests/test_planning_concurrency.py::test_unfinished_runs_are_marked_interrupted_on_restart PASSED [ 25%]
+tests/test_planning_concurrency.py::test_overdue_runs_are_reported_interrupted_never_successful PASSED [ 26%]
+tests/test_planning_concurrency.py::test_the_work_queue_is_bounded PASSED [ 27%]
+tests/test_planning_concurrency.py::test_the_database_allows_one_active_run_per_round PASSED [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_plan SKIPPED (...) [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_rider_reroute SKIPPED [ 29%]
+tests/test_planning_live.py::test_live_local_valhalla_grouped_route SKIPPED [ 30%]
+tests/test_reroute.py::test_reroute_from_the_current_position_changes_only_the_riders_own_sequence PASSED [ 31%]
+tests/test_reroute.py::test_reroute_is_refused_up_front_with_coded_reasons_and_writes_nothing PASSED [ 32%]
+tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted PASSED [ 33%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[inaccurate] PASSED [ 34%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[old] PASSED [ 35%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[outside] PASSED [ 36%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[incomplete] PASSED [ 37%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[coords-on-start] PASSED [ 38%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[order-on-position] PASSED [ 39%]
+tests/test_reroute.py::test_a_non_finite_position_is_refused PASSED      [ 40%]
+tests/test_reroute.py::test_the_position_limits_are_configurable_local_defaults PASSED [ 41%]
+tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation PASSED [ 42%]
+tests/test_reroute.py::test_a_returned_postponed_order_is_reinserted_only_by_an_explicit_reroute PASSED [ 42%]
+tests/test_reroute.py::test_priority_stays_first_and_a_last_stop_route_stays_open PASSED [ 43%]
+tests/test_reroute.py::test_each_rider_is_rerouted_with_their_own_vehicle_profile PASSED [ 44%]
+tests/test_reroute.py::test_failures_keep_the_last_valid_route PASSED    [ 45%]
+tests/test_reroute.py::test_one_reroute_at_a_time_per_rider_and_runs_are_private PASSED [ 46%]
+tests/test_reroute.py::test_an_interrupted_rider_run_never_saves_a_revision PASSED [ 47%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_status] PASSED [ 48%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_postpone] PASSED [ 49%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_destination] PASSED [ 50%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_pin] PASSED [ 51%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_status] PASSED [ 52%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[capacity] PASSED [ 53%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[ownership] PASSED [ 54%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[deactivate] PASSED [ 55%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [ 56%]
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 57%]
+tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning PASSED [ 57%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[own-status] PASSED [ 58%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[other-status] PASSED [ 59%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[admin-pin] PASSED [ 60%]
+tests/test_rider_deliveries.py::test_each_rider_sees_their_current_plan_sequence_and_nothing_else PASSED [ 61%]
+tests/test_rider_deliveries.py::test_instructions_contact_and_product_are_shown_as_stored PASSED [ 62%]
+tests/test_rider_deliveries.py::test_postponed_and_completed_are_separate_and_mark_the_plan_out_of_date PASSED [ 63%]
+tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one PASSED [ 64%]
+tests/test_rider_deliveries.py::test_own_destination_change_after_planning_keeps_the_saved_order_awaiting_recalculation PASSED [ 65%]
+tests/test_rider_deliveries.py::test_no_plan_yet_and_assigned_orders_without_a_plan PASSED [ 66%]
+tests/test_rider_deliveries.py::test_unusable_locations_never_get_navigation_coordinates PASSED [ 67%]
+tests/test_rider_deliveries.py::test_rider_who_left_a_round_still_sees_their_held_orders PASSED [ 68%]
+tests/test_rider_deliveries.py::test_other_riders_rounds_and_ids_are_refused_like_missing_ones PASSED [ 69%]
+tests/test_rider_deliveries.py::test_a_rider_never_receives_another_riders_orders_even_if_the_plan_rows_disagree PASSED [ 70%]
+tests/test_rider_deliveries.py::test_delivery_view_logs_no_customer_fields PASSED [ 71%]
+tests/test_rider_status.py::test_permitted_transitions_move_the_order_and_completed_is_final PASSED [ 71%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[unknown] PASSED [ 72%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[lowercase] PASSED [ 73%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[no-version] PASSED [ 74%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[string-version] PASSED [ 75%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[null] PASSED [ 76%]
+tests/test_rider_status.py::test_only_the_owner_can_change_an_order_and_others_learn_nothing PASSED [ 77%]
+tests/test_rider_status.py::test_stale_versions_never_overwrite_newer_work_or_reopen_completed PASSED [ 78%]
+tests/test_rider_status.py::test_repeated_submissions_change_nothing_twice PASSED [ 79%]
+tests/test_rider_status.py::test_concurrent_updates_from_two_tabs_have_exactly_one_winner PASSED [ 80%]
+tests/test_rider_status.py::test_an_admin_edit_racing_a_rider_update_has_exactly_one_winner PASSED [ 81%]
+tests/test_rider_status.py::test_delivery_progress_keeps_every_saved_route_usable_and_totals_as_planned PASSED [ 82%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[pin] PASSED [ 83%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[admin_status] PASSED [ 84%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[capacity] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[depot] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[mode] PASSED [ 86%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[lock] PASSED [ 87%]
+tests/test_rider_status.py::test_a_riders_own_destination_change_after_progress_invalidates_only_their_route PASSED [ 88%]
+tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position PASSED [ 89%]
+tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale PASSED [ 90%]
+tests/test_rider_status.py::test_a_replan_moving_the_order_wins_over_the_former_owners_update PASSED [ 91%]
+tests/test_rider_status.py::test_status_updates_log_no_customer_fields PASSED [ 92%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change0] PASSED [ 93%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change1] PASSED [ 94%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change2] PASSED [ 95%]
+tests/test_round_concurrency.py::test_depot_move_racing_confirmation_never_leaves_a_stale_confirmation PASSED [ 96%]
+tests/test_round_concurrency.py::test_destination_change_racing_confirmation_from_another_device PASSED [ 97%]
+tests/test_round_concurrency.py::test_two_admins_editing_one_rider_setup_one_wins PASSED [ 98%]
+tests/test_round_concurrency.py::test_two_admins_adding_the_same_rider_one_wins PASSED [ 99%]
+tests/test_round_concurrency.py::test_mixed_concurrent_writes_follow_one_lock_order_without_deadlock PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+2.09s call     tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position
+1.37s call     tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation
+1.28s call     tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning
+1.25s call     tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+1.23s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[deactivate]
+1.16s call     tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely
+1.15s call     tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one
+1.13s call     tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale
+1.10s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[lock]
+1.10s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot]
+1.09s call     tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version
+1.09s call     tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted
+1.08s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot]
+1.08s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[mode]
+1.06s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity]
+1.06s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[destination]
+1.06s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[status]
+1.05s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status]
+1.05s call     tests/test_rider_status.py::test_a_replan_moving_the_order_wins_over_the_former_owners_update
+1.05s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[lock]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:80: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+============ 104 passed, 3 skipped, 3 warnings in 123.55s (0:02:03) ============
+pytest-exit=0
+=================== LOOP 2 started 2026-11-27 18:42:23 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 107 items
+
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination] PASSED [  0%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[status] PASSED [  1%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[lock] PASSED [  2%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[priority] PASSED [  3%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[pin] PASSED [  4%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot] PASSED [  5%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[capacity] PASSED [  6%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[mode] PASSED [  7%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[deactivate] PASSED [  8%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[account_flag] PASSED [  9%]
+tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version PASSED [ 10%]
+tests/test_planning_concurrency.py::test_two_optimize_requests_for_one_round_start_one_run PASSED [ 11%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin] PASSED [ 12%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status] PASSED [ 13%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[destination] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[pin] PASSED [ 15%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[status] PASSED [ 16%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[lock] PASSED [ 17%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[priority] PASSED [ 18%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[destination] PASSED [ 19%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity] PASSED [ 20%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[mode] PASSED [ 21%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot] PASSED [ 22%]
+tests/test_planning_concurrency.py::test_a_round_the_deactivation_missed_still_cannot_get_a_valid_plan PASSED [ 23%]
+tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely PASSED [ 24%]
+tests/test_planning_concurrency.py::test_unfinished_runs_are_marked_interrupted_on_restart PASSED [ 25%]
+tests/test_planning_concurrency.py::test_overdue_runs_are_reported_interrupted_never_successful PASSED [ 26%]
+tests/test_planning_concurrency.py::test_the_work_queue_is_bounded PASSED [ 27%]
+tests/test_planning_concurrency.py::test_the_database_allows_one_active_run_per_round PASSED [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_plan SKIPPED (...) [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_rider_reroute SKIPPED [ 29%]
+tests/test_planning_live.py::test_live_local_valhalla_grouped_route SKIPPED [ 30%]
+tests/test_reroute.py::test_reroute_from_the_current_position_changes_only_the_riders_own_sequence PASSED [ 31%]
+tests/test_reroute.py::test_reroute_is_refused_up_front_with_coded_reasons_and_writes_nothing PASSED [ 32%]
+tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted PASSED [ 33%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[inaccurate] PASSED [ 34%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[old] PASSED [ 35%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[outside] PASSED [ 36%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[incomplete] PASSED [ 37%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[coords-on-start] PASSED [ 38%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[order-on-position] PASSED [ 39%]
+tests/test_reroute.py::test_a_non_finite_position_is_refused PASSED      [ 40%]
+tests/test_reroute.py::test_the_position_limits_are_configurable_local_defaults PASSED [ 41%]
+tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation PASSED [ 42%]
+tests/test_reroute.py::test_a_returned_postponed_order_is_reinserted_only_by_an_explicit_reroute PASSED [ 42%]
+tests/test_reroute.py::test_priority_stays_first_and_a_last_stop_route_stays_open PASSED [ 43%]
+tests/test_reroute.py::test_each_rider_is_rerouted_with_their_own_vehicle_profile PASSED [ 44%]
+tests/test_reroute.py::test_failures_keep_the_last_valid_route PASSED    [ 45%]
+tests/test_reroute.py::test_one_reroute_at_a_time_per_rider_and_runs_are_private PASSED [ 46%]
+tests/test_reroute.py::test_an_interrupted_rider_run_never_saves_a_revision PASSED [ 47%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_status] PASSED [ 48%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_postpone] PASSED [ 49%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_destination] PASSED [ 50%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_pin] PASSED [ 51%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_status] PASSED [ 52%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[capacity] PASSED [ 53%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[ownership] PASSED [ 54%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[deactivate] PASSED [ 55%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [ 56%]
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 57%]
+tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning PASSED [ 57%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[own-status] PASSED [ 58%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[other-status] PASSED [ 59%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[admin-pin] PASSED [ 60%]
+tests/test_rider_deliveries.py::test_each_rider_sees_their_current_plan_sequence_and_nothing_else PASSED [ 61%]
+tests/test_rider_deliveries.py::test_instructions_contact_and_product_are_shown_as_stored PASSED [ 62%]
+tests/test_rider_deliveries.py::test_postponed_and_completed_are_separate_and_mark_the_plan_out_of_date PASSED [ 63%]
+tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one PASSED [ 64%]
+tests/test_rider_deliveries.py::test_own_destination_change_after_planning_keeps_the_saved_order_awaiting_recalculation PASSED [ 65%]
+tests/test_rider_deliveries.py::test_no_plan_yet_and_assigned_orders_without_a_plan PASSED [ 66%]
+tests/test_rider_deliveries.py::test_unusable_locations_never_get_navigation_coordinates PASSED [ 67%]
+tests/test_rider_deliveries.py::test_rider_who_left_a_round_still_sees_their_held_orders PASSED [ 68%]
+tests/test_rider_deliveries.py::test_other_riders_rounds_and_ids_are_refused_like_missing_ones PASSED [ 69%]
+tests/test_rider_deliveries.py::test_a_rider_never_receives_another_riders_orders_even_if_the_plan_rows_disagree PASSED [ 70%]
+tests/test_rider_deliveries.py::test_delivery_view_logs_no_customer_fields PASSED [ 71%]
+tests/test_rider_status.py::test_permitted_transitions_move_the_order_and_completed_is_final PASSED [ 71%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[unknown] PASSED [ 72%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[lowercase] PASSED [ 73%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[no-version] PASSED [ 74%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[string-version] PASSED [ 75%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[null] PASSED [ 76%]
+tests/test_rider_status.py::test_only_the_owner_can_change_an_order_and_others_learn_nothing PASSED [ 77%]
+tests/test_rider_status.py::test_stale_versions_never_overwrite_newer_work_or_reopen_completed PASSED [ 78%]
+tests/test_rider_status.py::test_repeated_submissions_change_nothing_twice PASSED [ 79%]
+tests/test_rider_status.py::test_concurrent_updates_from_two_tabs_have_exactly_one_winner PASSED [ 80%]
+tests/test_rider_status.py::test_an_admin_edit_racing_a_rider_update_has_exactly_one_winner PASSED [ 81%]
+tests/test_rider_status.py::test_delivery_progress_keeps_every_saved_route_usable_and_totals_as_planned PASSED [ 82%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[pin] PASSED [ 83%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[admin_status] PASSED [ 84%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[capacity] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[depot] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[mode] PASSED [ 86%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[lock] PASSED [ 87%]
+tests/test_rider_status.py::test_a_riders_own_destination_change_after_progress_invalidates_only_their_route PASSED [ 88%]
+tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position PASSED [ 89%]
+tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale PASSED [ 90%]
+tests/test_rider_status.py::test_a_replan_moving_the_order_wins_over_the_former_owners_update PASSED [ 91%]
+tests/test_rider_status.py::test_status_updates_log_no_customer_fields PASSED [ 92%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change0] PASSED [ 93%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change1] PASSED [ 94%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change2] PASSED [ 95%]
+tests/test_round_concurrency.py::test_depot_move_racing_confirmation_never_leaves_a_stale_confirmation PASSED [ 96%]
+tests/test_round_concurrency.py::test_destination_change_racing_confirmation_from_another_device PASSED [ 97%]
+tests/test_round_concurrency.py::test_two_admins_editing_one_rider_setup_one_wins PASSED [ 98%]
+tests/test_round_concurrency.py::test_two_admins_adding_the_same_rider_one_wins PASSED [ 99%]
+tests/test_round_concurrency.py::test_mixed_concurrent_writes_follow_one_lock_order_without_deadlock PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+6.26s call     tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position
+3.15s setup    tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position
+2.02s call     tests/test_rider_status.py::test_a_riders_own_destination_change_after_progress_invalidates_only_their_route
+1.70s call     tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation
+1.38s call     tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning
+1.38s call     tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+1.35s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status]
+1.33s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[mode]
+1.30s call     tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale
+1.28s call     tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely
+1.27s call     tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one
+1.26s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin]
+1.19s call     tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version
+1.18s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot]
+1.18s call     tests/test_rider_status.py::test_a_replan_moving_the_order_wins_over_the_former_owners_update
+1.18s call     tests/test_reroute.py::test_each_rider_is_rerouted_with_their_own_vehicle_profile
+1.17s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity]
+1.15s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[priority]
+1.15s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[destination]
+1.14s call     tests/test_reroute.py::test_a_returned_postponed_order_is_reinserted_only_by_an_explicit_reroute
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:80: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+============ 104 passed, 3 skipped, 3 warnings in 147.17s (0:02:27) ============
+pytest-exit=0
+=================== LOOP 3 started 2026-11-27 18:44:53 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 107 items
+
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination] PASSED [  0%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[status] PASSED [  1%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[lock] PASSED [  2%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[priority] PASSED [  3%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[pin] PASSED [  4%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot] PASSED [  5%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[capacity] PASSED [  6%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[mode] PASSED [  7%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[deactivate] PASSED [  8%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[account_flag] PASSED [  9%]
+tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version PASSED [ 10%]
+tests/test_planning_concurrency.py::test_two_optimize_requests_for_one_round_start_one_run PASSED [ 11%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin] PASSED [ 12%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status] PASSED [ 13%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[destination] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[pin] PASSED [ 15%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[status] PASSED [ 16%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[lock] PASSED [ 17%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[priority] PASSED [ 18%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[destination] PASSED [ 19%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity] PASSED [ 20%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[mode] PASSED [ 21%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot] PASSED [ 22%]
+tests/test_planning_concurrency.py::test_a_round_the_deactivation_missed_still_cannot_get_a_valid_plan PASSED [ 23%]
+tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely PASSED [ 24%]
+tests/test_planning_concurrency.py::test_unfinished_runs_are_marked_interrupted_on_restart PASSED [ 25%]
+tests/test_planning_concurrency.py::test_overdue_runs_are_reported_interrupted_never_successful PASSED [ 26%]
+tests/test_planning_concurrency.py::test_the_work_queue_is_bounded PASSED [ 27%]
+tests/test_planning_concurrency.py::test_the_database_allows_one_active_run_per_round PASSED [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_plan SKIPPED (...) [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_rider_reroute SKIPPED [ 29%]
+tests/test_planning_live.py::test_live_local_valhalla_grouped_route SKIPPED [ 30%]
+tests/test_reroute.py::test_reroute_from_the_current_position_changes_only_the_riders_own_sequence PASSED [ 31%]
+tests/test_reroute.py::test_reroute_is_refused_up_front_with_coded_reasons_and_writes_nothing PASSED [ 32%]
+tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted PASSED [ 33%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[inaccurate] PASSED [ 34%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[old] PASSED [ 35%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[outside] PASSED [ 36%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[incomplete] PASSED [ 37%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[coords-on-start] PASSED [ 38%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[order-on-position] PASSED [ 39%]
+tests/test_reroute.py::test_a_non_finite_position_is_refused PASSED      [ 40%]
+tests/test_reroute.py::test_the_position_limits_are_configurable_local_defaults PASSED [ 41%]
+tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation PASSED [ 42%]
+tests/test_reroute.py::test_a_returned_postponed_order_is_reinserted_only_by_an_explicit_reroute PASSED [ 42%]
+tests/test_reroute.py::test_priority_stays_first_and_a_last_stop_route_stays_open PASSED [ 43%]
+tests/test_reroute.py::test_each_rider_is_rerouted_with_their_own_vehicle_profile PASSED [ 44%]
+tests/test_reroute.py::test_failures_keep_the_last_valid_route PASSED    [ 45%]
+tests/test_reroute.py::test_one_reroute_at_a_time_per_rider_and_runs_are_private PASSED [ 46%]
+tests/test_reroute.py::test_an_interrupted_rider_run_never_saves_a_revision PASSED [ 47%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_status] PASSED [ 48%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_postpone] PASSED [ 49%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_destination] PASSED [ 50%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_pin] PASSED [ 51%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_status] PASSED [ 52%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[capacity] PASSED [ 53%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[ownership] PASSED [ 54%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[deactivate] PASSED [ 55%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [ 56%]
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 57%]
+tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning PASSED [ 57%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[own-status] PASSED [ 58%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[other-status] PASSED [ 59%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[admin-pin] PASSED [ 60%]
+tests/test_rider_deliveries.py::test_each_rider_sees_their_current_plan_sequence_and_nothing_else PASSED [ 61%]
+tests/test_rider_deliveries.py::test_instructions_contact_and_product_are_shown_as_stored PASSED [ 62%]
+tests/test_rider_deliveries.py::test_postponed_and_completed_are_separate_and_mark_the_plan_out_of_date PASSED [ 63%]
+tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one PASSED [ 64%]
+tests/test_rider_deliveries.py::test_own_destination_change_after_planning_keeps_the_saved_order_awaiting_recalculation PASSED [ 65%]
+tests/test_rider_deliveries.py::test_no_plan_yet_and_assigned_orders_without_a_plan PASSED [ 66%]
+tests/test_rider_deliveries.py::test_unusable_locations_never_get_navigation_coordinates PASSED [ 67%]
+tests/test_rider_deliveries.py::test_rider_who_left_a_round_still_sees_their_held_orders PASSED [ 68%]
+tests/test_rider_deliveries.py::test_other_riders_rounds_and_ids_are_refused_like_missing_ones PASSED [ 69%]
+tests/test_rider_deliveries.py::test_a_rider_never_receives_another_riders_orders_even_if_the_plan_rows_disagree PASSED [ 70%]
+tests/test_rider_deliveries.py::test_delivery_view_logs_no_customer_fields PASSED [ 71%]
+tests/test_rider_status.py::test_permitted_transitions_move_the_order_and_completed_is_final PASSED [ 71%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[unknown] PASSED [ 72%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[lowercase] PASSED [ 73%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[no-version] PASSED [ 74%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[string-version] PASSED [ 75%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[null] PASSED [ 76%]
+tests/test_rider_status.py::test_only_the_owner_can_change_an_order_and_others_learn_nothing PASSED [ 77%]
+tests/test_rider_status.py::test_stale_versions_never_overwrite_newer_work_or_reopen_completed PASSED [ 78%]
+tests/test_rider_status.py::test_repeated_submissions_change_nothing_twice PASSED [ 79%]
+tests/test_rider_status.py::test_concurrent_updates_from_two_tabs_have_exactly_one_winner PASSED [ 80%]
+tests/test_rider_status.py::test_an_admin_edit_racing_a_rider_update_has_exactly_one_winner PASSED [ 81%]
+tests/test_rider_status.py::test_delivery_progress_keeps_every_saved_route_usable_and_totals_as_planned PASSED [ 82%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[pin] PASSED [ 83%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[admin_status] PASSED [ 84%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[capacity] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[depot] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[mode] PASSED [ 86%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[lock] PASSED [ 87%]
+tests/test_rider_status.py::test_a_riders_own_destination_change_after_progress_invalidates_only_their_route PASSED [ 88%]
+tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position PASSED [ 89%]
+tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale PASSED [ 90%]
+tests/test_rider_status.py::test_a_replan_moving_the_order_wins_over_the_former_owners_update PASSED [ 91%]
+tests/test_rider_status.py::test_status_updates_log_no_customer_fields PASSED [ 92%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change0] PASSED [ 93%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change1] PASSED [ 94%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change2] PASSED [ 95%]
+tests/test_round_concurrency.py::test_depot_move_racing_confirmation_never_leaves_a_stale_confirmation PASSED [ 96%]
+tests/test_round_concurrency.py::test_destination_change_racing_confirmation_from_another_device PASSED [ 97%]
+tests/test_round_concurrency.py::test_two_admins_editing_one_rider_setup_one_wins PASSED [ 98%]
+tests/test_round_concurrency.py::test_two_admins_adding_the_same_rider_one_wins PASSED [ 99%]
+tests/test_round_concurrency.py::test_mixed_concurrent_writes_follow_one_lock_order_without_deadlock PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+2.06s call     tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position
+1.68s call     tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation
+1.44s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[destination]
+1.35s call     tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely
+1.34s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[account_flag]
+1.32s call     tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+1.29s call     tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning
+1.27s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[destination]
+1.23s call     tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted
+1.23s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot]
+1.22s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[status]
+1.19s call     tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one
+1.19s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity]
+1.18s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination]
+1.17s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status]
+1.17s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[deactivate]
+1.17s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[mode]
+1.16s call     tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale
+1.13s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot]
+1.11s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[priority]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:80: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+============ 104 passed, 3 skipped, 3 warnings in 136.82s (0:02:16) ============
+pytest-exit=0
+=================== LOOP 4 started 2026-11-27 18:47:12 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 107 items
+
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination] PASSED [  0%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[status] PASSED [  1%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[lock] PASSED [  2%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[priority] PASSED [  3%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[pin] PASSED [  4%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot] PASSED [  5%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[capacity] PASSED [  6%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[mode] PASSED [  7%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[deactivate] PASSED [  8%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[account_flag] PASSED [  9%]
+tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version PASSED [ 10%]
+tests/test_planning_concurrency.py::test_two_optimize_requests_for_one_round_start_one_run PASSED [ 11%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin] PASSED [ 12%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status] PASSED [ 13%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[destination] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[pin] PASSED [ 15%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[status] PASSED [ 16%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[lock] PASSED [ 17%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[priority] PASSED [ 18%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[destination] PASSED [ 19%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity] PASSED [ 20%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[mode] PASSED [ 21%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot] PASSED [ 22%]
+tests/test_planning_concurrency.py::test_a_round_the_deactivation_missed_still_cannot_get_a_valid_plan PASSED [ 23%]
+tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely PASSED [ 24%]
+tests/test_planning_concurrency.py::test_unfinished_runs_are_marked_interrupted_on_restart PASSED [ 25%]
+tests/test_planning_concurrency.py::test_overdue_runs_are_reported_interrupted_never_successful PASSED [ 26%]
+tests/test_planning_concurrency.py::test_the_work_queue_is_bounded PASSED [ 27%]
+tests/test_planning_concurrency.py::test_the_database_allows_one_active_run_per_round PASSED [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_plan SKIPPED (...) [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_rider_reroute SKIPPED [ 29%]
+tests/test_planning_live.py::test_live_local_valhalla_grouped_route SKIPPED [ 30%]
+tests/test_reroute.py::test_reroute_from_the_current_position_changes_only_the_riders_own_sequence PASSED [ 31%]
+tests/test_reroute.py::test_reroute_is_refused_up_front_with_coded_reasons_and_writes_nothing PASSED [ 32%]
+tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted PASSED [ 33%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[inaccurate] PASSED [ 34%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[old] PASSED [ 35%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[outside] PASSED [ 36%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[incomplete] PASSED [ 37%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[coords-on-start] PASSED [ 38%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[order-on-position] PASSED [ 39%]
+tests/test_reroute.py::test_a_non_finite_position_is_refused PASSED      [ 40%]
+tests/test_reroute.py::test_the_position_limits_are_configurable_local_defaults PASSED [ 41%]
+tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation PASSED [ 42%]
+tests/test_reroute.py::test_a_returned_postponed_order_is_reinserted_only_by_an_explicit_reroute PASSED [ 42%]
+tests/test_reroute.py::test_priority_stays_first_and_a_last_stop_route_stays_open PASSED [ 43%]
+tests/test_reroute.py::test_each_rider_is_rerouted_with_their_own_vehicle_profile PASSED [ 44%]
+tests/test_reroute.py::test_failures_keep_the_last_valid_route PASSED    [ 45%]
+tests/test_reroute.py::test_one_reroute_at_a_time_per_rider_and_runs_are_private PASSED [ 46%]
+tests/test_reroute.py::test_an_interrupted_rider_run_never_saves_a_revision PASSED [ 47%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_status] PASSED [ 48%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_postpone] PASSED [ 49%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_destination] PASSED [ 50%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_pin] PASSED [ 51%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_status] PASSED [ 52%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[capacity] PASSED [ 53%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[ownership] PASSED [ 54%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[deactivate] PASSED [ 55%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [ 56%]
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 57%]
+tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning PASSED [ 57%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[own-status] PASSED [ 58%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[other-status] PASSED [ 59%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[admin-pin] PASSED [ 60%]
+tests/test_rider_deliveries.py::test_each_rider_sees_their_current_plan_sequence_and_nothing_else PASSED [ 61%]
+tests/test_rider_deliveries.py::test_instructions_contact_and_product_are_shown_as_stored PASSED [ 62%]
+tests/test_rider_deliveries.py::test_postponed_and_completed_are_separate_and_mark_the_plan_out_of_date PASSED [ 63%]
+tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one PASSED [ 64%]
+tests/test_rider_deliveries.py::test_own_destination_change_after_planning_keeps_the_saved_order_awaiting_recalculation PASSED [ 65%]
+tests/test_rider_deliveries.py::test_no_plan_yet_and_assigned_orders_without_a_plan PASSED [ 66%]
+tests/test_rider_deliveries.py::test_unusable_locations_never_get_navigation_coordinates PASSED [ 67%]
+tests/test_rider_deliveries.py::test_rider_who_left_a_round_still_sees_their_held_orders PASSED [ 68%]
+tests/test_rider_deliveries.py::test_other_riders_rounds_and_ids_are_refused_like_missing_ones PASSED [ 69%]
+tests/test_rider_deliveries.py::test_a_rider_never_receives_another_riders_orders_even_if_the_plan_rows_disagree PASSED [ 70%]
+tests/test_rider_deliveries.py::test_delivery_view_logs_no_customer_fields PASSED [ 71%]
+tests/test_rider_status.py::test_permitted_transitions_move_the_order_and_completed_is_final PASSED [ 71%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[unknown] PASSED [ 72%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[lowercase] PASSED [ 73%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[no-version] PASSED [ 74%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[string-version] PASSED [ 75%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[null] PASSED [ 76%]
+tests/test_rider_status.py::test_only_the_owner_can_change_an_order_and_others_learn_nothing PASSED [ 77%]
+tests/test_rider_status.py::test_stale_versions_never_overwrite_newer_work_or_reopen_completed PASSED [ 78%]
+tests/test_rider_status.py::test_repeated_submissions_change_nothing_twice PASSED [ 79%]
+tests/test_rider_status.py::test_concurrent_updates_from_two_tabs_have_exactly_one_winner PASSED [ 80%]
+tests/test_rider_status.py::test_an_admin_edit_racing_a_rider_update_has_exactly_one_winner PASSED [ 81%]
+tests/test_rider_status.py::test_delivery_progress_keeps_every_saved_route_usable_and_totals_as_planned PASSED [ 82%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[pin] PASSED [ 83%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[admin_status] PASSED [ 84%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[capacity] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[depot] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[mode] PASSED [ 86%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[lock] PASSED [ 87%]
+tests/test_rider_status.py::test_a_riders_own_destination_change_after_progress_invalidates_only_their_route PASSED [ 88%]
+tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position PASSED [ 89%]
+tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale PASSED [ 90%]
+tests/test_rider_status.py::test_a_replan_moving_the_order_wins_over_the_former_owners_update PASSED [ 91%]
+tests/test_rider_status.py::test_status_updates_log_no_customer_fields PASSED [ 92%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change0] PASSED [ 93%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change1] PASSED [ 94%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change2] PASSED [ 95%]
+tests/test_round_concurrency.py::test_depot_move_racing_confirmation_never_leaves_a_stale_confirmation PASSED [ 96%]
+tests/test_round_concurrency.py::test_destination_change_racing_confirmation_from_another_device PASSED [ 97%]
+tests/test_round_concurrency.py::test_two_admins_editing_one_rider_setup_one_wins PASSED [ 98%]
+tests/test_round_concurrency.py::test_two_admins_adding_the_same_rider_one_wins PASSED [ 99%]
+tests/test_round_concurrency.py::test_mixed_concurrent_writes_follow_one_lock_order_without_deadlock PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+2.35s call     tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position
+1.39s call     tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale
+1.33s call     tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation
+1.27s call     tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+1.27s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot]
+1.23s call     tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely
+1.22s call     tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one
+1.21s call     tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted
+1.20s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[pin]
+1.20s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin]
+1.20s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot]
+1.19s call     tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning
+1.17s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[lock]
+1.14s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination]
+1.14s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[status]
+1.12s call     tests/test_rider_status.py::test_a_replan_moving_the_order_wins_over_the_former_owners_update
+1.12s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status]
+1.11s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[destination]
+1.11s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[destination]
+1.09s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[capacity]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:80: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+============ 104 passed, 3 skipped, 3 warnings in 131.32s (0:02:11) ============
+pytest-exit=0
+=================== LOOP 5 started 2026-11-27 18:49:26 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 107 items
+
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination] PASSED [  0%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[status] PASSED [  1%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[lock] PASSED [  2%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[priority] PASSED [  3%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[pin] PASSED [  4%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot] PASSED [  5%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[capacity] PASSED [  6%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[mode] PASSED [  7%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[deactivate] PASSED [  8%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[account_flag] PASSED [  9%]
+tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version PASSED [ 10%]
+tests/test_planning_concurrency.py::test_two_optimize_requests_for_one_round_start_one_run PASSED [ 11%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin] PASSED [ 12%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status] PASSED [ 13%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[destination] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[pin] PASSED [ 15%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[status] PASSED [ 16%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[lock] PASSED [ 17%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[priority] PASSED [ 18%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[destination] PASSED [ 19%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity] PASSED [ 20%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[mode] PASSED [ 21%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot] PASSED [ 22%]
+tests/test_planning_concurrency.py::test_a_round_the_deactivation_missed_still_cannot_get_a_valid_plan PASSED [ 23%]
+tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely PASSED [ 24%]
+tests/test_planning_concurrency.py::test_unfinished_runs_are_marked_interrupted_on_restart PASSED [ 25%]
+tests/test_planning_concurrency.py::test_overdue_runs_are_reported_interrupted_never_successful PASSED [ 26%]
+tests/test_planning_concurrency.py::test_the_work_queue_is_bounded PASSED [ 27%]
+tests/test_planning_concurrency.py::test_the_database_allows_one_active_run_per_round PASSED [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_plan SKIPPED (...) [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_rider_reroute SKIPPED [ 29%]
+tests/test_planning_live.py::test_live_local_valhalla_grouped_route SKIPPED [ 30%]
+tests/test_reroute.py::test_reroute_from_the_current_position_changes_only_the_riders_own_sequence PASSED [ 31%]
+tests/test_reroute.py::test_reroute_is_refused_up_front_with_coded_reasons_and_writes_nothing PASSED [ 32%]
+tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted PASSED [ 33%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[inaccurate] PASSED [ 34%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[old] PASSED [ 35%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[outside] PASSED [ 36%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[incomplete] PASSED [ 37%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[coords-on-start] PASSED [ 38%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[order-on-position] PASSED [ 39%]
+tests/test_reroute.py::test_a_non_finite_position_is_refused PASSED      [ 40%]
+tests/test_reroute.py::test_the_position_limits_are_configurable_local_defaults PASSED [ 41%]
+tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation PASSED [ 42%]
+tests/test_reroute.py::test_a_returned_postponed_order_is_reinserted_only_by_an_explicit_reroute PASSED [ 42%]
+tests/test_reroute.py::test_priority_stays_first_and_a_last_stop_route_stays_open PASSED [ 43%]
+tests/test_reroute.py::test_each_rider_is_rerouted_with_their_own_vehicle_profile PASSED [ 44%]
+tests/test_reroute.py::test_failures_keep_the_last_valid_route PASSED    [ 45%]
+tests/test_reroute.py::test_one_reroute_at_a_time_per_rider_and_runs_are_private PASSED [ 46%]
+tests/test_reroute.py::test_an_interrupted_rider_run_never_saves_a_revision PASSED [ 47%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_status] PASSED [ 48%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_postpone] PASSED [ 49%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_destination] PASSED [ 50%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_pin] PASSED [ 51%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_status] PASSED [ 52%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[capacity] PASSED [ 53%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[ownership] PASSED [ 54%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[deactivate] PASSED [ 55%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [ 56%]
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 57%]
+tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning PASSED [ 57%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[own-status] PASSED [ 58%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[other-status] PASSED [ 59%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[admin-pin] PASSED [ 60%]
+tests/test_rider_deliveries.py::test_each_rider_sees_their_current_plan_sequence_and_nothing_else PASSED [ 61%]
+tests/test_rider_deliveries.py::test_instructions_contact_and_product_are_shown_as_stored PASSED [ 62%]
+tests/test_rider_deliveries.py::test_postponed_and_completed_are_separate_and_mark_the_plan_out_of_date PASSED [ 63%]
+tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one PASSED [ 64%]
+tests/test_rider_deliveries.py::test_own_destination_change_after_planning_keeps_the_saved_order_awaiting_recalculation PASSED [ 65%]
+tests/test_rider_deliveries.py::test_no_plan_yet_and_assigned_orders_without_a_plan PASSED [ 66%]
+tests/test_rider_deliveries.py::test_unusable_locations_never_get_navigation_coordinates PASSED [ 67%]
+tests/test_rider_deliveries.py::test_rider_who_left_a_round_still_sees_their_held_orders PASSED [ 68%]
+tests/test_rider_deliveries.py::test_other_riders_rounds_and_ids_are_refused_like_missing_ones PASSED [ 69%]
+tests/test_rider_deliveries.py::test_a_rider_never_receives_another_riders_orders_even_if_the_plan_rows_disagree PASSED [ 70%]
+tests/test_rider_deliveries.py::test_delivery_view_logs_no_customer_fields PASSED [ 71%]
+tests/test_rider_status.py::test_permitted_transitions_move_the_order_and_completed_is_final PASSED [ 71%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[unknown] PASSED [ 72%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[lowercase] PASSED [ 73%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[no-version] PASSED [ 74%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[string-version] PASSED [ 75%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[null] PASSED [ 76%]
+tests/test_rider_status.py::test_only_the_owner_can_change_an_order_and_others_learn_nothing PASSED [ 77%]
+tests/test_rider_status.py::test_stale_versions_never_overwrite_newer_work_or_reopen_completed PASSED [ 78%]
+tests/test_rider_status.py::test_repeated_submissions_change_nothing_twice PASSED [ 79%]
+tests/test_rider_status.py::test_concurrent_updates_from_two_tabs_have_exactly_one_winner PASSED [ 80%]
+tests/test_rider_status.py::test_an_admin_edit_racing_a_rider_update_has_exactly_one_winner PASSED [ 81%]
+tests/test_rider_status.py::test_delivery_progress_keeps_every_saved_route_usable_and_totals_as_planned PASSED [ 82%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[pin] PASSED [ 83%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[admin_status] PASSED [ 84%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[capacity] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[depot] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[mode] PASSED [ 86%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[lock] PASSED [ 87%]
+tests/test_rider_status.py::test_a_riders_own_destination_change_after_progress_invalidates_only_their_route PASSED [ 88%]
+tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position PASSED [ 89%]
+tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale PASSED [ 90%]
+tests/test_rider_status.py::test_a_replan_moving_the_order_wins_over_the_former_owners_update PASSED [ 91%]
+tests/test_rider_status.py::test_status_updates_log_no_customer_fields PASSED [ 92%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change0] PASSED [ 93%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change1] PASSED [ 94%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change2] PASSED [ 95%]
+tests/test_round_concurrency.py::test_depot_move_racing_confirmation_never_leaves_a_stale_confirmation PASSED [ 96%]
+tests/test_round_concurrency.py::test_destination_change_racing_confirmation_from_another_device PASSED [ 97%]
+tests/test_round_concurrency.py::test_two_admins_editing_one_rider_setup_one_wins PASSED [ 98%]
+tests/test_round_concurrency.py::test_two_admins_adding_the_same_rider_one_wins PASSED [ 99%]
+tests/test_round_concurrency.py::test_mixed_concurrent_writes_follow_one_lock_order_without_deadlock PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+2.49s call     tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position
+1.32s call     tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation
+1.25s call     tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+1.22s call     tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely
+1.17s call     tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning
+1.17s call     tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one
+1.12s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot]
+1.10s call     tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted
+1.10s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination]
+1.10s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[mode]
+1.09s call     tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version
+1.09s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[destination]
+1.09s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin]
+1.09s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[status]
+1.08s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status]
+1.08s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot]
+1.07s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot]
+1.07s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[status]
+1.06s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[lock]
+1.06s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[mode]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:80: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+============ 104 passed, 3 skipped, 3 warnings in 128.03s (0:02:08) ============
+pytest-exit=0
+=================== LOOP 6 started 2026-11-27 18:51:35 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 107 items
+
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination] PASSED [  0%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[status] PASSED [  1%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[lock] PASSED [  2%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[priority] PASSED [  3%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[pin] PASSED [  4%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot] PASSED [  5%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[capacity] PASSED [  6%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[mode] PASSED [  7%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[deactivate] PASSED [  8%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[account_flag] PASSED [  9%]
+tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version PASSED [ 10%]
+tests/test_planning_concurrency.py::test_two_optimize_requests_for_one_round_start_one_run PASSED [ 11%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin] PASSED [ 12%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status] PASSED [ 13%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[destination] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[pin] PASSED [ 15%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[status] PASSED [ 16%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[lock] PASSED [ 17%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[priority] PASSED [ 18%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[destination] PASSED [ 19%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity] PASSED [ 20%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[mode] PASSED [ 21%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot] PASSED [ 22%]
+tests/test_planning_concurrency.py::test_a_round_the_deactivation_missed_still_cannot_get_a_valid_plan PASSED [ 23%]
+tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely PASSED [ 24%]
+tests/test_planning_concurrency.py::test_unfinished_runs_are_marked_interrupted_on_restart PASSED [ 25%]
+tests/test_planning_concurrency.py::test_overdue_runs_are_reported_interrupted_never_successful PASSED [ 26%]
+tests/test_planning_concurrency.py::test_the_work_queue_is_bounded PASSED [ 27%]
+tests/test_planning_concurrency.py::test_the_database_allows_one_active_run_per_round PASSED [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_plan SKIPPED (...) [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_rider_reroute SKIPPED [ 29%]
+tests/test_planning_live.py::test_live_local_valhalla_grouped_route SKIPPED [ 30%]
+tests/test_reroute.py::test_reroute_from_the_current_position_changes_only_the_riders_own_sequence PASSED [ 31%]
+tests/test_reroute.py::test_reroute_is_refused_up_front_with_coded_reasons_and_writes_nothing PASSED [ 32%]
+tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted PASSED [ 33%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[inaccurate] PASSED [ 34%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[old] PASSED [ 35%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[outside] PASSED [ 36%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[incomplete] PASSED [ 37%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[coords-on-start] PASSED [ 38%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[order-on-position] PASSED [ 39%]
+tests/test_reroute.py::test_a_non_finite_position_is_refused PASSED      [ 40%]
+tests/test_reroute.py::test_the_position_limits_are_configurable_local_defaults PASSED [ 41%]
+tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation PASSED [ 42%]
+tests/test_reroute.py::test_a_returned_postponed_order_is_reinserted_only_by_an_explicit_reroute PASSED [ 42%]
+tests/test_reroute.py::test_priority_stays_first_and_a_last_stop_route_stays_open PASSED [ 43%]
+tests/test_reroute.py::test_each_rider_is_rerouted_with_their_own_vehicle_profile PASSED [ 44%]
+tests/test_reroute.py::test_failures_keep_the_last_valid_route PASSED    [ 45%]
+tests/test_reroute.py::test_one_reroute_at_a_time_per_rider_and_runs_are_private PASSED [ 46%]
+tests/test_reroute.py::test_an_interrupted_rider_run_never_saves_a_revision PASSED [ 47%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_status] PASSED [ 48%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_postpone] PASSED [ 49%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_destination] PASSED [ 50%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_pin] PASSED [ 51%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_status] PASSED [ 52%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[capacity] PASSED [ 53%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[ownership] PASSED [ 54%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[deactivate] PASSED [ 55%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [ 56%]
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 57%]
+tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning PASSED [ 57%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[own-status] PASSED [ 58%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[other-status] PASSED [ 59%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[admin-pin] PASSED [ 60%]
+tests/test_rider_deliveries.py::test_each_rider_sees_their_current_plan_sequence_and_nothing_else PASSED [ 61%]
+tests/test_rider_deliveries.py::test_instructions_contact_and_product_are_shown_as_stored PASSED [ 62%]
+tests/test_rider_deliveries.py::test_postponed_and_completed_are_separate_and_mark_the_plan_out_of_date PASSED [ 63%]
+tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one PASSED [ 64%]
+tests/test_rider_deliveries.py::test_own_destination_change_after_planning_keeps_the_saved_order_awaiting_recalculation PASSED [ 65%]
+tests/test_rider_deliveries.py::test_no_plan_yet_and_assigned_orders_without_a_plan PASSED [ 66%]
+tests/test_rider_deliveries.py::test_unusable_locations_never_get_navigation_coordinates PASSED [ 67%]
+tests/test_rider_deliveries.py::test_rider_who_left_a_round_still_sees_their_held_orders PASSED [ 68%]
+tests/test_rider_deliveries.py::test_other_riders_rounds_and_ids_are_refused_like_missing_ones PASSED [ 69%]
+tests/test_rider_deliveries.py::test_a_rider_never_receives_another_riders_orders_even_if_the_plan_rows_disagree PASSED [ 70%]
+tests/test_rider_deliveries.py::test_delivery_view_logs_no_customer_fields PASSED [ 71%]
+tests/test_rider_status.py::test_permitted_transitions_move_the_order_and_completed_is_final PASSED [ 71%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[unknown] PASSED [ 72%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[lowercase] PASSED [ 73%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[no-version] PASSED [ 74%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[string-version] PASSED [ 75%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[null] PASSED [ 76%]
+tests/test_rider_status.py::test_only_the_owner_can_change_an_order_and_others_learn_nothing PASSED [ 77%]
+tests/test_rider_status.py::test_stale_versions_never_overwrite_newer_work_or_reopen_completed PASSED [ 78%]
+tests/test_rider_status.py::test_repeated_submissions_change_nothing_twice PASSED [ 79%]
+tests/test_rider_status.py::test_concurrent_updates_from_two_tabs_have_exactly_one_winner PASSED [ 80%]
+tests/test_rider_status.py::test_an_admin_edit_racing_a_rider_update_has_exactly_one_winner PASSED [ 81%]
+tests/test_rider_status.py::test_delivery_progress_keeps_every_saved_route_usable_and_totals_as_planned PASSED [ 82%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[pin] PASSED [ 83%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[admin_status] PASSED [ 84%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[capacity] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[depot] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[mode] PASSED [ 86%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[lock] PASSED [ 87%]
+tests/test_rider_status.py::test_a_riders_own_destination_change_after_progress_invalidates_only_their_route PASSED [ 88%]
+tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position PASSED [ 89%]
+tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale PASSED [ 90%]
+tests/test_rider_status.py::test_a_replan_moving_the_order_wins_over_the_former_owners_update PASSED [ 91%]
+tests/test_rider_status.py::test_status_updates_log_no_customer_fields PASSED [ 92%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change0] PASSED [ 93%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change1] PASSED [ 94%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change2] PASSED [ 95%]
+tests/test_round_concurrency.py::test_depot_move_racing_confirmation_never_leaves_a_stale_confirmation PASSED [ 96%]
+tests/test_round_concurrency.py::test_destination_change_racing_confirmation_from_another_device PASSED [ 97%]
+tests/test_round_concurrency.py::test_two_admins_editing_one_rider_setup_one_wins PASSED [ 98%]
+tests/test_round_concurrency.py::test_two_admins_adding_the_same_rider_one_wins PASSED [ 99%]
+tests/test_round_concurrency.py::test_mixed_concurrent_writes_follow_one_lock_order_without_deadlock PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+2.18s call     tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position
+1.34s call     tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation
+1.34s call     tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+1.24s call     tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one
+1.18s call     tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely
+1.17s call     tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning
+1.14s call     tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale
+1.14s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot]
+1.10s call     tests/test_rider_status.py::test_a_replan_moving_the_order_wins_over_the_former_owners_update
+1.10s call     tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version
+1.09s call     tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted
+1.08s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination]
+1.08s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[destination]
+1.07s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot]
+1.06s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[priority]
+1.06s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin]
+1.06s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[destination]
+1.06s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity]
+1.06s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status]
+1.05s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:80: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+============ 104 passed, 3 skipped, 3 warnings in 127.95s (0:02:07) ============
+pytest-exit=0
+=================== LOOP 7 started 2026-11-27 18:53:45 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 107 items
+
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination] PASSED [  0%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[status] PASSED [  1%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[lock] PASSED [  2%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[priority] PASSED [  3%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[pin] PASSED [  4%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot] PASSED [  5%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[capacity] PASSED [  6%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[mode] PASSED [  7%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[deactivate] PASSED [  8%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[account_flag] PASSED [  9%]
+tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version PASSED [ 10%]
+tests/test_planning_concurrency.py::test_two_optimize_requests_for_one_round_start_one_run PASSED [ 11%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin] PASSED [ 12%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status] PASSED [ 13%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[destination] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[pin] PASSED [ 15%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[status] PASSED [ 16%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[lock] PASSED [ 17%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[priority] PASSED [ 18%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[destination] PASSED [ 19%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity] PASSED [ 20%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[mode] PASSED [ 21%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot] PASSED [ 22%]
+tests/test_planning_concurrency.py::test_a_round_the_deactivation_missed_still_cannot_get_a_valid_plan PASSED [ 23%]
+tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely PASSED [ 24%]
+tests/test_planning_concurrency.py::test_unfinished_runs_are_marked_interrupted_on_restart PASSED [ 25%]
+tests/test_planning_concurrency.py::test_overdue_runs_are_reported_interrupted_never_successful PASSED [ 26%]
+tests/test_planning_concurrency.py::test_the_work_queue_is_bounded PASSED [ 27%]
+tests/test_planning_concurrency.py::test_the_database_allows_one_active_run_per_round PASSED [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_plan SKIPPED (...) [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_rider_reroute SKIPPED [ 29%]
+tests/test_planning_live.py::test_live_local_valhalla_grouped_route SKIPPED [ 30%]
+tests/test_reroute.py::test_reroute_from_the_current_position_changes_only_the_riders_own_sequence PASSED [ 31%]
+tests/test_reroute.py::test_reroute_is_refused_up_front_with_coded_reasons_and_writes_nothing PASSED [ 32%]
+tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted PASSED [ 33%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[inaccurate] PASSED [ 34%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[old] PASSED [ 35%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[outside] PASSED [ 36%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[incomplete] PASSED [ 37%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[coords-on-start] PASSED [ 38%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[order-on-position] PASSED [ 39%]
+tests/test_reroute.py::test_a_non_finite_position_is_refused PASSED      [ 40%]
+tests/test_reroute.py::test_the_position_limits_are_configurable_local_defaults PASSED [ 41%]
+tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation PASSED [ 42%]
+tests/test_reroute.py::test_a_returned_postponed_order_is_reinserted_only_by_an_explicit_reroute PASSED [ 42%]
+tests/test_reroute.py::test_priority_stays_first_and_a_last_stop_route_stays_open PASSED [ 43%]
+tests/test_reroute.py::test_each_rider_is_rerouted_with_their_own_vehicle_profile PASSED [ 44%]
+tests/test_reroute.py::test_failures_keep_the_last_valid_route PASSED    [ 45%]
+tests/test_reroute.py::test_one_reroute_at_a_time_per_rider_and_runs_are_private PASSED [ 46%]
+tests/test_reroute.py::test_an_interrupted_rider_run_never_saves_a_revision PASSED [ 47%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_status] PASSED [ 48%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_postpone] PASSED [ 49%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_destination] PASSED [ 50%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_pin] PASSED [ 51%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_status] PASSED [ 52%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[capacity] PASSED [ 53%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[ownership] PASSED [ 54%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[deactivate] PASSED [ 55%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [ 56%]
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 57%]
+tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning PASSED [ 57%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[own-status] PASSED [ 58%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[other-status] PASSED [ 59%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[admin-pin] PASSED [ 60%]
+tests/test_rider_deliveries.py::test_each_rider_sees_their_current_plan_sequence_and_nothing_else PASSED [ 61%]
+tests/test_rider_deliveries.py::test_instructions_contact_and_product_are_shown_as_stored PASSED [ 62%]
+tests/test_rider_deliveries.py::test_postponed_and_completed_are_separate_and_mark_the_plan_out_of_date PASSED [ 63%]
+tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one PASSED [ 64%]
+tests/test_rider_deliveries.py::test_own_destination_change_after_planning_keeps_the_saved_order_awaiting_recalculation PASSED [ 65%]
+tests/test_rider_deliveries.py::test_no_plan_yet_and_assigned_orders_without_a_plan PASSED [ 66%]
+tests/test_rider_deliveries.py::test_unusable_locations_never_get_navigation_coordinates PASSED [ 67%]
+tests/test_rider_deliveries.py::test_rider_who_left_a_round_still_sees_their_held_orders PASSED [ 68%]
+tests/test_rider_deliveries.py::test_other_riders_rounds_and_ids_are_refused_like_missing_ones PASSED [ 69%]
+tests/test_rider_deliveries.py::test_a_rider_never_receives_another_riders_orders_even_if_the_plan_rows_disagree PASSED [ 70%]
+tests/test_rider_deliveries.py::test_delivery_view_logs_no_customer_fields PASSED [ 71%]
+tests/test_rider_status.py::test_permitted_transitions_move_the_order_and_completed_is_final PASSED [ 71%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[unknown] PASSED [ 72%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[lowercase] PASSED [ 73%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[no-version] PASSED [ 74%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[string-version] PASSED [ 75%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[null] PASSED [ 76%]
+tests/test_rider_status.py::test_only_the_owner_can_change_an_order_and_others_learn_nothing PASSED [ 77%]
+tests/test_rider_status.py::test_stale_versions_never_overwrite_newer_work_or_reopen_completed PASSED [ 78%]
+tests/test_rider_status.py::test_repeated_submissions_change_nothing_twice PASSED [ 79%]
+tests/test_rider_status.py::test_concurrent_updates_from_two_tabs_have_exactly_one_winner PASSED [ 80%]
+tests/test_rider_status.py::test_an_admin_edit_racing_a_rider_update_has_exactly_one_winner PASSED [ 81%]
+tests/test_rider_status.py::test_delivery_progress_keeps_every_saved_route_usable_and_totals_as_planned PASSED [ 82%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[pin] PASSED [ 83%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[admin_status] PASSED [ 84%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[capacity] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[depot] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[mode] PASSED [ 86%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[lock] PASSED [ 87%]
+tests/test_rider_status.py::test_a_riders_own_destination_change_after_progress_invalidates_only_their_route PASSED [ 88%]
+tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position PASSED [ 89%]
+tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale PASSED [ 90%]
+tests/test_rider_status.py::test_a_replan_moving_the_order_wins_over_the_former_owners_update PASSED [ 91%]
+tests/test_rider_status.py::test_status_updates_log_no_customer_fields PASSED [ 92%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change0] PASSED [ 93%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change1] PASSED [ 94%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change2] PASSED [ 95%]
+tests/test_round_concurrency.py::test_depot_move_racing_confirmation_never_leaves_a_stale_confirmation PASSED [ 96%]
+tests/test_round_concurrency.py::test_destination_change_racing_confirmation_from_another_device PASSED [ 97%]
+tests/test_round_concurrency.py::test_two_admins_editing_one_rider_setup_one_wins PASSED [ 98%]
+tests/test_round_concurrency.py::test_two_admins_adding_the_same_rider_one_wins PASSED [ 99%]
+tests/test_round_concurrency.py::test_mixed_concurrent_writes_follow_one_lock_order_without_deadlock PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+2.24s call     tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position
+1.38s call     tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation
+1.31s call     tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+1.27s call     tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely
+1.27s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[mode]
+1.23s call     tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one
+1.22s call     tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning
+1.21s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot]
+1.17s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot]
+1.17s call     tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version
+1.16s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot]
+1.16s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity]
+1.16s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[capacity]
+1.15s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination]
+1.14s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[priority]
+1.13s call     tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale
+1.13s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[account_flag]
+1.13s call     tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted
+1.13s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[pin]
+1.13s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:80: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+============ 104 passed, 3 skipped, 3 warnings in 133.76s (0:02:13) ============
+pytest-exit=0
+=================== LOOP 8 started 2026-11-27 18:56:01 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 107 items
+
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination] PASSED [  0%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[status] PASSED [  1%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[lock] PASSED [  2%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[priority] PASSED [  3%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[pin] PASSED [  4%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot] PASSED [  5%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[capacity] PASSED [  6%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[mode] PASSED [  7%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[deactivate] PASSED [  8%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[account_flag] PASSED [  9%]
+tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version PASSED [ 10%]
+tests/test_planning_concurrency.py::test_two_optimize_requests_for_one_round_start_one_run PASSED [ 11%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin] PASSED [ 12%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status] PASSED [ 13%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[destination] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[pin] PASSED [ 15%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[status] PASSED [ 16%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[lock] PASSED [ 17%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[priority] PASSED [ 18%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[destination] PASSED [ 19%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity] PASSED [ 20%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[mode] PASSED [ 21%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot] PASSED [ 22%]
+tests/test_planning_concurrency.py::test_a_round_the_deactivation_missed_still_cannot_get_a_valid_plan PASSED [ 23%]
+tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely PASSED [ 24%]
+tests/test_planning_concurrency.py::test_unfinished_runs_are_marked_interrupted_on_restart PASSED [ 25%]
+tests/test_planning_concurrency.py::test_overdue_runs_are_reported_interrupted_never_successful PASSED [ 26%]
+tests/test_planning_concurrency.py::test_the_work_queue_is_bounded PASSED [ 27%]
+tests/test_planning_concurrency.py::test_the_database_allows_one_active_run_per_round PASSED [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_plan SKIPPED (...) [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_rider_reroute SKIPPED [ 29%]
+tests/test_planning_live.py::test_live_local_valhalla_grouped_route SKIPPED [ 30%]
+tests/test_reroute.py::test_reroute_from_the_current_position_changes_only_the_riders_own_sequence PASSED [ 31%]
+tests/test_reroute.py::test_reroute_is_refused_up_front_with_coded_reasons_and_writes_nothing PASSED [ 32%]
+tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted PASSED [ 33%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[inaccurate] PASSED [ 34%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[old] PASSED [ 35%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[outside] PASSED [ 36%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[incomplete] PASSED [ 37%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[coords-on-start] PASSED [ 38%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[order-on-position] PASSED [ 39%]
+tests/test_reroute.py::test_a_non_finite_position_is_refused PASSED      [ 40%]
+tests/test_reroute.py::test_the_position_limits_are_configurable_local_defaults PASSED [ 41%]
+tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation PASSED [ 42%]
+tests/test_reroute.py::test_a_returned_postponed_order_is_reinserted_only_by_an_explicit_reroute PASSED [ 42%]
+tests/test_reroute.py::test_priority_stays_first_and_a_last_stop_route_stays_open PASSED [ 43%]
+tests/test_reroute.py::test_each_rider_is_rerouted_with_their_own_vehicle_profile PASSED [ 44%]
+tests/test_reroute.py::test_failures_keep_the_last_valid_route PASSED    [ 45%]
+tests/test_reroute.py::test_one_reroute_at_a_time_per_rider_and_runs_are_private PASSED [ 46%]
+tests/test_reroute.py::test_an_interrupted_rider_run_never_saves_a_revision PASSED [ 47%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_status] PASSED [ 48%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_postpone] PASSED [ 49%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_destination] PASSED [ 50%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_pin] PASSED [ 51%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_status] PASSED [ 52%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[capacity] PASSED [ 53%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[ownership] PASSED [ 54%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[deactivate] PASSED [ 55%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [ 56%]
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 57%]
+tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning PASSED [ 57%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[own-status] PASSED [ 58%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[other-status] PASSED [ 59%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[admin-pin] PASSED [ 60%]
+tests/test_rider_deliveries.py::test_each_rider_sees_their_current_plan_sequence_and_nothing_else PASSED [ 61%]
+tests/test_rider_deliveries.py::test_instructions_contact_and_product_are_shown_as_stored PASSED [ 62%]
+tests/test_rider_deliveries.py::test_postponed_and_completed_are_separate_and_mark_the_plan_out_of_date PASSED [ 63%]
+tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one PASSED [ 64%]
+tests/test_rider_deliveries.py::test_own_destination_change_after_planning_keeps_the_saved_order_awaiting_recalculation PASSED [ 65%]
+tests/test_rider_deliveries.py::test_no_plan_yet_and_assigned_orders_without_a_plan PASSED [ 66%]
+tests/test_rider_deliveries.py::test_unusable_locations_never_get_navigation_coordinates PASSED [ 67%]
+tests/test_rider_deliveries.py::test_rider_who_left_a_round_still_sees_their_held_orders PASSED [ 68%]
+tests/test_rider_deliveries.py::test_other_riders_rounds_and_ids_are_refused_like_missing_ones PASSED [ 69%]
+tests/test_rider_deliveries.py::test_a_rider_never_receives_another_riders_orders_even_if_the_plan_rows_disagree PASSED [ 70%]
+tests/test_rider_deliveries.py::test_delivery_view_logs_no_customer_fields PASSED [ 71%]
+tests/test_rider_status.py::test_permitted_transitions_move_the_order_and_completed_is_final PASSED [ 71%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[unknown] PASSED [ 72%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[lowercase] PASSED [ 73%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[no-version] PASSED [ 74%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[string-version] PASSED [ 75%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[null] PASSED [ 76%]
+tests/test_rider_status.py::test_only_the_owner_can_change_an_order_and_others_learn_nothing PASSED [ 77%]
+tests/test_rider_status.py::test_stale_versions_never_overwrite_newer_work_or_reopen_completed PASSED [ 78%]
+tests/test_rider_status.py::test_repeated_submissions_change_nothing_twice PASSED [ 79%]
+tests/test_rider_status.py::test_concurrent_updates_from_two_tabs_have_exactly_one_winner PASSED [ 80%]
+tests/test_rider_status.py::test_an_admin_edit_racing_a_rider_update_has_exactly_one_winner PASSED [ 81%]
+tests/test_rider_status.py::test_delivery_progress_keeps_every_saved_route_usable_and_totals_as_planned PASSED [ 82%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[pin] PASSED [ 83%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[admin_status] PASSED [ 84%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[capacity] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[depot] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[mode] PASSED [ 86%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[lock] PASSED [ 87%]
+tests/test_rider_status.py::test_a_riders_own_destination_change_after_progress_invalidates_only_their_route PASSED [ 88%]
+tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position PASSED [ 89%]
+tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale PASSED [ 90%]
+tests/test_rider_status.py::test_a_replan_moving_the_order_wins_over_the_former_owners_update PASSED [ 91%]
+tests/test_rider_status.py::test_status_updates_log_no_customer_fields PASSED [ 92%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change0] PASSED [ 93%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change1] PASSED [ 94%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change2] PASSED [ 95%]
+tests/test_round_concurrency.py::test_depot_move_racing_confirmation_never_leaves_a_stale_confirmation PASSED [ 96%]
+tests/test_round_concurrency.py::test_destination_change_racing_confirmation_from_another_device PASSED [ 97%]
+tests/test_round_concurrency.py::test_two_admins_editing_one_rider_setup_one_wins PASSED [ 98%]
+tests/test_round_concurrency.py::test_two_admins_adding_the_same_rider_one_wins PASSED [ 99%]
+tests/test_round_concurrency.py::test_mixed_concurrent_writes_follow_one_lock_order_without_deadlock PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+2.18s call     tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position
+1.37s call     tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+1.27s call     tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation
+1.25s call     tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely
+1.23s call     tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning
+1.18s call     tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one
+1.16s call     tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted
+1.16s call     tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version
+1.15s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot]
+1.15s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[capacity]
+1.14s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status]
+1.14s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin]
+1.13s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination]
+1.13s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot]
+1.12s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[lock]
+1.11s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot]
+1.11s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[lock]
+1.11s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[mode]
+1.11s call     tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale
+1.10s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[priority]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:80: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+============ 104 passed, 3 skipped, 3 warnings in 132.50s (0:02:12) ============
+pytest-exit=0
+=================== LOOP 9 started 2026-11-27 18:58:16 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 107 items
+
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination] PASSED [  0%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[status] PASSED [  1%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[lock] PASSED [  2%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[priority] PASSED [  3%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[pin] PASSED [  4%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot] PASSED [  5%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[capacity] PASSED [  6%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[mode] PASSED [  7%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[deactivate] PASSED [  8%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[account_flag] PASSED [  9%]
+tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version PASSED [ 10%]
+tests/test_planning_concurrency.py::test_two_optimize_requests_for_one_round_start_one_run PASSED [ 11%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin] PASSED [ 12%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status] PASSED [ 13%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[destination] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[pin] PASSED [ 15%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[status] PASSED [ 16%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[lock] PASSED [ 17%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[priority] PASSED [ 18%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[destination] PASSED [ 19%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity] PASSED [ 20%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[mode] PASSED [ 21%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot] PASSED [ 22%]
+tests/test_planning_concurrency.py::test_a_round_the_deactivation_missed_still_cannot_get_a_valid_plan PASSED [ 23%]
+tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely PASSED [ 24%]
+tests/test_planning_concurrency.py::test_unfinished_runs_are_marked_interrupted_on_restart PASSED [ 25%]
+tests/test_planning_concurrency.py::test_overdue_runs_are_reported_interrupted_never_successful PASSED [ 26%]
+tests/test_planning_concurrency.py::test_the_work_queue_is_bounded PASSED [ 27%]
+tests/test_planning_concurrency.py::test_the_database_allows_one_active_run_per_round PASSED [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_plan SKIPPED (...) [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_rider_reroute SKIPPED [ 29%]
+tests/test_planning_live.py::test_live_local_valhalla_grouped_route SKIPPED [ 30%]
+tests/test_reroute.py::test_reroute_from_the_current_position_changes_only_the_riders_own_sequence PASSED [ 31%]
+tests/test_reroute.py::test_reroute_is_refused_up_front_with_coded_reasons_and_writes_nothing PASSED [ 32%]
+tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted PASSED [ 33%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[inaccurate] PASSED [ 34%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[old] PASSED [ 35%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[outside] PASSED [ 36%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[incomplete] PASSED [ 37%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[coords-on-start] PASSED [ 38%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[order-on-position] PASSED [ 39%]
+tests/test_reroute.py::test_a_non_finite_position_is_refused PASSED      [ 40%]
+tests/test_reroute.py::test_the_position_limits_are_configurable_local_defaults PASSED [ 41%]
+tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation PASSED [ 42%]
+tests/test_reroute.py::test_a_returned_postponed_order_is_reinserted_only_by_an_explicit_reroute PASSED [ 42%]
+tests/test_reroute.py::test_priority_stays_first_and_a_last_stop_route_stays_open PASSED [ 43%]
+tests/test_reroute.py::test_each_rider_is_rerouted_with_their_own_vehicle_profile PASSED [ 44%]
+tests/test_reroute.py::test_failures_keep_the_last_valid_route PASSED    [ 45%]
+tests/test_reroute.py::test_one_reroute_at_a_time_per_rider_and_runs_are_private PASSED [ 46%]
+tests/test_reroute.py::test_an_interrupted_rider_run_never_saves_a_revision PASSED [ 47%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_status] PASSED [ 48%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_postpone] PASSED [ 49%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_destination] PASSED [ 50%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_pin] PASSED [ 51%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_status] PASSED [ 52%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[capacity] PASSED [ 53%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[ownership] PASSED [ 54%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[deactivate] PASSED [ 55%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [ 56%]
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 57%]
+tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning PASSED [ 57%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[own-status] PASSED [ 58%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[other-status] PASSED [ 59%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[admin-pin] PASSED [ 60%]
+tests/test_rider_deliveries.py::test_each_rider_sees_their_current_plan_sequence_and_nothing_else PASSED [ 61%]
+tests/test_rider_deliveries.py::test_instructions_contact_and_product_are_shown_as_stored PASSED [ 62%]
+tests/test_rider_deliveries.py::test_postponed_and_completed_are_separate_and_mark_the_plan_out_of_date PASSED [ 63%]
+tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one PASSED [ 64%]
+tests/test_rider_deliveries.py::test_own_destination_change_after_planning_keeps_the_saved_order_awaiting_recalculation PASSED [ 65%]
+tests/test_rider_deliveries.py::test_no_plan_yet_and_assigned_orders_without_a_plan PASSED [ 66%]
+tests/test_rider_deliveries.py::test_unusable_locations_never_get_navigation_coordinates PASSED [ 67%]
+tests/test_rider_deliveries.py::test_rider_who_left_a_round_still_sees_their_held_orders PASSED [ 68%]
+tests/test_rider_deliveries.py::test_other_riders_rounds_and_ids_are_refused_like_missing_ones PASSED [ 69%]
+tests/test_rider_deliveries.py::test_a_rider_never_receives_another_riders_orders_even_if_the_plan_rows_disagree PASSED [ 70%]
+tests/test_rider_deliveries.py::test_delivery_view_logs_no_customer_fields PASSED [ 71%]
+tests/test_rider_status.py::test_permitted_transitions_move_the_order_and_completed_is_final PASSED [ 71%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[unknown] PASSED [ 72%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[lowercase] PASSED [ 73%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[no-version] PASSED [ 74%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[string-version] PASSED [ 75%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[null] PASSED [ 76%]
+tests/test_rider_status.py::test_only_the_owner_can_change_an_order_and_others_learn_nothing PASSED [ 77%]
+tests/test_rider_status.py::test_stale_versions_never_overwrite_newer_work_or_reopen_completed PASSED [ 78%]
+tests/test_rider_status.py::test_repeated_submissions_change_nothing_twice PASSED [ 79%]
+tests/test_rider_status.py::test_concurrent_updates_from_two_tabs_have_exactly_one_winner PASSED [ 80%]
+tests/test_rider_status.py::test_an_admin_edit_racing_a_rider_update_has_exactly_one_winner PASSED [ 81%]
+tests/test_rider_status.py::test_delivery_progress_keeps_every_saved_route_usable_and_totals_as_planned PASSED [ 82%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[pin] PASSED [ 83%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[admin_status] PASSED [ 84%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[capacity] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[depot] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[mode] PASSED [ 86%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[lock] PASSED [ 87%]
+tests/test_rider_status.py::test_a_riders_own_destination_change_after_progress_invalidates_only_their_route PASSED [ 88%]
+tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position PASSED [ 89%]
+tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale PASSED [ 90%]
+tests/test_rider_status.py::test_a_replan_moving_the_order_wins_over_the_former_owners_update PASSED [ 91%]
+tests/test_rider_status.py::test_status_updates_log_no_customer_fields PASSED [ 92%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change0] PASSED [ 93%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change1] PASSED [ 94%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change2] PASSED [ 95%]
+tests/test_round_concurrency.py::test_depot_move_racing_confirmation_never_leaves_a_stale_confirmation PASSED [ 96%]
+tests/test_round_concurrency.py::test_destination_change_racing_confirmation_from_another_device PASSED [ 97%]
+tests/test_round_concurrency.py::test_two_admins_editing_one_rider_setup_one_wins PASSED [ 98%]
+tests/test_round_concurrency.py::test_two_admins_adding_the_same_rider_one_wins PASSED [ 99%]
+tests/test_round_concurrency.py::test_mixed_concurrent_writes_follow_one_lock_order_without_deadlock PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+2.22s call     tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position
+1.43s call     tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation
+1.32s call     tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+1.24s call     tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely
+1.22s call     tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one
+1.22s call     tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning
+1.15s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[capacity]
+1.15s call     tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted
+1.15s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[deactivate]
+1.14s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity]
+1.14s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot]
+1.14s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[lock]
+1.14s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[status]
+1.13s call     tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version
+1.13s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination]
+1.13s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot]
+1.13s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[mode]
+1.12s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[account_flag]
+1.12s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin]
+1.12s call     tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:80: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+============ 104 passed, 3 skipped, 3 warnings in 133.30s (0:02:13) ============
+pytest-exit=0
+=================== LOOP 10 started 2026-11-27 19:00:31 +0530
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/satyamnirala/Projects/RouteWise/services/api/.venv/bin/python
+rootdir: /Users/satyamnirala/Projects/RouteWise/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 107 items
+
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[destination] PASSED [  0%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[status] PASSED [  1%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[lock] PASSED [  2%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[priority] PASSED [  3%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[pin] PASSED [  4%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot] PASSED [  5%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[capacity] PASSED [  6%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[mode] PASSED [  7%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[deactivate] PASSED [  8%]
+tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[account_flag] PASSED [  9%]
+tests/test_planning_concurrency.py::test_without_changes_the_paused_run_commits_the_next_version PASSED [ 10%]
+tests/test_planning_concurrency.py::test_two_optimize_requests_for_one_round_start_one_run PASSED [ 11%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin] PASSED [ 12%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status] PASSED [ 13%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[destination] PASSED [ 14%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[pin] PASSED [ 15%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[status] PASSED [ 16%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[lock] PASSED [ 17%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[priority] PASSED [ 18%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[destination] PASSED [ 19%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity] PASSED [ 20%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[mode] PASSED [ 21%]
+tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot] PASSED [ 22%]
+tests/test_planning_concurrency.py::test_a_round_the_deactivation_missed_still_cannot_get_a_valid_plan PASSED [ 23%]
+tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely PASSED [ 24%]
+tests/test_planning_concurrency.py::test_unfinished_runs_are_marked_interrupted_on_restart PASSED [ 25%]
+tests/test_planning_concurrency.py::test_overdue_runs_are_reported_interrupted_never_successful PASSED [ 26%]
+tests/test_planning_concurrency.py::test_the_work_queue_is_bounded PASSED [ 27%]
+tests/test_planning_concurrency.py::test_the_database_allows_one_active_run_per_round PASSED [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_plan SKIPPED (...) [ 28%]
+tests/test_planning_live.py::test_live_local_valhalla_rider_reroute SKIPPED [ 29%]
+tests/test_planning_live.py::test_live_local_valhalla_grouped_route SKIPPED [ 30%]
+tests/test_reroute.py::test_reroute_from_the_current_position_changes_only_the_riders_own_sequence PASSED [ 31%]
+tests/test_reroute.py::test_reroute_is_refused_up_front_with_coded_reasons_and_writes_nothing PASSED [ 32%]
+tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted PASSED [ 33%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[inaccurate] PASSED [ 34%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[old] PASSED [ 35%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[outside] PASSED [ 36%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[incomplete] PASSED [ 37%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[coords-on-start] PASSED [ 38%]
+tests/test_reroute.py::test_device_positions_are_checked_and_refusals_do_not_echo_them[order-on-position] PASSED [ 39%]
+tests/test_reroute.py::test_a_non_finite_position_is_refused PASSED      [ 40%]
+tests/test_reroute.py::test_the_position_limits_are_configurable_local_defaults PASSED [ 41%]
+tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation PASSED [ 42%]
+tests/test_reroute.py::test_a_returned_postponed_order_is_reinserted_only_by_an_explicit_reroute PASSED [ 42%]
+tests/test_reroute.py::test_priority_stays_first_and_a_last_stop_route_stays_open PASSED [ 43%]
+tests/test_reroute.py::test_each_rider_is_rerouted_with_their_own_vehicle_profile PASSED [ 44%]
+tests/test_reroute.py::test_failures_keep_the_last_valid_route PASSED    [ 45%]
+tests/test_reroute.py::test_one_reroute_at_a_time_per_rider_and_runs_are_private PASSED [ 46%]
+tests/test_reroute.py::test_an_interrupted_rider_run_never_saves_a_revision PASSED [ 47%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_status] PASSED [ 48%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_postpone] PASSED [ 49%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[own_destination] PASSED [ 50%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_pin] PASSED [ 51%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[admin_status] PASSED [ 52%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[capacity] PASSED [ 53%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[ownership] PASSED [ 54%]
+tests/test_reroute.py::test_a_change_to_the_riders_own_input_during_the_solve_makes_the_reroute_stale[deactivate] PASSED [ 55%]
+tests/test_reroute.py::test_other_riders_progress_and_reroutes_never_make_this_reroute_stale PASSED [ 56%]
+tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight PASSED [ 57%]
+tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning PASSED [ 57%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[own-status] PASSED [ 58%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[other-status] PASSED [ 59%]
+tests/test_reroute.py::test_an_edit_racing_the_reroute_commit_after_its_final_check_lands_after_it[admin-pin] PASSED [ 60%]
+tests/test_rider_deliveries.py::test_each_rider_sees_their_current_plan_sequence_and_nothing_else PASSED [ 61%]
+tests/test_rider_deliveries.py::test_instructions_contact_and_product_are_shown_as_stored PASSED [ 62%]
+tests/test_rider_deliveries.py::test_postponed_and_completed_are_separate_and_mark_the_plan_out_of_date PASSED [ 63%]
+tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one PASSED [ 64%]
+tests/test_rider_deliveries.py::test_own_destination_change_after_planning_keeps_the_saved_order_awaiting_recalculation PASSED [ 65%]
+tests/test_rider_deliveries.py::test_no_plan_yet_and_assigned_orders_without_a_plan PASSED [ 66%]
+tests/test_rider_deliveries.py::test_unusable_locations_never_get_navigation_coordinates PASSED [ 67%]
+tests/test_rider_deliveries.py::test_rider_who_left_a_round_still_sees_their_held_orders PASSED [ 68%]
+tests/test_rider_deliveries.py::test_other_riders_rounds_and_ids_are_refused_like_missing_ones PASSED [ 69%]
+tests/test_rider_deliveries.py::test_a_rider_never_receives_another_riders_orders_even_if_the_plan_rows_disagree PASSED [ 70%]
+tests/test_rider_deliveries.py::test_delivery_view_logs_no_customer_fields PASSED [ 71%]
+tests/test_rider_status.py::test_permitted_transitions_move_the_order_and_completed_is_final PASSED [ 71%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[unknown] PASSED [ 72%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[lowercase] PASSED [ 73%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[no-version] PASSED [ 74%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[string-version] PASSED [ 75%]
+tests/test_rider_status.py::test_invalid_statuses_and_payloads_are_rejected[null] PASSED [ 76%]
+tests/test_rider_status.py::test_only_the_owner_can_change_an_order_and_others_learn_nothing PASSED [ 77%]
+tests/test_rider_status.py::test_stale_versions_never_overwrite_newer_work_or_reopen_completed PASSED [ 78%]
+tests/test_rider_status.py::test_repeated_submissions_change_nothing_twice PASSED [ 79%]
+tests/test_rider_status.py::test_concurrent_updates_from_two_tabs_have_exactly_one_winner PASSED [ 80%]
+tests/test_rider_status.py::test_an_admin_edit_racing_a_rider_update_has_exactly_one_winner PASSED [ 81%]
+tests/test_rider_status.py::test_delivery_progress_keeps_every_saved_route_usable_and_totals_as_planned PASSED [ 82%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[pin] PASSED [ 83%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[admin_status] PASSED [ 84%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[capacity] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[depot] PASSED [ 85%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[mode] PASSED [ 86%]
+tests/test_rider_status.py::test_genuine_changes_after_progress_still_mark_the_plan_out_of_date[lock] PASSED [ 87%]
+tests/test_rider_status.py::test_a_riders_own_destination_change_after_progress_invalidates_only_their_route PASSED [ 88%]
+tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position PASSED [ 89%]
+tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale PASSED [ 90%]
+tests/test_rider_status.py::test_a_replan_moving_the_order_wins_over_the_former_owners_update PASSED [ 91%]
+tests/test_rider_status.py::test_status_updates_log_no_customer_fields PASSED [ 92%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change0] PASSED [ 93%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change1] PASSED [ 94%]
+tests/test_round_concurrency.py::test_admin_edit_racing_confirmation_never_leaves_a_stale_confirmation[change2] PASSED [ 95%]
+tests/test_round_concurrency.py::test_depot_move_racing_confirmation_never_leaves_a_stale_confirmation PASSED [ 96%]
+tests/test_round_concurrency.py::test_destination_change_racing_confirmation_from_another_device PASSED [ 97%]
+tests/test_round_concurrency.py::test_two_admins_editing_one_rider_setup_one_wins PASSED [ 98%]
+tests/test_round_concurrency.py::test_two_admins_adding_the_same_rider_one_wins PASSED [ 99%]
+tests/test_round_concurrency.py::test_mixed_concurrent_writes_follow_one_lock_order_without_deadlock PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:491
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 20 durations =============================
+2.15s call     tests/test_rider_status.py::test_returning_to_pending_reuses_only_a_saved_position
+1.38s call     tests/test_reroute.py::test_destination_change_recalculates_only_that_rider_after_confirmation
+1.38s call     tests/test_reroute.py::test_admin_replanning_wins_over_a_reroute_in_flight
+1.26s call     tests/test_planning_concurrency.py::test_a_failed_commit_rolls_back_completely
+1.22s call     tests/test_reroute.py::test_a_new_reroute_is_refused_while_the_admin_is_replanning
+1.22s call     tests/test_rider_deliveries.py::test_only_the_current_plan_is_used_never_a_superseded_one
+1.15s call     tests/test_rider_status.py::test_a_rider_update_during_a_solve_makes_the_run_stale
+1.15s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[pin]
+1.15s call     tests/test_reroute.py::test_origins_are_explicit_labelled_and_never_substituted
+1.15s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[pin]
+1.13s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[priority]
+1.13s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[capacity]
+1.12s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[priority]
+1.12s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[status]
+1.12s call     tests/test_rider_status.py::test_a_replan_moving_the_order_wins_over_the_former_owners_update
+1.11s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[depot]
+1.11s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[depot]
+1.11s call     tests/test_planning_concurrency.py::test_an_edit_racing_the_commit_after_its_final_check_has_a_serial_outcome[capacity]
+1.11s call     tests/test_planning_concurrency.py::test_input_changed_during_the_solve_makes_the_run_stale_and_keeps_the_previous_plan[account_flag]
+1.11s call     tests/test_planning_concurrency.py::test_plan_commit_racing_an_input_edit_serialises_without_deadlock[depot]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_planning_live.py:25: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:49: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+SKIPPED [1] tests/test_planning_live.py:80: set ROUTEWISE_LIVE_TESTS=1 (local tiles)
+============ 104 passed, 3 skipped, 3 warnings in 133.01s (0:02:13) ============
+pytest-exit=0
+# finished 2026-11-27 19:02:46 +0530

@@ -1,0 +1,22 @@
+# 4d: did the Mac sleep during the post-fix verification runs (4b, 4c)? Derived from the evidence files' timestamps and `pmset -g log`.
+# For each run: wall time from its start to the next run's start, minus pytest's own elapsed time (pytest's clock excludes sleep)
+# = time the process was frozen or the runner was idle; plus any macOS 'Sleep' event inside [start, start + pytest time + 12 s].
+# `caffeinate -i` wrapped only the full runs (4b); the loops (4c) were not caffeinated. All runs below passed.
+
+file                    run start       wall_s pytest_s   frozen_min  Sleep entries inside the run window
+4b full suite            11 21:20:16      4454      287           69  21:20:56
+4b full suite            18 23:00:35      2001      258           29  23:03:27
+4b full suite            19 23:33:56      4698      271           74  23:35:32
+4b full suite            20 00:52:14     19876      282          327  00:52:49,00:55:26
+4c link_robust.           1 06:23:30      2229       11           37  -
+4c link_robust.           2 07:00:39        11       10            0  07:00:55
+4c link_robust.           3 07:00:50       357       10            6  07:00:55
+4c link_robust.           4 07:06:47      2039       11           34  07:06:50
+4c link_robust.           5 07:40:46      1704       11           28  07:40:48
+4c link_robust.           6 08:09:10      1496       10           25  08:09:12
+4c link_robust.           7 08:34:06       110       11            2  08:34:10
+4c link_robust.           8 08:35:56      1545       10           26  08:35:56
+4c link_robust.           9 09:01:41       500       11            8  09:01:44
+4c link_robust.          10 09:10:01      2018       10           33  09:10:01
+4c slice                  1 09:43:40      8743      125          144  -
+4c slice                  2 12:09:23      1295      128           19  12:09:30
